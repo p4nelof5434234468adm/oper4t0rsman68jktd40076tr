@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Operator — SMAN 68 Jakarta</title>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+<style>
+/* ============================================================
+   OPERATOR PANEL — SMAN 68 JAKARTA
+   Light Mode | Clean Professional Design
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+:root{
+  --green:#006633; --green-dk:#004d26; --green-lt:#e8f5ee; --green-md:#d0eddc;
+  --blue:#0284c7; --blue-lt:#e0f2fe;
+  --red:#dc2626; --red-lt:#fef2f2;
+  --yellow:#d97706; --yellow-lt:#fffbeb;
+  --purple:#7c3aed; --purple-lt:#f5f3ff;
+  --bg:#f4f6f9; --white:#fff;
+  --border:#e2e8f0; --border-md:#cbd5e1;
+  --text-1:#0f172a; --text-2:#475569; --text-3:#94a3b8;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.12);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:22px; --r-full:9999px;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --ease:all .25s cubic-bezier(.4,0,.2,1);
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text-1);min-height:100vh;line-height:1.6;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px;}
+
+/* ---- PRELOADER ---- */
+.preloader{position:fixed;inset:0;z-index:99999;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity .5s,visibility .5s;}
+.preloader.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.preloader-logo-wrap{position:relative;width:72px;height:72px;display:flex;align-items:center;justify-content:center;}
+.preloader-logo-wrap img{width:60px;height:60px;object-fit:contain;border-radius:50%;position:relative;z-index:2;animation:bobFloat 2s ease-in-out infinite;}
+.spin-ring{position:absolute;inset:-8px;border-radius:50%;border:3px solid transparent;border-top-color:var(--green);border-right-color:var(--green);animation:spin 1s linear infinite;}
+.preloader-title{font-size:1.1rem;font-weight:800;color:var(--text-1);}
+.preloader-sub{font-size:.78rem;color:var(--text-2);}
+.preloader-bar{width:160px;height:3px;background:#e2e8f0;border-radius:99px;overflow:hidden;}
+.preloader-bar-fill{height:100%;background:var(--green);border-radius:99px;animation:barFill 1.6s ease forwards;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes bobFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+@keyframes barFill{from{width:0;}to{width:100%;}}
+
+/* ---- TOAST ---- */
+.toast-container{position:fixed;top:18px;right:18px;z-index:99998;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--shadow-lg);padding:12px 16px;display:flex;align-items:flex-start;gap:10px;min-width:270px;max-width:360px;pointer-events:auto;transform:translateX(110%);opacity:0;animation:toastIn .35s cubic-bezier(.4,0,.2,1) forwards;border-left:4px solid var(--green);}
+.toast.leaving{animation:toastOut .3s forwards;}
+.toast.error{border-left-color:var(--red);} .toast.warning{border-left-color:var(--yellow);} .toast.info{border-left-color:var(--blue);}
+.toast-ico{font-size:1.1rem;margin-top:1px;flex-shrink:0;color:var(--green);}
+.toast.error .toast-ico{color:var(--red);} .toast.warning .toast-ico{color:var(--yellow);} .toast.info .toast-ico{color:var(--blue);}
+.toast-title{font-weight:700;font-size:.84rem;color:var(--text-1);}
+.toast-msg{font-size:.76rem;color:var(--text-2);margin-top:2px;line-height:1.4;}
+@keyframes toastIn{to{transform:translateX(0);opacity:1;}}
+@keyframes toastOut{to{transform:translateX(110%);opacity:0;}}
+
+/* ---- LOGIN ---- */
+.op-login-page{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.op-login-bg{position:absolute;inset:0;}
+.op-login-bg img{width:100%;height:100%;object-fit:cover;}
+.op-login-bg-ov{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,30,12,.88) 0%,rgba(0,20,50,.84) 100%);}
+.op-login-card{position:relative;z-index:2;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-radius:var(--r-xl);padding:38px 34px;max-width:400px;width:100%;box-shadow:0 30px 70px rgba(0,0,0,.45);text-align:center;animation:fadeUp .6s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:none;}}
+.op-login-logo-wrap{position:relative;width:80px;height:80px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;}
+.op-login-logo-ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(255,150,0,.45);animation:ringP 3s ease-in-out infinite;}
+@keyframes ringP{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.07);opacity:.5;}}
+.op-login-logo{width:80px;height:80px;object-fit:contain;border-radius:50%;position:relative;z-index:2;filter:drop-shadow(0 0 16px rgba(255,150,0,.5));animation:bobFloat 3s ease-in-out infinite;}
+.op-login-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,150,0,.15);border:1px solid rgba(255,150,0,.3);border-radius:var(--r-full);padding:4px 14px;font-size:.72rem;font-weight:800;color:#fbbf24;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.op-login-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:3px;}
+.op-login-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:24px;}
+.field-wrap{margin-bottom:14px;text-align:left;}
+.field-label{display:block;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:6px;}
+.field-label i{color:#fbbf24;margin-right:5px;}
+.field-input-rel{position:relative;}
+.field-input{width:100%;padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);border-radius:var(--r-md);color:#fff;font-family:var(--font);font-size:.88rem;outline:none;transition:var(--ease);}
+.field-input::placeholder{color:rgba(255,255,255,.32);}
+.field-input:focus{border-color:rgba(255,180,0,.6);background:rgba(255,150,0,.08);box-shadow:0 0 0 3px rgba(255,180,0,.15);}
+.toggle-pass-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;transition:var(--ease);}
+.toggle-pass-btn:hover{color:rgba(255,255,255,.9);}
+.btn-op-login{width:100%;padding:12px;border:none;border-radius:var(--r-md);background:linear-gradient(135deg,#b45309,#d97706);color:#fff;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;transition:var(--ease);box-shadow:0 4px 14px rgba(180,83,9,.4);display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-op-login:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(180,83,9,.5);}
+.btn-op-login:disabled{opacity:.65;cursor:not-allowed;transform:none;}
+
+/* ---- PORTAL WRAPPER ---- */
+.op-wrapper{display:flex;min-height:100vh;}
+
+/* ---- SIDEBAR ---- */
+.op-sidebar{width:250px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;z-index:100;}
+.op-sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.op-sidebar-brand img{width:36px;height:36px;object-fit:contain;border-radius:8px;flex-shrink:0;}
+.op-brand-name{display:block;font-size:.86rem;font-weight:800;color:var(--text-1);}
+.op-brand-sub{display:block;font-size:.66rem;color:var(--text-2);}
+.op-sidebar-badge{padding:10px 14px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.op-badge-chip{display:inline-flex;align-items:center;gap:6px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--r-full);padding:5px 12px;font-size:.72rem;font-weight:800;color:#b45309;}
+.op-nav{flex:1;padding:10px 8px;overflow-y:auto;}
+.op-nav-label{display:block;font-size:.62rem;font-weight:800;letter-spacing:1.5px;color:var(--text-3);padding:6px 8px 4px;text-transform:uppercase;}
+.op-nav-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-md);margin-bottom:2px;border:none;background:none;cursor:pointer;font-family:var(--font);font-size:.83rem;font-weight:600;color:var(--text-2);text-align:left;transition:var(--ease);position:relative;white-space:nowrap;}
+.op-nav-btn i{font-size:.95rem;flex-shrink:0;min-width:18px;text-align:center;}
+.op-nav-btn span{flex:1;overflow:hidden;text-overflow:ellipsis;}
+.op-nav-btn:hover{background:var(--yellow-lt);color:var(--yellow);}
+.op-nav-btn.active{background:var(--yellow-lt);color:var(--yellow);font-weight:700;}
+.op-nav-btn.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--yellow);border-radius:0 3px 3px 0;}
+.op-nav-badge{font-size:.62rem;font-weight:800;background:#ef4444;color:#fff;padding:2px 6px;border-radius:99px;flex-shrink:0;min-width:18px;text-align:center;}
+.op-sidebar-footer{padding:10px 8px 16px;border-top:1px solid var(--border);flex-shrink:0;}
+.op-logout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-md);border:none;background:none;cursor:pointer;font-family:var(--font);font-size:.83rem;font-weight:600;color:#dc2626;text-align:left;transition:var(--ease);}
+.op-logout-btn:hover{background:var(--red-lt);}
+.op-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
+.op-sidebar-overlay.on{display:block;}
+
+/* ---- MAIN AREA ---- */
+.op-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+/* ---- TOPBAR ---- */
+.op-topbar{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50;flex-shrink:0;box-shadow:var(--shadow-sm);}
+.op-topbar-left{display:flex;align-items:center;gap:14px;}
+.op-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.op-hamburger span{width:20px;height:2px;background:var(--text-2);border-radius:99px;}
+.op-breadcrumb{font-size:.84rem;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:6px;}
+.op-breadcrumb i{color:var(--yellow);}
+.op-topbar-right{display:flex;align-items:center;gap:14px;}
+.op-topbar-time{font-size:1rem;font-weight:800;color:var(--text-1);}
+.op-topbar-divider{width:1px;height:26px;background:var(--border);}
+.op-topbar-user-name{font-size:.8rem;font-weight:700;color:var(--text-1);}
+.op-topbar-user-role{font-size:.68rem;color:var(--yellow);font-weight:700;}
+.op-topbar-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#b45309,#d97706);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;flex-shrink:0;}
+
+/* ---- PAGE AREA ---- */
+.op-page-area{flex:1;overflow:auto;}
+.op-pg{padding:24px;display:none;}
+.op-pg.active{display:block;}
+.op-pg-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px;}
+.op-pg-title{font-size:1.4rem;font-weight:800;color:var(--text-1);}
+.op-pg-sub{font-size:.82rem;color:var(--text-2);margin-top:3px;}
+
+/* ---- PANEL ---- */
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:18px;transition:var(--ease);}
+.panel:hover{box-shadow:var(--shadow-md);}
+.panel-head{display:flex;align-items:center;gap:9px;padding:16px 20px;border-bottom:1px solid var(--border);}
+.panel-head i{color:var(--yellow);font-size:.95rem;}
+.panel-head h3{font-size:.9rem;font-weight:800;color:var(--text-1);flex:1;}
+
+/* ---- BUTTONS ---- */
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border:none;border-radius:var(--r-md);background:var(--green);color:#fff;font-family:var(--font);font-weight:700;font-size:.84rem;cursor:pointer;transition:var(--ease);box-shadow:0 3px 10px rgba(0,102,51,.3);}
+.btn-primary:hover:not(:disabled){background:var(--green-dk);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.65;cursor:not-allowed;transform:none;}
+.btn-yellow{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border:none;border-radius:var(--r-md);background:#d97706;color:#fff;font-family:var(--font);font-weight:700;font-size:.84rem;cursor:pointer;transition:var(--ease);box-shadow:0 3px 10px rgba(180,83,9,.3);}
+.btn-yellow:hover:not(:disabled){background:#b45309;transform:translateY(-1px);}
+.btn-yellow:disabled{opacity:.65;cursor:not-allowed;transform:none;}
+.btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border:1.5px solid var(--border);border-radius:var(--r-md);background:#fff;color:var(--text-2);font-family:var(--font);font-weight:600;font-size:.82rem;cursor:pointer;transition:var(--ease);}
+.btn-outline:hover{border-color:var(--green);color:var(--green);}
+.btn-red{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 16px;border:none;border-radius:var(--r-md);background:#ef4444;color:#fff;font-family:var(--font);font-weight:700;font-size:.8rem;cursor:pointer;transition:var(--ease);}
+.btn-red:hover:not(:disabled){background:#dc2626;transform:translateY(-1px);}
+.btn-red:disabled{opacity:.65;cursor:not-allowed;}
+.btn-sm{padding:6px 12px !important;font-size:.76rem !important;}
+.w-full{width:100%;}
+
+/* ---- FIELD INPUT (inside portal) ---- */
+.op-field-wrap{margin-bottom:14px;}
+.op-field-label{display:block;font-size:.78rem;font-weight:600;color:var(--text-2);margin-bottom:6px;}
+.op-field-label i{color:var(--yellow);margin-right:5px;}
+.op-field-input{width:100%;padding:10px 13px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text-1);font-family:var(--font);font-size:.86rem;outline:none;transition:var(--ease);}
+.op-field-input::placeholder{color:var(--text-3);}
+.op-field-input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(217,119,6,.12);}
+.op-field-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%2394a3b8' d='M7.293 10.293a1 1 0 001.414 0l3-3a1 1 0 10-1.414-1.414L8 8.172 5.707 5.879a1 1 0 10-1.414 1.414l3 3z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:34px;}
+.req{color:#dc2626;}
+
+/* ---- MODAL ---- */
+.modal-bg{position:fixed;inset:0;z-index:99000;background:rgba(10,20,40,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal-card{background:#fff;border-radius:var(--r-xl);padding:28px;max-width:520px;width:100%;box-shadow:var(--shadow-lg);animation:modalPop .3s cubic-bezier(.34,1.56,.64,1);max-height:92vh;overflow-y:auto;}
+.modal-card-lg{max-width:680px;}
+@keyframes modalPop{from{opacity:0;transform:scale(.88) translateY(16px);}to{opacity:1;transform:none;}}
+.modal-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.modal-head i{font-size:1.2rem;color:var(--yellow);}
+.modal-head h3{font-size:1rem;font-weight:800;color:var(--text-1);flex:1;}
+.modal-x{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--text-2);transition:var(--ease);flex-shrink:0;}
+.modal-x:hover{background:var(--red-lt);border-color:#fca5a5;color:var(--red);}
+
+/* ---- STAT CARDS ---- */
+.stat-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);transition:var(--ease);position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-lg) var(--r-lg) 0 0;}
+.stat-card:nth-child(1)::after{background:linear-gradient(90deg,#059669,#34d399);}
+.stat-card:nth-child(2)::after{background:linear-gradient(90deg,#d97706,#fbbf24);}
+.stat-card:nth-child(3)::after{background:linear-gradient(90deg,#0284c7,#38bdf8);}
+.stat-card:nth-child(4)::after{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.stat-icon{width:44px;height:44px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.si-green{background:#d1fae5;color:#059669;} .si-yellow{background:#fef3c7;color:#d97706;} .si-blue{background:#dbeafe;color:#2563eb;} .si-purple{background:#ede9fe;color:#7c3aed;} .si-red{background:#fee2e2;color:#dc2626;}
+.stat-val{font-size:1.7rem;font-weight:800;color:var(--text-1);line-height:1;}
+.stat-lbl{font-size:.72rem;color:var(--text-2);font-weight:600;margin-top:3px;}
+
+/* ---- TABLE ---- */
+.table-wrap{overflow-x:auto;}
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.data-table th{padding:11px 16px;text-align:left;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-2);background:var(--bg);border-bottom:1px solid var(--border);white-space:nowrap;}
+.data-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-1);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#fafafa;}
+.tbl-empty{text-align:center;padding:30px !important;color:var(--text-3);font-style:italic;}
+
+/* ---- CHIPS & BADGES ---- */
+.chip{display:inline-block;font-size:.68rem;font-weight:800;padding:3px 9px;border-radius:99px;}
+.chip-green{background:#d1fae5;color:#059669;} .chip-yellow{background:#fef3c7;color:#d97706;} .chip-blue{background:#dbeafe;color:#2563eb;} .chip-red{background:#fee2e2;color:#dc2626;} .chip-purple{background:#ede9fe;color:#7c3aed;} .chip-gray{background:var(--bg);color:var(--text-2);}
+.status-chip.hadir{background:#d1fae5;color:#059669;} .status-chip.sakit{background:#fee2e2;color:#dc2626;} .status-chip.izin{background:#fef3c7;color:#d97706;} .status-chip.dispensasi_dinas{background:#dbeafe;color:#2563eb;} .status-chip.dispensasi_sekolah{background:#ede9fe;color:#7c3aed;}
+
+/* ---- SEARCH & FILTER ---- */
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:14px 20px;border-bottom:1px solid var(--border);}
+.filter-row .op-field-wrap{margin-bottom:0;flex:1;min-width:140px;}
+.search-wrap{position:relative;flex:1;min-width:200px;}
+.search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:.85rem;}
+.search-input{width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:var(--r-md);font-family:var(--font);font-size:.84rem;outline:none;color:var(--text-1);background:#fff;transition:var(--ease);}
+.search-input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+
+/* ---- STATUS RESET CARDS ---- */
+.req-card{border-radius:var(--r-md);border:1.5px solid var(--border);padding:16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;transition:var(--ease);}
+.req-card:hover{box-shadow:var(--shadow-sm);}
+.req-card.pending{border-color:#fcd34d;background:#fffbeb;}
+.req-card.processing{border-color:#93c5fd;background:#eff6ff;}
+.req-card.approved{border-color:#86efac;background:#f0fdf4;}
+.req-card.rejected{border-color:#fca5a5;background:#fef2f2;}
+.req-card.completed{border-color:#d1fae5;background:#f0fdf4;opacity:.7;}
+.req-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.req-info{flex:1;}
+.req-name{font-weight:800;font-size:.9rem;color:var(--text-1);}
+.req-nip{font-size:.74rem;color:var(--text-2);margin-top:2px;}
+.req-time{font-size:.72rem;color:var(--text-3);margin-top:3px;}
+.req-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+/* ---- FORM GRID ---- */
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* ---- AVATAR in guru table ---- */
+.guru-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),#00a854);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;overflow:hidden;flex-shrink:0;}
+.guru-avatar img{width:100%;height:100%;object-fit:cover;}
+.guru-name-cell{display:flex;align-items:center;gap:10px;}
+
+/* ---- PENGUMUMAN EDITOR ---- */
+.ann-editor-wrap{padding:20px;}
+.char-count{font-size:.72rem;color:var(--text-3);text-align:right;margin-top:3px;}
+.ann-preview-card{border-radius:var(--r-md);border:1.5px solid var(--border);overflow:hidden;}
+.ann-preview-body{padding:16px;font-size:.85rem;color:var(--text-2);line-height:1.8;white-space:pre-wrap;}
+.ann-preview-body p{margin-bottom:10px;}
+
+/* ---- ABSENSI REKAP ---- */
+.rekap-filter{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:16px 20px;border-bottom:1px solid var(--border);}
+.rekap-filter .op-field-wrap{margin-bottom:0;flex:1;min-width:130px;}
+
+/* ---- EMPTY STATE ---- */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-3);}
+.empty-state i{font-size:2rem;margin-bottom:10px;display:block;}
+.empty-state p{font-size:.85rem;}
+
+/* ---- FADE ---- */
+.fade-in{animation:fadeIn .3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* ---- SKELETON ---- */
+.skel{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* ---- MOBILE BOTTOM NAV ---- */
+.op-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:none;align-items:center;justify-content:space-around;padding:7px 0 10px;height:60px;}
+.op-bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.6rem;font-weight:700;color:var(--text-3);}
+.op-bn i{font-size:1.1rem;}
+.op-bn.active{color:var(--yellow);}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:1100px){.stat-grid-4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){
+  .op-sidebar{position:fixed;left:-250px;height:100vh;top:0;transition:left .3s ease;z-index:1000;}
+  .op-sidebar.mob-open{left:0;}
+  .op-hamburger{display:flex !important;}
+  .op-page-area .op-pg{padding-bottom:70px;}
+  .op-bottom-nav{display:flex !important;}
+  .op-topbar-time,.op-topbar-divider,.op-topbar-user-name,.op-topbar-user-role{display:none;}
+}
+@media(max-width:640px){
+  .op-pg{padding:16px;}
+  .form-2col,.form-3col{grid-template-columns:1fr;}
+  .stat-grid-4{grid-template-columns:1fr 1fr;}
+  .filter-row{flex-direction:column;}
+  .filter-row .op-field-wrap,.search-wrap{min-width:100%;width:100%;}
+  .req-actions{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader" class="preloader">
+  <div class="preloader-logo-wrap">
+    <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="">
+    <div class="spin-ring"></div>
+  </div>
+  <p class="preloader-title">Panel Operator</p>
+  <p class="preloader-sub">SMAN 68 Jakarta</p>
+  <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+</div>
+
+<!-- TOAST -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===== MODAL: APPROVE RESET (isi alasan opsional) ===== -->
+<div id="modalApprove" class="modal-bg">
+  <div class="modal-card">
+    <div class="modal-head"><i class="fas fa-check-circle" style="color:#059669;"></i><h3>Setujui Reset Password</h3><button class="modal-x" data-close="modalApprove"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="approveDocId">
+    <p style="font-size:.84rem;color:var(--text-2);margin-bottom:16px;">Guru <strong id="approveNama">—</strong> akan mendapatkan akses reset password selama <strong>3 menit</strong>.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-outline" data-close="modalApprove">Batal</button>
+      <button class="btn-primary" id="btnDoApprove"><i class="fas fa-check"></i> Ya, Setujui</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: REJECT RESET ===== -->
+<div id="modalReject" class="modal-bg">
+  <div class="modal-card">
+    <div class="modal-head"><i class="fas fa-times-circle" style="color:#dc2626;"></i><h3>Tolak Reset Password</h3><button class="modal-x" data-close="modalReject"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="rejectDocId">
+    <p style="font-size:.84rem;color:var(--text-2);margin-bottom:14px;">Guru: <strong id="rejectNama">—</strong></p>
+    <div class="op-field-wrap">
+      <label class="op-field-label"><i class="fas fa-comment-alt"></i> Alasan Penolakan <span class="req">*</span></label>
+      <textarea id="rejectAlasan" class="op-field-input" rows="3" placeholder="Tuliskan alasan penolakan..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-outline" data-close="modalReject">Batal</button>
+      <button class="btn-red" id="btnDoReject"><i class="fas fa-times"></i> Tolak</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TAMBAH GURU ===== -->
+<div id="modalTambahGuru" class="modal-bg">
+  <div class="modal-card modal-card-lg">
+    <div class="modal-head"><i class="fas fa-user-plus"></i><h3 id="modalGuruTitle">Tambah Data Guru</h3><button class="modal-x" data-close="modalTambahGuru"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="editGuruId">
+    <form id="formTambahGuru">
+      <div class="form-2col">
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-user"></i> Nama Lengkap <span class="req">*</span></label><input type="text" id="gNama" class="op-field-input" placeholder="Nama lengkap guru" required></div>
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-id-card"></i> NIP <span class="req">*</span></label><input type="text" id="gNip" class="op-field-input" placeholder="NIP guru"></div>
+      </div>
+      <div class="form-2col">
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-fingerprint"></i> NUPTK</label><input type="text" id="gNuptk" class="op-field-input" placeholder="16 digit NUPTK" maxlength="16" inputmode="numeric"></div>
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-book"></i> Mata Pelajaran <span class="req">*</span></label><input type="text" id="gMapel" class="op-field-input" placeholder="Contoh: Matematika" required></div>
+      </div>
+      <div class="form-2col">
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-phone"></i> No. HP</label><input type="tel" id="gHp" class="op-field-input" placeholder="08xx-xxxx-xxxx"></div>
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-envelope"></i> Email</label><input type="email" id="gEmail" class="op-field-input" placeholder="email@sman68.sch.id"></div>
+      </div>
+      <div class="form-2col">
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-lock"></i> Password <span class="req">*</span></label><input type="text" id="gPassword" class="op-field-input" placeholder="Password awal" required></div>
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-toggle-on"></i> Status Akun</label>
+          <select id="gStatus" class="op-field-input op-field-select">
+            <option value="approved">Aktif (Approved)</option>
+            <option value="pending">Pending</option>
+            <option value="nonaktif">Nonaktif</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
+        <button type="button" class="btn-outline" data-close="modalTambahGuru">Batal</button>
+        <button type="submit" id="btnSimpanGuru" class="btn-primary"><i class="fas fa-save"></i> Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: BUAT PENGUMUMAN ===== -->
+<div id="modalPengumuman" class="modal-bg">
+  <div class="modal-card modal-card-lg">
+    <div class="modal-head"><i class="fas fa-bullhorn"></i><h3 id="modalAnnTitle">Buat Pengumuman</h3><button class="modal-x" data-close="modalPengumuman"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="editAnnId">
+    <form id="formPengumuman">
+      <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-heading"></i> Judul <span class="req">*</span></label><input type="text" id="annJudul" class="op-field-input" placeholder="Judul pengumuman" required maxlength="120"></div>
+      <div class="form-2col">
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-tag"></i> Kategori</label>
+          <select id="annKategori" class="op-field-input op-field-select">
+            <option value="umum">Umum</option>
+            <option value="penting">Penting</option>
+            <option value="info">Info</option>
+            <option value="kegiatan">Kegiatan</option>
+          </select>
+        </div>
+        <div class="op-field-wrap"><label class="op-field-label"><i class="fas fa-user-tie"></i> Penulis / Sumber</label><input type="text" id="annPenulis" class="op-field-input" placeholder="Contoh: Kepala Sekolah"></div>
+      </div>
+      <div class="op-field-wrap">
+        <label class="op-field-label"><i class="fas fa-align-left"></i> Isi Pengumuman <span class="req">*</span></label>
+        <p style="font-size:.73rem;color:var(--text-3);margin-bottom:6px;">Tekan Enter untuk membuat paragraf baru. Setiap paragraf baru akan tampil terpisah di portal guru.</p>
+        <textarea id="annIsi" class="op-field-input" rows="8" placeholder="Tuliskan isi pengumuman di sini...&#10;&#10;Tekan Enter untuk paragraf baru." required style="resize:vertical;" oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="charCount">0</span> karakter</div>
+      </div>
+      <div class="op-field-wrap" style="display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" id="annPinned" style="width:16px;height:16px;cursor:pointer;accent-color:var(--red);">
+        <label for="annPinned" style="font-size:.82rem;font-weight:600;color:var(--text-2);cursor:pointer;"><i class="fas fa-thumbtack" style="color:#dc2626;"></i> Tandai sebagai Penting / Pin di atas</label>
+      </div>
+      <!-- Preview -->
+      <div style="margin-top:4px;margin-bottom:16px;">
+        <p style="font-size:.75rem;font-weight:700;color:var(--text-2);margin-bottom:8px;"><i class="fas fa-eye"></i> Preview tampilan di portal guru:</p>
+        <div class="ann-preview-card"><div id="annPreview" class="ann-preview-body" style="color:var(--text-3);font-style:italic;">Preview akan muncul saat Anda mengetik isi pengumuman...</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" class="btn-outline" data-close="modalPengumuman">Batal</button>
+        <button type="submit" id="btnSimpanAnn" class="btn-yellow"><i class="fas fa-paper-plane"></i> Publikasikan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: DETAIL ABSENSI GURU ===== -->
+<div id="modalDetailAbsen" class="modal-bg">
+  <div class="modal-card modal-card-lg">
+    <div class="modal-head"><i class="fas fa-clipboard-list"></i><h3 id="modalAbsenTitle">Detail Absensi</h3><button class="modal-x" data-close="modalDetailAbsen"><i class="fas fa-times"></i></button></div>
+    <div id="modalAbsenBody"></div>
+  </div>
+</div>
+
+<!-- ===================================
+     HALAMAN LOGIN OPERATOR
+     =================================== -->
+<div id="opLoginPage" class="op-login-page">
+  <div class="op-login-bg">
+    <img src="https://media.indozone.id/crop/0x0:0x0/images/2026/01/14/1768352620_6966eb6c54bf6_maxresdefault.jpg" alt="">
+    <div class="op-login-bg-ov"></div>
+  </div>
+  <div class="op-login-card">
+    <div class="op-login-logo-wrap">
+      <div class="op-login-logo-ring"></div>
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="SMAN 68" class="op-login-logo">
+    </div>
+    <div class="op-login-badge"><i class="fas fa-shield-alt"></i> Panel Operator</div>
+    <h1 class="op-login-title">Dashboard Operator</h1>
+    <p class="op-login-sub">SMAN 68 Jakarta — Akses Terbatas</p>
+    <form id="opLoginForm">
+      <div class="field-wrap">
+        <label class="field-label"><i class="fas fa-user-shield"></i> Username Operator</label>
+        <input id="opUsername" type="text" class="field-input" placeholder="Username operator" autocomplete="username">
+      </div>
+      <div class="field-wrap">
+        <label class="field-label"><i class="fas fa-lock"></i> Password</label>
+        <div class="field-input-rel">
+          <input id="opPassword" type="password" class="field-input" placeholder="Password operator" autocomplete="current-password">
+          <button type="button" class="toggle-pass-btn" id="opTogglePass"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <button type="submit" id="btnOpLogin" class="btn-op-login">
+        <span id="btnOpLoginTxt"><i class="fas fa-sign-in-alt"></i> Masuk sebagai Operator</span>
+        <span id="btnOpLoginLoad" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i> Memverifikasi...</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================================
+     PANEL OPERATOR UTAMA
+     =================================== -->
+<div id="opApp" class="op-wrapper" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside id="opSidebar" class="op-sidebar">
+    <div class="op-sidebar-brand">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo">
+      <div><span class="op-brand-name">Panel Operator</span><span class="op-brand-sub">SMAN 68 Jakarta</span></div>
+    </div>
+    <div class="op-sidebar-badge">
+      <span class="op-badge-chip"><i class="fas fa-shield-alt"></i> Mode Operator</span>
+    </div>
+    <nav class="op-nav">
+      <span class="op-nav-label">MENU</span>
+      <button class="op-nav-btn active" data-page="dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></button>
+      <button class="op-nav-btn" data-page="guru"><i class="fas fa-chalkboard-teacher"></i><span>Data Guru</span></button>
+      <button class="op-nav-btn" data-page="absensi"><i class="fas fa-clipboard-check"></i><span>Rekap Absensi</span></button>
+      <button class="op-nav-btn" data-page="reset"><i class="fas fa-key"></i><span>Reset Password</span><span class="op-nav-badge" id="opBadgeReset">0</span></button>
+      <button class="op-nav-btn" data-page="pengumuman"><i class="fas fa-bullhorn"></i><span>Pengumuman</span></button>
+    </nav>
+    <div class="op-sidebar-footer">
+      <button class="op-logout-btn" id="opLogoutBtn"><i class="fas fa-sign-out-alt"></i><span>Keluar dari Operator</span></button>
+    </div>
+  </aside>
+
+  <!-- Overlay mobile -->
+  <div id="opSidebarOverlay" class="op-sidebar-overlay" onclick="opCloseSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="op-main">
+    <header class="op-topbar">
+      <div class="op-topbar-left">
+        <button class="op-hamburger" id="opHamburger" onclick="opToggleSidebar()"><span></span><span></span><span></span></button>
+        <div class="op-breadcrumb" id="opBreadcrumb"><i class="fas fa-th-large"></i> Dashboard</div>
+      </div>
+      <div class="op-topbar-right">
+        <div class="op-topbar-time" id="opClock">00:00</div>
+        <div class="op-topbar-divider"></div>
+        <div>
+          <div class="op-topbar-user-name" id="opTopName">Operator</div>
+          <div class="op-topbar-user-role">Administrator</div>
+        </div>
+        <div class="op-topbar-avatar"><i class="fas fa-user-shield"></i></div>
+      </div>
+    </header>
+
+    <div class="op-page-area">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div id="pg-dashboard" class="op-pg active">
+        <div class="op-pg-header"><div><h1 class="op-pg-title">Dashboard Operator</h1><p class="op-pg-sub" id="dashDateStr">—</p></div></div>
+        <div class="stat-grid-4">
+          <div class="stat-card"><div class="stat-icon si-green"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="stat-val" id="stTotalGuru">—</div><div class="stat-lbl">Total Guru</div></div></div>
+          <div class="stat-card"><div class="stat-icon si-yellow"><i class="fas fa-clipboard-check"></i></div><div><div class="stat-val" id="stAbsensiHari">—</div><div class="stat-lbl">Absensi Hari Ini</div></div></div>
+          <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-key"></i></div><div><div class="stat-val" id="stResetPending">—</div><div class="stat-lbl">Reset Pending</div></div></div>
+          <div class="stat-card"><div class="stat-icon si-purple"><i class="fas fa-bullhorn"></i></div><div><div class="stat-val" id="stTotalAnn">—</div><div class="stat-lbl">Total Pengumuman</div></div></div>
+        </div>
+        <!-- Absensi hari ini ringkasan -->
+        <div class="panel">
+          <div class="panel-head"><i class="fas fa-calendar-day"></i><h3>Absensi Hari Ini — Ringkasan</h3></div>
+          <div id="dashAbsensiRekap" style="padding:16px 20px;"></div>
+        </div>
+        <!-- Reset pending terbaru -->
+        <div class="panel">
+          <div class="panel-head"><i class="fas fa-key"></i><h3>Permintaan Reset Password Terbaru</h3><span style="margin-left:auto;font-size:.75rem;font-weight:700;color:var(--yellow);cursor:pointer;" data-goto="reset">Lihat semua →</span></div>
+          <div id="dashResetList" style="padding:16px;"></div>
+        </div>
+      </div>
+
+      <!-- ===== DATA GURU ===== -->
+      <div id="pg-guru" class="op-pg">
+        <div class="op-pg-header">
+          <div><h1 class="op-pg-title">Data Guru</h1><p class="op-pg-sub">Kelola seluruh data guru SMAN 68 Jakarta</p></div>
+          <button class="btn-primary" onclick="openModalTambahGuru()"><i class="fas fa-user-plus"></i> Tambah Guru</button>
+        </div>
+        <div class="panel">
+          <div class="filter-row">
+            <div class="search-wrap"><i class="fas fa-search"></i><input id="searchGuru" type="text" class="search-input" placeholder="Cari nama, NIP, mata pelajaran..." oninput="filterGuruTable()"></div>
+            <div class="op-field-wrap" style="min-width:140px;margin-bottom:0;">
+              <select id="filterStatusGuru" class="op-field-input op-field-select" onchange="filterGuruTable()">
+                <option value="">Semua Status</option>
+                <option value="approved">Aktif</option>
+                <option value="pending">Pending</option>
+                <option value="nonaktif">Nonaktif</option>
+              </select>
+            </div>
+            <button class="btn-outline" onclick="loadGuruData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>No</th><th>Nama Guru</th><th>NIP</th><th>NUPTK</th><th>Mata Pelajaran</th><th>No. HP</th><th>Status</th><th>Aksi</th></tr></thead>
+              <tbody id="guruTableBody"><tr><td colspan="8" class="tbl-empty"><i class="fas fa-circle-notch fa-spin"></i> Memuat data...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REKAP ABSENSI ===== -->
+      <div id="pg-absensi" class="op-pg">
+        <div class="op-pg-header"><div><h1 class="op-pg-title">Rekap Absensi</h1><p class="op-pg-sub">Lihat dan kelola data absensi seluruh guru</p></div></div>
+        <div class="panel">
+          <div class="rekap-filter">
+            <div class="op-field-wrap"><label class="op-field-label">Tanggal</label><input type="date" id="rekapTanggal" class="op-field-input" value=""></div>
+            <div class="op-field-wrap"><label class="op-field-label">Bulan</label>
+              <select id="rekapBulan" class="op-field-input op-field-select">
+                <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5" selected>Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
+              </select>
+            </div>
+            <div class="op-field-wrap"><label class="op-field-label">Tahun</label><input type="number" id="rekapTahun" class="op-field-input" value="2026" min="2020" max="2030"></div>
+            <div class="op-field-wrap"><label class="op-field-label">Filter Status</label>
+              <select id="rekapStatus" class="op-field-input op-field-select">
+                <option value="">Semua Status</option>
+                <option value="hadir">Hadir</option>
+                <option value="sakit">Sakit</option>
+                <option value="izin">Izin</option>
+                <option value="dispensasi_dinas">Dispensasi Dinas</option>
+                <option value="dispensasi_sekolah">Dispensasi Sekolah</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="loadAbsensiRekap()" style="align-self:flex-end;"><i class="fas fa-search"></i> Tampilkan</button>
+            <button class="btn-outline" onclick="window.print()" style="align-self:flex-end;"><i class="fas fa-print"></i> Cetak</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>No</th><th>Nama Guru</th><th>NIP</th><th>Mapel</th><th>Tanggal</th><th>Jam</th><th>Status</th><th>Keterangan</th><th>Bukti</th></tr></thead>
+              <tbody id="absensiTableBody"><tr><td colspan="9" class="tbl-empty">Pilih filter lalu klik Tampilkan</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RESET PASSWORD ===== -->
+      <div id="pg-reset" class="op-pg">
+        <div class="op-pg-header"><div><h1 class="op-pg-title">Permintaan Reset Password</h1><p class="op-pg-sub">Setujui atau tolak permintaan reset password dari guru</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <select id="filterReset" class="op-field-input op-field-select" style="font-family:var(--font);padding:9px 34px 9px 12px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:.82rem;min-width:150px;" onchange="loadResetRequests()">
+              <option value="">Semua Status</option>
+              <option value="pending" selected>Pending</option>
+              <option value="processing">Diproses</option>
+              <option value="approved">Disetujui</option>
+              <option value="rejected">Ditolak</option>
+              <option value="completed">Selesai</option>
+            </select>
+            <button class="btn-outline" onclick="loadResetRequests()"><i class="fas fa-sync-alt"></i></button>
+          </div>
+        </div>
+        <div id="resetRequestList"><div class="panel" style="padding:20px;"><div class="skel" style="height:80px;margin-bottom:10px;"></div><div class="skel" style="height:80px;"></div></div></div>
+      </div>
+
+      <!-- ===== PENGUMUMAN ===== -->
+      <div id="pg-pengumuman" class="op-pg">
+        <div class="op-pg-header">
+          <div><h1 class="op-pg-title">Manajemen Pengumuman</h1><p class="op-pg-sub">Buat dan kelola pengumuman yang tampil di portal guru</p></div>
+          <button class="btn-yellow" onclick="openModalPengumuman()"><i class="fas fa-plus"></i> Buat Pengumuman</button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>No</th><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Tanggal</th><th>Pin</th><th>Aksi</th></tr></thead>
+              <tbody id="annTableBody"><tr><td colspan="7" class="tbl-empty"><i class="fas fa-circle-notch fa-spin"></i> Memuat...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end page-area -->
+  </div><!-- end op-main -->
+</div><!-- end op-wrapper -->
+
+<!-- Mobile bottom nav -->
+<nav id="opBottomNav" class="op-bottom-nav" style="display:none;">
+  <button class="op-bn active" data-page="dashboard"><i class="fas fa-th-large"></i><span>Beranda</span></button>
+  <button class="op-bn" data-page="guru"><i class="fas fa-users"></i><span>Guru</span></button>
+  <button class="op-bn" data-page="absensi"><i class="fas fa-clipboard-check"></i><span>Absensi</span></button>
+  <button class="op-bn" data-page="reset"><i class="fas fa-key"></i><span>Reset</span></button>
+  <button class="op-bn" data-page="pengumuman"><i class="fas fa-bullhorn"></i><span>Info</span></button>
+</nav>
+
+<script>
+'use strict';
+/* ============================================================
+   OPERATOR PANEL — SMAN 68 JAKARTA  JS
+   ============================================================ */
+
+// --- FIREBASE ---
+const firebaseConfig = {
+  apiKey:"AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",authDomain:"upnvjdatsystem.firebaseapp.com",
+  projectId:"upnvjdatsystem",storageBucket:"upnvjdatsystem.firebasestorage.app",
+  messagingSenderId:"57095309946",appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// --- OPERATOR CREDENTIALS (simpan di Firestore koleksi 'operator') ---
+// Fallback hardcoded jika koleksi belum ada
+const DEFAULT_OPS = [
+  { username:'admin68', password:'Admin@68!' },
+  { username:'operator', password:'Op3r4t0r!' },
+];
+
+let opUser = null;
+let allGuruData = [];
+
+// ---- PRELOADER ----
+setTimeout(() => document.getElementById('preloader')?.classList.add('hide'), 1800);
+
+// ---- TOAST ----
+function toast(type, title, msg, dur=4000) {
+  const ct = document.getElementById('toastContainer');
+  const icons = {success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+  const el = document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<i class="fas ${icons[type]||'fa-bell'} toast-ico"></i><div><div class="toast-title">${safe(title)}</div><div class="toast-msg">${safe(msg)}</div></div>`;
+  ct.appendChild(el);
+  setTimeout(()=>{el.classList.add('leaving');setTimeout(()=>el.remove(),350);},dur);
+}
+function safe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ---- CLOCK ----
+function tickClock() {
+  const now = new Date();
+  const el = document.getElementById('opClock');
+  if(el) el.textContent = now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const ds = document.getElementById('dashDateStr');
+  if(ds) ds.textContent = now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+setInterval(tickClock,1000); tickClock();
+
+// ---- MODAL ----
+function openModal(id){document.getElementById(id)?.classList.add('open');}
+function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));
+document.querySelectorAll('.modal-bg').forEach(bg=>bg.addEventListener('click',e=>{if(e.target===bg)bg.classList.remove('open');}));
+
+// ---- PASSWORD TOGGLE ----
+document.getElementById('opTogglePass')?.addEventListener('click',function(){
+  const inp=document.getElementById('opPassword');
+  const ico=this.querySelector('i');
+  inp.type=inp.type==='password'?'text':'password';
+  ico.className=inp.type==='password'?'fas fa-eye':'fas fa-eye-slash';
+});
+
+// ---- LOGIN ----
+document.getElementById('opLoginForm')?.addEventListener('submit', async e=>{
+  e.preventDefault();
+  const usr=document.getElementById('opUsername')?.value.trim();
+  const pwd=document.getElementById('opPassword')?.value;
+  if(!usr||!pwd){toast('error','Gagal','Username dan password wajib diisi!');return;}
+
+  const btn=document.getElementById('btnOpLogin');
+  const txt=document.getElementById('btnOpLoginTxt');
+  const ld =document.getElementById('btnOpLoginLoad');
+  if(btn)btn.disabled=true; if(txt)txt.style.display='none'; if(ld)ld.style.display='';
+
+  try {
+    // Cek di Firestore koleksi 'operator' dulu
+    let snap = await db.collection('operator').where('username','==',usr).where('password','==',pwd).get();
+    let found = !snap.empty;
+    let opData = found ? {username:usr,...snap.docs[0].data()} : null;
+
+    // Fallback ke DEFAULT_OPS jika Firestore kosong
+    if (!found) {
+      const match = DEFAULT_OPS.find(o=>o.username===usr && o.password===pwd);
+      if(match){found=true; opData={username:usr,nama:'Operator SMAN 68'};}
+    }
+
+    if(!found){toast('error','Login Gagal','Username atau password salah!');return;}
+    opUser=opData;
+    localStorage.setItem('opSession',JSON.stringify({...opData,_at:new Date().toISOString()}));
+    toast('success','Berhasil!',`Selamat datang, ${opData.nama||opData.username}!`);
+    setTimeout(enterOpPortal,600);
+  } catch(err) {
+    console.error(err);
+    toast('error','Error','Tidak dapat terhubung ke server.');
+  } finally {
+    if(btn)btn.disabled=false; if(txt)txt.style.display=''; if(ld)ld.style.display='none';
+  }
+});
+
+// ---- ENTER PORTAL ----
+function enterOpPortal(){
+  document.getElementById('opLoginPage').style.display='none';
+  document.getElementById('opApp').style.display='flex';
+  document.getElementById('opBottomNav').style.display='';
+  const name=opUser?.nama||opUser?.username||'Operator';
+  const el=document.getElementById('opTopName'); if(el)el.textContent=name;
+  setupOpNav();
+  goOpTo('dashboard');
+}
+
+// ---- NAVIGATION ----
+const PAGE_LABELS={dashboard:['fa-th-large','Dashboard'],guru:['fa-chalkboard-teacher','Data Guru'],absensi:['fa-clipboard-check','Rekap Absensi'],reset:['fa-key','Reset Password'],pengumuman:['fa-bullhorn','Pengumuman']};
+function setupOpNav(){
+  document.querySelectorAll('[data-page],.op-bn[data-page]').forEach(el=>{
+    el.addEventListener('click',()=>{goOpTo(el.dataset.page);opCloseSidebar();});
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click',()=>goOpTo(el.dataset.goto));
+  });
+}
+function goOpTo(page){
+  document.querySelectorAll('.op-pg').forEach(p=>p.classList.remove('active'));
+  const tgt=document.getElementById(`pg-${page}`);
+  if(tgt){tgt.classList.add('active');tgt.classList.add('fade-in');}
+  document.querySelectorAll('.op-nav-btn[data-page],.op-bn[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  const[icon,label]=PAGE_LABELS[page]||['fa-home','Panel'];
+  const bc=document.getElementById('opBreadcrumb');
+  if(bc)bc.innerHTML=`<i class="fas ${icon}"></i> ${label}`;
+  if(page==='dashboard')loadDashboard();
+  if(page==='guru')loadGuruData();
+  if(page==='absensi')initAbsensiRekap();
+  if(page==='reset')loadResetRequests();
+  if(page==='pengumuman')loadPengumumanTable();
+}
+
+// ---- SIDEBAR MOBILE ----
+function opToggleSidebar(){document.getElementById('opSidebar')?.classList.toggle('mob-open');document.getElementById('opSidebarOverlay')?.classList.toggle('on');}
+function opCloseSidebar(){document.getElementById('opSidebar')?.classList.remove('mob-open');document.getElementById('opSidebarOverlay')?.classList.remove('on');}
+window.opToggleSidebar=opToggleSidebar; window.opCloseSidebar=opCloseSidebar;
+
+// ---- LOGOUT ----
+document.getElementById('opLogoutBtn')?.addEventListener('click',()=>{
+  if(!confirm('Keluar dari Panel Operator?'))return;
+  opUser=null; localStorage.removeItem('opSession');
+  document.getElementById('opApp').style.display='none';
+  document.getElementById('opBottomNav').style.display='none';
+  document.getElementById('opLoginPage').style.display='flex';
+  document.getElementById('opLoginForm')?.reset();
+  toast('info','Keluar','Sesi operator telah diakhiri.');
+});
+
+// ============================================================
+//  DASHBOARD
+// ============================================================
+async function loadDashboard(){
+  // Total guru
+  db.collection('guru').get().then(s=>{setText('stTotalGuru',s.size);}).catch(()=>{});
+  // Absensi hari ini
+  const today=new Date().toISOString().split('T')[0];
+  db.collection('absensiGuru').where('tanggal','==',today).get().then(s=>{
+    setText('stAbsensiHari',s.size);
+    // Ringkasan
+    const cnt={hadir:0,sakit:0,izin:0,dispensasi:0};
+    s.forEach(d=>{
+      const st=d.data().status;
+      if(st==='hadir')cnt.hadir++;
+      else if(st==='sakit')cnt.sakit++;
+      else if(st==='izin')cnt.izin++;
+      else cnt.dispensasi++;
+    });
+    const el=document.getElementById('dashAbsensiRekap');
+    if(el)el.innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="text-align:center;padding:14px;background:#f0fdf4;border-radius:12px;border:1px solid #86efac;">
+          <div style="font-size:1.6rem;font-weight:800;color:#059669;">${cnt.hadir}</div><div style="font-size:.74rem;color:#059669;font-weight:600;">Hadir</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:#fef2f2;border-radius:12px;border:1px solid #fca5a5;">
+          <div style="font-size:1.6rem;font-weight:800;color:#dc2626;">${cnt.sakit}</div><div style="font-size:.74rem;color:#dc2626;font-weight:600;">Sakit</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:#fffbeb;border-radius:12px;border:1px solid #fcd34d;">
+          <div style="font-size:1.6rem;font-weight:800;color:#d97706;">${cnt.izin}</div><div style="font-size:.74rem;color:#d97706;font-weight:600;">Izin</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:#eff6ff;border-radius:12px;border:1px solid #93c5fd;">
+          <div style="font-size:1.6rem;font-weight:800;color:#2563eb;">${cnt.dispensasi}</div><div style="font-size:.74rem;color:#2563eb;font-weight:600;">Dispensasi</div>
+        </div>
+      </div>
+      <p style="font-size:.74rem;color:var(--text-3);margin-top:10px;">Data absensi tanggal: <strong>${today}</strong> — Total masuk: <strong>${s.size} guru</strong></p>
+    `;
+  }).catch(()=>{});
+  // Reset pending
+  db.collection('resetPasswordRequest').where('status','==','pending').get().then(s=>{
+    setText('stResetPending',s.size);
+    const badge=document.getElementById('opBadgeReset');
+    if(badge){badge.textContent=s.size;badge.style.display=s.size>0?'':'none';}
+    // Preview di dashboard
+    const el=document.getElementById('dashResetList');
+    if(!el)return;
+    if(s.empty){el.innerHTML='<p style="font-size:.82rem;color:var(--text-3);">Tidak ada permintaan reset password yang pending.</p>';return;}
+    const docs=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()??0)-(a.createdAt?.toMillis?.()??0)).slice(0,3);
+    el.innerHTML='';
+    docs.forEach(d=>el.appendChild(buildReqCard(d)));
+  }).catch(()=>{});
+  // Total pengumuman
+  db.collection('pengumuman').get().then(s=>setText('stTotalAnn',s.size)).catch(()=>{});
+}
+
+// ============================================================
+//  DATA GURU
+// ============================================================
+async function loadGuruData(){
+  const tbody=document.getElementById('guruTableBody');
+  if(!tbody)return;
+  tbody.innerHTML=`<tr><td colspan="8" class="tbl-empty"><i class="fas fa-circle-notch fa-spin"></i> Memuat...</td></tr>`;
+  try{
+    const snap=await db.collection('guru').get();
+    allGuruData=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderGuruTable(allGuruData);
+  }catch(e){tbody.innerHTML=`<tr><td colspan="8" class="tbl-empty">Gagal memuat data guru.</td></tr>`;}
+}
+
+function renderGuruTable(data){
+  const tbody=document.getElementById('guruTableBody');
+  if(!tbody)return;
+  if(data.length===0){tbody.innerHTML=`<tr><td colspan="8" class="tbl-empty">Tidak ada data guru ditemukan.</td></tr>`;return;}
+  const statusMap={approved:{cls:'chip-green',lbl:'Aktif'},pending:{cls:'chip-yellow',lbl:'Pending'},nonaktif:{cls:'chip-gray',lbl:'Nonaktif'}};
+  tbody.innerHTML='';
+  data.forEach((g,i)=>{
+    const st=statusMap[g.status]||{cls:'chip-gray',lbl:g.status||'—'};
+    const avatarHTML=g.fotoUrl
+      ?`<div class="guru-avatar"><img src="${g.fotoUrl}" alt="foto"></div>`
+      :`<div class="guru-avatar">${(g.nama||'G').charAt(0).toUpperCase()}</div>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${i+1}</td>
+      <td><div class="guru-name-cell">${avatarHTML}<div><div style="font-weight:700;">${safe(g.nama||'—')}</div><div style="font-size:.7rem;color:var(--text-3);">${safe(g.email||'')}</div></div></div></td>
+      <td>${safe(g.nip||'—')}</td>
+      <td>${safe(g.nuptk||'—')}</td>
+      <td>${safe(g.mapel||'—')}</td>
+      <td>${safe(g.hp||'—')}</td>
+      <td><span class="chip ${st.cls}">${st.lbl}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn-outline btn-sm" onclick="editGuru('${g.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn-outline btn-sm" onclick="lihatAbsensiGuru('${g.id}','${safe(g.nama||'')}')"><i class="fas fa-clipboard-list"></i> Absensi</button>
+          <button class="btn-red btn-sm" onclick="hapusGuru('${g.id}','${safe(g.nama||'')}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterGuruTable(){
+  const q=document.getElementById('searchGuru')?.value.toLowerCase()||'';
+  const st=document.getElementById('filterStatusGuru')?.value||'';
+  const filtered=allGuruData.filter(g=>{
+    const matchQ=!q||(g.nama||'').toLowerCase().includes(q)||(g.nip||'').includes(q)||(g.mapel||'').toLowerCase().includes(q)||(g.nuptk||'').includes(q);
+    const matchSt=!st||(g.status||''===st)||(g.status===st);
+    return matchQ&&matchSt;
+  });
+  renderGuruTable(filtered);
+}
+window.filterGuruTable=filterGuruTable;
+
+function openModalTambahGuru(){
+  document.getElementById('editGuruId').value='';
+  document.getElementById('modalGuruTitle').textContent='Tambah Data Guru';
+  document.getElementById('formTambahGuru')?.reset();
+  openModal('modalTambahGuru');
+}
+window.openModalTambahGuru=openModalTambahGuru;
+
+function editGuru(id){
+  const g=allGuruData.find(x=>x.id===id);
+  if(!g)return;
+  document.getElementById('editGuruId').value=id;
+  document.getElementById('modalGuruTitle').textContent='Edit Data Guru';
+  document.getElementById('gNama').value=g.nama||'';
+  document.getElementById('gNip').value=g.nip||'';
+  document.getElementById('gNuptk').value=g.nuptk||'';
+  document.getElementById('gMapel').value=g.mapel||'';
+  document.getElementById('gHp').value=g.hp||'';
+  document.getElementById('gEmail').value=g.email||'';
+  document.getElementById('gPassword').value=g.password||'';
+  document.getElementById('gStatus').value=g.status||'approved';
+  openModal('modalTambahGuru');
+}
+window.editGuru=editGuru;
+
+document.getElementById('formTambahGuru')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const id=document.getElementById('editGuruId').value;
+  const data={
+    nama:document.getElementById('gNama').value.trim(),
+    nip:document.getElementById('gNip').value.trim(),
+    nuptk:document.getElementById('gNuptk').value.trim(),
+    mapel:document.getElementById('gMapel').value.trim(),
+    hp:document.getElementById('gHp').value.trim(),
+    email:document.getElementById('gEmail').value.trim(),
+    password:document.getElementById('gPassword').value,
+    status:document.getElementById('gStatus').value,
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const btn=document.getElementById('btnSimpanGuru');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i>';}
+  try{
+    if(id){
+      await db.collection('guru').doc(id).update(data);
+      toast('success','Berhasil','Data guru berhasil diperbarui.');
+    }else{
+      data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('guru').add(data);
+      toast('success','Berhasil','Guru baru berhasil ditambahkan.');
+    }
+    closeModal('modalTambahGuru');
+    loadGuruData();
+  }catch(err){toast('error','Gagal','Tidak dapat menyimpan data guru.');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Simpan';}}
+});
+
+async function hapusGuru(id,nama){
+  if(!confirm(`Hapus data guru "${nama}"? Tindakan ini tidak dapat dibatalkan.`))return;
+  try{
+    await db.collection('guru').doc(id).delete();
+    toast('success','Dihapus',`Data guru "${nama}" berhasil dihapus.`);
+    loadGuruData();
+  }catch(e){toast('error','Gagal','Tidak dapat menghapus data guru.');}
+}
+window.hapusGuru=hapusGuru;
+
+// ---- LIHAT ABSENSI PER GURU ----
+async function lihatAbsensiGuru(guruId, nama){
+  const title=document.getElementById('modalAbsenTitle');
+  const body=document.getElementById('modalAbsenBody');
+  if(title)title.textContent=`Absensi — ${nama}`;
+  if(body)body.innerHTML=`<div class="skel" style="height:60px;margin:12px 0;"></div><div class="skel" style="height:60px;"></div>`;
+  openModal('modalDetailAbsen');
+  try{
+    const snap=await db.collection('absensiGuru').where('guruId','==',guruId).get();
+    const rows=snap.docs.map(d=>d.data()).sort((a,b)=>b.tanggal.localeCompare(a.tanggal)).slice(0,30);
+    if(rows.length===0){if(body)body.innerHTML='<p style="padding:20px;text-align:center;color:var(--text-3);">Belum ada data absensi untuk guru ini.</p>';return;}
+    const sLbl={hadir:'Hadir',sakit:'Sakit',izin:'Izin',dispensasi_dinas:'Disp. Dinas',dispensasi_sekolah:'Disp. Sekolah'};
+    if(body){
+      body.innerHTML=`<div class="table-wrap"><table class="data-table"><thead><tr><th>Tanggal</th><th>Hari</th><th>Status</th><th>Jam</th><th>Keterangan</th><th>Bukti</th></tr></thead><tbody>
+        ${rows.map(d=>{
+          const tgl=new Date(d.tanggal+'T00:00:00');
+          return `<tr><td>${d.tanggal}</td><td>${tgl.toLocaleDateString('id-ID',{weekday:'long'})}</td><td><span class="chip status-chip ${d.status}">${sLbl[d.status]||d.status}</span>${d.terlambat?'<span style="font-size:.68rem;color:#d97706;margin-left:4px;">⚠ Terlambat</span>':''}</td><td>${d.jamAbsen||'—'}</td><td style="font-size:.76rem;">${safe(d.keterangan&&d.keterangan!=='-'?d.keterangan:'')}</td><td>${d.buktiUrl?`<a href="${safe(d.buktiUrl)}" target="_blank" style="color:var(--blue);font-size:.76rem;"><i class="fab fa-google-drive"></i> Lihat</a>`:'—'}</td></tr>`;
+        }).join('')}
+      </tbody></table></div>`;
+    }
+  }catch(e){if(body)body.innerHTML='<p style="padding:20px;text-align:center;color:#dc2626;">Gagal memuat data absensi.</p>';}
+}
+window.lihatAbsensiGuru=lihatAbsensiGuru;
+
+// ============================================================
+//  REKAP ABSENSI
+// ============================================================
+function initAbsensiRekap(){
+  const now=new Date();
+  const td=document.getElementById('rekapTanggal');
+  const tb=document.getElementById('rekapBulan');
+  const ty=document.getElementById('rekapTahun');
+  if(td)td.value=now.toISOString().split('T')[0];
+  if(tb)tb.value=now.getMonth();
+  if(ty)ty.value=now.getFullYear();
+}
+
+async function loadAbsensiRekap(){
+  const tbody=document.getElementById('absensiTableBody');
+  if(!tbody)return;
+  tbody.innerHTML=`<tr><td colspan="9" class="tbl-empty"><i class="fas fa-circle-notch fa-spin"></i> Memuat...</td></tr>`;
+
+  const tgl=document.getElementById('rekapTanggal')?.value;
+  const bulan=parseInt(document.getElementById('rekapBulan')?.value);
+  const tahun=parseInt(document.getElementById('rekapTahun')?.value);
+  const stFilter=document.getElementById('rekapStatus')?.value||'';
+
+  try{
+    // Ambil semua absensi (tanpa where tanggal agar tidak perlu composite index)
+    const snap=await db.collection('absensiGuru').get();
+    let rows=snap.docs.map(d=>d.data());
+
+    // Filter
+    if(tgl){
+      rows=rows.filter(d=>d.tanggal===tgl);
+    }else{
+      const prefix=`${tahun}-${String(bulan+1).padStart(2,'0')}`;
+      rows=rows.filter(d=>d.tanggal?.startsWith(prefix));
+    }
+    if(stFilter) rows=rows.filter(d=>d.status===stFilter);
+    rows.sort((a,b)=>b.tanggal.localeCompare(a.tanggal)||(a.nama||'').localeCompare(b.nama||''));
+
+    if(rows.length===0){tbody.innerHTML=`<tr><td colspan="9" class="tbl-empty">Tidak ada data absensi untuk filter ini.</td></tr>`;return;}
+    const sLbl={hadir:'Hadir',sakit:'Sakit',izin:'Izin',dispensasi_dinas:'Disp. Dinas',dispensasi_sekolah:'Disp. Sekolah'};
+    tbody.innerHTML='';
+    rows.forEach((d,i)=>{
+      const tglObj=new Date(d.tanggal+'T00:00:00');
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${i+1}</td><td>${safe(d.nama||'—')}</td><td>${safe(d.nip||'—')}</td><td>${safe(d.mapel||'—')}</td><td>${d.tanggal}<br><span style="font-size:.7rem;color:var(--text-3);">${tglObj.toLocaleDateString('id-ID',{weekday:'long'})}</span></td><td>${d.jamAbsen||'—'}${d.terlambat?'<br><span style="font-size:.68rem;color:#d97706;">⚠ Terlambat</span>':''}</td><td><span class="chip status-chip ${d.status}">${sLbl[d.status]||d.status}</span></td><td style="font-size:.76rem;">${safe(d.keterangan&&d.keterangan!=='-'?d.keterangan:'')}</td><td>${d.buktiUrl?`<a href="${safe(d.buktiUrl)}" target="_blank" style="color:var(--blue);font-size:.76rem;"><i class="fab fa-google-drive"></i></a>`:'—'}</td>`;
+      tbody.appendChild(tr);
+    });
+  }catch(e){tbody.innerHTML=`<tr><td colspan="9" class="tbl-empty">Gagal memuat data absensi.</td></tr>`;}
+}
+window.loadAbsensiRekap=loadAbsensiRekap;
+
+// ============================================================
+//  RESET PASSWORD REQUESTS
+// ============================================================
+async function loadResetRequests(){
+  const container=document.getElementById('resetRequestList');
+  if(!container)return;
+  container.innerHTML=`<div class="panel" style="padding:20px;"><div class="skel" style="height:80px;margin-bottom:10px;"></div><div class="skel" style="height:80px;"></div></div>`;
+  const stFilter=document.getElementById('filterReset')?.value||'';
+  try{
+    let query=db.collection('resetPasswordRequest');
+    // Jangan orderBy agar tidak butuh composite index
+    const snap=await query.get();
+    let docs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(stFilter)docs=docs.filter(d=>d.status===stFilter);
+    docs.sort((a,b)=>(b.createdAt?.toMillis?.()??0)-(a.createdAt?.toMillis?.()??0));
+
+    // Update badge
+    const pending=docs.filter(d=>d.status==='pending').length;
+    const badge=document.getElementById('opBadgeReset');
+    if(badge){badge.textContent=pending;badge.style.display=pending>0?'':'none';}
+
+    if(docs.length===0){
+      container.innerHTML=`<div class="panel"><div style="padding:30px;text-align:center;color:var(--text-3);"><i class="fas fa-check-circle" style="font-size:2rem;margin-bottom:10px;display:block;color:#059669;"></i><p>Tidak ada permintaan reset password${stFilter?' dengan status ini':''}.</p></div></div>`;
+      return;
+    }
+    container.innerHTML='<div class="panel" style="padding:16px;">';
+    const wrap=document.createElement('div');
+    wrap.className='panel'; wrap.style.padding='16px';
+    docs.forEach(d=>wrap.appendChild(buildReqCard(d)));
+    container.innerHTML='';
+    container.appendChild(wrap);
+  }catch(e){container.innerHTML=`<div class="panel"><p style="padding:20px;color:#dc2626;font-size:.82rem;">Gagal memuat data. Coba lagi.</p></div>`;}
+}
+window.loadResetRequests=loadResetRequests;
+
+function buildReqCard(d){
+  const sMap={
+    pending:{cls:'pending',icon:'fa-clock',icoCls:'si-yellow',col:'#d97706',lbl:'Menunggu'},
+    processing:{cls:'processing',icon:'fa-spinner',icoCls:'si-blue',col:'#2563eb',lbl:'Diproses'},
+    approved:{cls:'approved',icon:'fa-check-circle',icoCls:'si-green',col:'#059669',lbl:'Disetujui'},
+    rejected:{cls:'rejected',icon:'fa-times-circle',icoCls:'si-red',col:'#dc2626',lbl:'Ditolak'},
+    completed:{cls:'completed',icon:'fa-check-double',icoCls:'si-green',col:'#059669',lbl:'Selesai'},
+  };
+  const s=sMap[d.status]||sMap.pending;
+  const tgl=d.createdAt?.toDate?d.createdAt.toDate().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+
+  const el=document.createElement('div');
+  el.className=`req-card ${s.cls}`;
+  el.innerHTML=`
+    <div class="req-icon stat-icon ${s.icoCls}"><i class="fas ${s.icon}"></i></div>
+    <div class="req-info">
+      <div class="req-name">${safe(d.nama||'—')}</div>
+      <div class="req-nip">NIP: ${safe(d.nip||'—')} &nbsp;|&nbsp; NUPTK: ${safe(d.nuptk||'—')}</div>
+      <div class="req-time"><i class="fas fa-clock"></i> ${tgl} &nbsp;·&nbsp; <span class="chip ${s.cls==='pending'?'chip-yellow':s.cls==='approved'?'chip-green':s.cls==='rejected'?'chip-red':'chip-gray'}">${s.lbl}</span></div>
+      ${d.alasan?`<div style="margin-top:6px;padding:6px 10px;background:rgba(220,38,38,.08);border-radius:6px;font-size:.74rem;color:#dc2626;"><i class="fas fa-comment-alt"></i> Alasan: ${safe(d.alasan)}</div>`:''}
+    </div>
+    <div class="req-actions">
+      ${d.status==='pending'||d.status==='processing'?`
+        <button class="btn-primary btn-sm" onclick="approveReset('${d.id}','${safe(d.nama||'')}')"><i class="fas fa-check"></i> Setujui</button>
+        <button class="btn-red btn-sm" onclick="rejectReset('${d.id}','${safe(d.nama||'')}')"><i class="fas fa-times"></i> Tolak</button>
+      `:''}
+      ${d.status==='rejected'?`<button class="btn-outline btn-sm" onclick="approveReset('${d.id}','${safe(d.nama||'')}')"><i class="fas fa-redo"></i> Setujui Ulang</button>`:''}
+    </div>
+  `;
+  return el;
+}
+
+function approveReset(id,nama){
+  document.getElementById('approveDocId').value=id;
+  document.getElementById('approveNama').textContent=nama;
+  openModal('modalApprove');
+}
+window.approveReset=approveReset;
+
+document.getElementById('btnDoApprove')?.addEventListener('click',async()=>{
+  const id=document.getElementById('approveDocId').value;
+  if(!id)return;
+  const btn=document.getElementById('btnDoApprove');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i>';}
+  try{
+    await db.collection('resetPasswordRequest').doc(id).update({status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedBy:opUser?.username||'operator'});
+    toast('success','Disetujui','Permintaan reset password telah disetujui. Guru dapat segera reset password.');
+    closeModal('modalApprove');
+    loadResetRequests();
+    loadDashboard();
+  }catch(e){toast('error','Gagal','Tidak dapat menyetujui permintaan.');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Ya, Setujui';}}
+});
+
+function rejectReset(id,nama){
+  document.getElementById('rejectDocId').value=id;
+  document.getElementById('rejectNama').textContent=nama;
+  document.getElementById('rejectAlasan').value='';
+  openModal('modalReject');
+}
+window.rejectReset=rejectReset;
+
+document.getElementById('btnDoReject')?.addEventListener('click',async()=>{
+  const id=document.getElementById('rejectDocId').value;
+  const alasan=document.getElementById('rejectAlasan')?.value.trim();
+  if(!alasan){toast('error','Isi Alasan','Alasan penolakan wajib diisi!');return;}
+  const btn=document.getElementById('btnDoReject');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i>';}
+  try{
+    await db.collection('resetPasswordRequest').doc(id).update({status:'rejected',alasan,rejectedAt:firebase.firestore.FieldValue.serverTimestamp(),rejectedBy:opUser?.username||'operator'});
+    toast('warning','Ditolak','Permintaan reset password telah ditolak.');
+    closeModal('modalReject');
+    loadResetRequests();
+  }catch(e){toast('error','Gagal','Tidak dapat menolak permintaan.');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-times"></i> Tolak';}}
+});
+
+// ============================================================
+//  PENGUMUMAN
+// ============================================================
+async function loadPengumumanTable(){
+  const tbody=document.getElementById('annTableBody');
+  if(!tbody)return;
+  tbody.innerHTML=`<tr><td colspan="7" class="tbl-empty"><i class="fas fa-circle-notch fa-spin"></i> Memuat...</td></tr>`;
+  try{
+    const snap=await db.collection('pengumuman').orderBy('createdAt','desc').get();
+    if(snap.empty){tbody.innerHTML=`<tr><td colspan="7" class="tbl-empty">Belum ada pengumuman. Klik "Buat Pengumuman" untuk menambahkan.</td></tr>`;return;}
+    const catMap={umum:{cls:'chip-green',lbl:'Umum'},penting:{cls:'chip-red',lbl:'Penting'},info:{cls:'chip-blue',lbl:'Info'},kegiatan:{cls:'chip-yellow',lbl:'Kegiatan'}};
+    tbody.innerHTML='';
+    snap.docs.forEach((doc,i)=>{
+      const d={id:doc.id,...doc.data()};
+      const cat=catMap[d.kategori||'umum']||catMap.umum;
+      const tgl=d.createdAt?.toDate?d.createdAt.toDate().toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'—';
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td>${i+1}</td>
+        <td style="max-width:240px;"><div style="font-weight:700;font-size:.84rem;">${safe(d.judul||'—')}</div></td>
+        <td><span class="chip ${cat.cls}">${cat.lbl}</span></td>
+        <td>${safe(d.penulis||'—')}</td>
+        <td>${tgl}</td>
+        <td>${d.pinned?'<span class="chip chip-red"><i class="fas fa-thumbtack"></i> Ya</span>':'<span style="color:var(--text-3);font-size:.78rem;">—</span>'}</td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-outline btn-sm" onclick="editPengumuman('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-red btn-sm" onclick="hapusPengumuman('${d.id}','${safe(d.judul||'')}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }catch(e){tbody.innerHTML=`<tr><td colspan="7" class="tbl-empty">Gagal memuat pengumuman.</td></tr>`;}
+}
+
+function openModalPengumuman(){
+  document.getElementById('editAnnId').value='';
+  document.getElementById('modalAnnTitle').textContent='Buat Pengumuman Baru';
+  document.getElementById('formPengumuman')?.reset();
+  document.getElementById('annPinned').checked=false;
+  document.getElementById('annPreview').innerHTML='<span style="color:var(--text-3);font-style:italic;">Preview akan muncul saat Anda mengetik isi pengumuman...</span>';
+  document.getElementById('charCount').textContent='0';
+  openModal('modalPengumuman');
+}
+window.openModalPengumuman=openModalPengumuman;
+
+async function editPengumuman(id){
+  try{
+    const doc=await db.collection('pengumuman').doc(id).get();
+    if(!doc.exists)return;
+    const d=doc.data();
+    document.getElementById('editAnnId').value=id;
+    document.getElementById('modalAnnTitle').textContent='Edit Pengumuman';
+    document.getElementById('annJudul').value=d.judul||'';
+    document.getElementById('annKategori').value=d.kategori||'umum';
+    document.getElementById('annPenulis').value=d.penulis||'';
+    document.getElementById('annIsi').value=d.isi||'';
+    document.getElementById('annPinned').checked=d.pinned||false;
+    updateCharCount();
+    openModal('modalPengumuman');
+  }catch(e){toast('error','Gagal','Tidak dapat memuat data pengumuman.');}
+}
+window.editPengumuman=editPengumuman;
+
+function updateCharCount(){
+  const isi=document.getElementById('annIsi')?.value||'';
+  const cc=document.getElementById('charCount');
+  if(cc)cc.textContent=isi.length;
+  // Live preview: setiap baris jadi <p>
+  const prev=document.getElementById('annPreview');
+  if(!prev)return;
+  const paras=isi.split('\n').filter(p=>p.trim()!=='');
+  if(paras.length===0){prev.innerHTML='<span style="color:var(--text-3);font-style:italic;">Preview akan muncul saat Anda mengetik...</span>';return;}
+  prev.innerHTML=paras.map(p=>`<p style="margin-bottom:10px;">${safe(p)}</p>`).join('');
+}
+window.updateCharCount=updateCharCount;
+
+document.getElementById('formPengumuman')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const id=document.getElementById('editAnnId').value;
+  const data={
+    judul:document.getElementById('annJudul').value.trim(),
+    kategori:document.getElementById('annKategori').value,
+    penulis:document.getElementById('annPenulis').value.trim(),
+    isi:document.getElementById('annIsi').value, // simpan asli dengan newline
+    pinned:document.getElementById('annPinned').checked,
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if(!data.judul||!data.isi){toast('error','Lengkapi Data','Judul dan isi pengumuman wajib diisi!');return;}
+  const btn=document.getElementById('btnSimpanAnn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Menyimpan...';}
+  try{
+    if(id){
+      await db.collection('pengumuman').doc(id).update(data);
+      toast('success','Diperbarui','Pengumuman berhasil diperbarui.');
+    }else{
+      data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('pengumuman').add(data);
+      toast('success','Dipublikasikan!','Pengumuman baru telah tayang di portal guru.');
+    }
+    closeModal('modalPengumuman');
+    loadPengumumanTable();
+  }catch(err){toast('error','Gagal','Tidak dapat menyimpan pengumuman.');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> Publikasikan';}}
+});
+
+async function hapusPengumuman(id,judul){
+  if(!confirm(`Hapus pengumuman "${judul}"? Tindakan ini tidak dapat dibatalkan.`))return;
+  try{
+    await db.collection('pengumuman').doc(id).delete();
+    toast('success','Dihapus','Pengumuman berhasil dihapus.');
+    loadPengumumanTable();
+  }catch(e){toast('error','Gagal','Tidak dapat menghapus pengumuman.');}
+}
+window.hapusPengumuman=hapusPengumuman;
+
+// ============================================================
+//  SESSION RESTORE
+// ============================================================
+(function restoreOpSession(){
+  try{
+    const s=JSON.parse(localStorage.getItem('opSession')||'{}');
+    if(!s.username||!s._at)return;
+    const hrs=(Date.now()-new Date(s._at))/(1000*60*60);
+    if(hrs>12){localStorage.removeItem('opSession');return;}
+    opUser=s;
+    enterOpPortal();
+  }catch(e){localStorage.removeItem('opSession');}
+})();
+
+function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+console.log('%c✅ Panel Operator SMAN 68 Jakarta','color:#d97706;font-weight:800;font-size:13px;');
+</script>
+</body>
+</html>
