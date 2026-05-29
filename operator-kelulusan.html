@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Operator Kelulusan - SMAN 68 Jakarta</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Papa Parse untuk CSV -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    
+    <!-- PDF.js untuk PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+    
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        :root {
+            --primary: #006633;
+            --primary-blue: #0088cc;
+            --gradient: linear-gradient(135deg, #006633 0%, #0088cc 100%);
+            --white: #ffffff;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-full: 50px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--gradient);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
+        }
+        .login-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 40px 35px;
+            max-width: 420px; width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from { opacity:0; transform:translateY(30px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+        .login-logo {
+            width: 80px; height: 80px;
+            border-radius: 50%; object-fit: cover;
+            background: white; padding: 5px;
+            box-shadow: var(--shadow); margin-bottom: 20px;
+        }
+        .login-card h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+        .login-card p { color: var(--text-light); margin-bottom: 25px; font-size: 0.9rem; }
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .toggle-pass { left: auto !important; right: 14px; cursor: pointer; }
+        .input-group input {
+            width: 100%; padding: 14px 14px 14px 42px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem; transition: var(--transition);
+        }
+        .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,102,51,0.08); }
+        .btn-login {
+            width: 100%; padding: 14px;
+            background: var(--gradient); color: white;
+            border: none; border-radius: var(--radius-sm);
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: var(--transition); box-shadow: 0 8px 25px rgba(0,102,51,0.3);
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(0,136,204,0.4); }
+        .login-info {
+            margin-top: 20px; font-size: 0.8rem; color: var(--text-light);
+            background: #f8fafc; padding: 10px; border-radius: var(--radius-sm);
+        }
+
+        /* Main Panel */
+        .main-panel { display: none; }
+
+        /* Header */
+        .header {
+            background: var(--gradient);
+            padding: 16px 30px; color: white;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-logo { width: 45px; height: 45px; border-radius: 10px; background: white; padding: 3px; }
+        .header-left h1 { font-size: 1.3rem; font-weight: 700; }
+        .header-left span { font-size: 0.75rem; opacity: 0.8; display: block; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-badge { padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem; }
+        .btn-logout { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: var(--radius-full); cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition); }
+        .btn-logout:hover { background: #ef4444; }
+
+        /* Content */
+        .content { max-width: 1200px; margin: 0 auto; padding: 25px; }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 25px 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px; padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        .card-header i { font-size: 1.4rem; color: var(--primary); }
+        .card-header h3 { font-size: 1.2rem; font-weight: 700; }
+
+        /* Form */
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-weight: 600;
+            margin-bottom: 6px; color: var(--text); font-size: 0.9rem;
+        }
+        .form-group label i { color: var(--primary); width: 18px; }
+        .required { color: #ef4444; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem;
+            background: #fafafa;
+            transition: var(--transition);
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none; border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0,102,51,0.08);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px; border: none; border-radius: var(--radius-sm);
+            font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: var(--transition);
+        }
+        .btn-primary { background: var(--gradient); color: white; box-shadow: 0 8px 25px rgba(0,102,51,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(0,136,204,0.4); }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; padding: 6px 14px; font-size: 0.8rem; }
+        .btn-upload { background: #f59e0b; color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+
+        /* Upload Area */
+        .upload-area {
+            border: 3px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 40px; text-align: center;
+            transition: var(--transition); cursor: pointer;
+            background: #fafafa; margin-bottom: 20px;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0,102,51,0.03);
+        }
+        .upload-area i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; }
+        .upload-area h4 { font-size: 1.1rem; margin-bottom: 8px; }
+        .upload-area p { color: var(--text-light); font-size: 0.9rem; }
+        .upload-area input[type="file"] { display: none; }
+        .file-info { display: none; background: #e8f5e9; padding: 12px 18px; border-radius: var(--radius-sm); margin-top: 15px; align-items: center; gap: 10px; }
+        .file-info.show { display: flex; }
+        .format-info {
+            background: #fef3c7; padding: 14px 18px;
+            border-radius: var(--radius-sm); margin: 20px 0;
+            font-size: 0.85rem; border-left: 4px solid #f59e0b;
+        }
+        .format-info code {
+            background: #fde68a; padding: 2px 6px;
+            border-radius: 4px; font-size: 0.8rem;
+        }
+
+        /* Table */
+        .table-wrapper { overflow-x: auto; border-radius: var(--radius-sm); box-shadow: var(--shadow); }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: var(--gradient); color: white;
+            padding: 14px 16px; text-align: left;
+            font-weight: 700; font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        tr:hover { background: #f8fafc; }
+        .badge { padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; }
+        .badge.lulus { background: #dbeafe; color: #1e40af; }
+        .badge.tidak-lulus { background: #fee2e2; color: #dc2626; }
+        .empty-state { text-align: center; padding: 40px; color: var(--text-light); }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card {
+            background: var(--card); padding: 20px; border-radius: var(--radius-sm);
+            box-shadow: var(--shadow); text-align: center;
+        }
+        .stat-card h3 { font-size: 2rem; font-weight: 800; }
+        .stat-card p { font-size: 0.85rem; color: var(--text-light); }
+        .stat-card.lulus h3 { color: #1e40af; }
+        .stat-card.tidak-lulus h3 { color: #dc2626; }
+        .stat-card.total h3 { color: var(--primary); }
+
+        /* Toast */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background: var(--card); padding: 16px 22px;
+            border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);
+            display: flex; align-items: center; gap: 12px;
+            transform: translateX(120%);
+            animation: toastIn 0.4s ease forwards;
+            border-left: 5px solid var(--primary);
+            max-width: 400px;
+        }
+        @keyframes toastIn { to { transform:translateX(0); } }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.warning { border-left-color: #f59e0b; }
+        .toast i { font-size: 1.3rem; }
+        .toast.success i { color: #10b981; }
+        .toast.error i { color: #ef4444; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 700; font-size: 0.9rem; }
+        .toast-message { font-size: 0.8rem; color: var(--text-light); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .header { padding: 15px 20px; }
+            .content { padding: 15px; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="SMAN 68" class="login-logo">
+            <h2>Operator Kelulusan</h2>
+            <p>SMAN 68 Jakarta</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email Operator" value="operator@sman68jkt.sch.id" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" value="operator123" required>
+                    <i class="fas fa-eye toggle-pass" id="loginPassToggle"></i>
+                </div>
+                <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> Masuk</button>
+            </form>
+            <div class="login-info">
+                <i class="fas fa-info-circle"></i> Gunakan akun operator untuk mengakses halaman ini
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel" id="mainPanel">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="SMAN 68" class="header-logo">
+                <div>
+                    <h1>Operator Kelulusan</h1>
+                    <span>SMAN 68 Jakarta</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="user-badge" id="userBadge"><i class="fas fa-user-circle"></i> Operator</span>
+                <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card total"><h3 id="statTotal">0</h3><p>Total Siswa</p></div>
+                <div class="stat-card lulus"><h3 id="statLulus">0</h3><p>Lulus</p></div>
+                <div class="stat-card tidak-lulus"><h3 id="statTidakLulus">0</h3><p>Tidak Lulus</p></div>
+                <div class="stat-card"><h3 id="statUploaded">0</h3><p>Baru Diupload</p></div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Upload Data Kelulusan (CSV/PDF)</h3>
+                </div>
+                
+                <div class="format-info">
+                    <strong><i class="fas fa-info-circle"></i> Format CSV yang diterima:</strong><br>
+                    <code>NISN,Nama,Tanggal Lahir,Kelas,Status</code><br>
+                    Contoh: <code>1234567890,Ahmad Fauzi,2008-05-15,XII.5,lulus</code><br>
+                    <strong>Status:</strong> <code>lulus</code> atau <code>tidak-lulus</code>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h4>Drag & Drop File di Sini</h4>
+                    <p>atau klik untuk memilih file (CSV, TXT, PDF)</p>
+                    <input type="file" id="fileInput" accept=".csv,.txt,.pdf">
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <i class="fas fa-file-csv" style="color:var(--primary);font-size:1.5rem;"></i>
+                    <div style="flex:1;">
+                        <strong id="fileName">-</strong>
+                        <p style="font-size:0.8rem;color:var(--text-light);" id="fileSize">-</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnProcess" style="padding:8px 16px;font-size:0.85rem;">
+                        <i class="fas fa-cog"></i> Proses
+                    </button>
+                </div>
+            </div>
+
+            <!-- Manual Input -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Tambah Data Manual</h3>
+                </div>
+                <form id="kelulusanForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> NISN <span class="required">*</span></label>
+                            <input type="text" id="nisn" class="form-input" placeholder="10 digit" required maxlength="10" inputmode="numeric">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nama Lengkap <span class="required">*</span></label>
+                            <input type="text" id="nama" class="form-input" placeholder="Nama siswa" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-graduation-cap"></i> Status <span class="required">*</span></label>
+                            <select id="status" class="form-select" required>
+                                <option value="">Pilih</option>
+                                <option value="lulus">LULUS</option>
+                                <option value="tidak-lulus">TIDAK LULUS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Tanggal Lahir <span class="required">*</span></label>
+                            <input type="date" id="tanggalLahir" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-users"></i> Kelas <span class="required">*</span></label>
+                            <select id="kelas" class="form-select" required>
+                                <option value="">Pilih Kelas</option>
+                                <option value="XII.1">XII.1</option><option value="XII.2">XII.2</option>
+                                <option value="XII.3">XII.3</option><option value="XII.4">XII.4</option>
+                                <option value="XII.5">XII.5</option><option value="XII.6">XII.6</option>
+                                <option value="XII.7">XII.7</option><option value="XII.8">XII.8</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-sticky-note"></i> Keterangan</label>
+                            <input type="text" id="keterangan" class="form-input" placeholder="Opsional">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Data</button>
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('kelulusanForm').reset()"><i class="fas fa-undo"></i> Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Data Table -->
+            <div class="card">
+                <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <i class="fas fa-list"></i>
+                        <h3>Data Kelulusan</h3>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <input type="text" id="searchInput" class="form-input" placeholder="🔍 Cari NISN atau Nama..." style="width:200px;padding:10px 14px;font-size:0.85rem;">
+                        <select id="filterKelas" class="form-select" style="width:130px;padding:10px 14px;font-size:0.85rem;">
+                            <option value="">Semua Kelas</option>
+                            <option value="XII.1">XII.1</option><option value="XII.2">XII.2</option>
+                            <option value="XII.3">XII.3</option><option value="XII.4">XII.4</option>
+                            <option value="XII.5">XII.5</option><option value="XII.6">XII.6</option>
+                            <option value="XII.7">XII.7</option><option value="XII.8">XII.8</option>
+                        </select>
+                        <button class="btn btn-success" id="btnExportCSV" style="padding:10px 16px;font-size:0.85rem;"><i class="fas fa-download"></i> Export CSV</button>
+                        <button class="btn btn-danger" id="btnDeleteAll" style="padding:10px 16px;font-size:0.85rem;"><i class="fas fa-trash"></i> Hapus Semua</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>NISN</th>
+                                <th>Nama</th>
+                                <th>Tanggal Lahir</th>
+                                <th>Kelas</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataBody">
+                            <tr><td colspan="6" class="empty-state">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // FIREBASE CONFIG
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
+            authDomain: "upnvjdatsystem.firebaseapp.com",
+            projectId: "upnvjdatsystem",
+            storageBucket: "upnvjdatsystem.firebasestorage.app",
+            messagingSenderId: "57095309946",
+            appId: "1:57095309946:web:b0e9f3f86380d549ffc9c3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ============================================
+        // ADMIN CREDENTIALS
+        // ============================================
+        const ADMIN_CREDENTIALS = [
+            { email: 'operator@sman68jkt.sch.id', password: 'operator123' },
+            { email: 'admin@sman68jkt.sch.id', password: 'admin123' }
+        ];
+
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        let allData = [];
+        let uploadedCount = 0;
+
+        // ============================================
+        // AUTH
+        // ============================================
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const isValid = ADMIN_CREDENTIALS.some(c => c.email === user.email);
+                if (isValid) {
+                    showMainPanel();
+                    document.getElementById('userBadge').innerHTML = `<i class="fas fa-user-circle"></i> ${user.email}`;
+                } else {
+                    await auth.signOut();
+                    showToast('error', 'Akses Ditolak', 'Anda tidak memiliki akses operator.');
+                }
+            } else {
+                showLogin();
+            }
+        });
+
+        function showLogin() {
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('mainPanel').style.display = 'none';
+        }
+        function showMainPanel() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainPanel').style.display = 'block';
+            loadData();
+            updateStats();
+        }
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showToast('success', 'Login Berhasil', 'Selamat datang di Operator Kelulusan!');
+            } catch (error) {
+                // Fallback: cek credentials manual
+                const found = ADMIN_CREDENTIALS.find(c => c.email === email && c.password === password);
+                if (found) {
+                    // Buat akun jika belum ada
+                    try {
+                        await auth.createUserWithEmailAndPassword(email, password);
+                    } catch (e) {
+                        // Sudah ada, login saja
+                    }
+                    await auth.signInWithEmailAndPassword(email, password);
+                    showToast('success', 'Login Berhasil', 'Selamat datang!');
+                } else {
+                    showToast('error', 'Login Gagal', 'Email atau password salah!');
+                }
+            }
+        });
+
+        document.getElementById('loginPassToggle').addEventListener('click', function() {
+            const input = document.getElementById('loginPassword');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            showToast('info', 'Logout', 'Anda telah logout.');
+        });
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(type, title, message, duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'check-circle', error: 'exclamation-circle', warning: 'exclamation-triangle', info: 'info-circle' };
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type]}"></i>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.transform = 'translateX(120%)'; setTimeout(() => toast.remove(), 300); }, duration);
+        }
+
+        // ============================================
+        // NISN ONLY NUMBERS
+        // ============================================
+        document.getElementById('nisn').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+
+        // ============================================
+        // UPLOAD AREA
+        // ============================================
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) handleFile(file);
+        });
+
+        function handleFile(file) {
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+            fileInfo.classList.add('show');
+            
+            // Store file for processing
+            window.selectedFile = file;
+        }
+
+        // ============================================
+        // PROCESS FILE
+        // ============================================
+        document.getElementById('btnProcess').addEventListener('click', async () => {
+            const file = window.selectedFile;
+            if (!file) {
+                showToast('error', 'Tidak Ada File', 'Silakan pilih file terlebih dahulu!');
+                return;
+            }
+
+            const btn = document.getElementById('btnProcess');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            try {
+                if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
+                    await processCSV(file);
+                } else if (file.name.endsWith('.pdf')) {
+                    await processPDF(file);
+                } else {
+                    showToast('error', 'Format Tidak Didukung', 'Hanya file CSV, TXT, dan PDF yang diterima.');
+                }
+            } catch (error) {
+                console.error('Error processing file:', error);
+                showToast('error', 'Gagal Memproses', 'Terjadi kesalahan saat membaca file.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-cog"></i> Proses';
+            }
+        });
+
+        // ============================================
+        // PROCESS CSV
+        // ============================================
+        function processCSV(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: async (results) => {
+                        if (results.data.length === 0) {
+                            showToast('warning', 'File Kosong', 'Tidak ada data yang ditemukan dalam file.');
+                            resolve();
+                            return;
+                        }
+
+                        uploadedCount = 0;
+                        const batch = db.batch();
+
+                        for (const row of results.data) {
+                            const nisn = (row.NISN || row.nisn || '').trim();
+                            const nama = (row.Nama || row.nama || row.NAME || '').trim();
+                            const tanggalLahir = (row['Tanggal Lahir'] || row.tanggalLahir || row['TanggalLahir'] || '').trim();
+                            const kelas = (row.Kelas || row.kelas || row.KELAS || '').trim();
+                            const status = ((row.Status || row.status || row.STATUS || 'lulus').trim().toLowerCase() === 'lulus') ? 'lulus' : 'tidak-lulus';
+                            const keterangan = (row.Keterangan || row.keterangan || '').trim();
+
+                            if (nisn && nama && kelas) {
+                                // Cek existing
+                                const existing = await db.collection('kelulusan').where('nisn', '==', nisn).get();
+                                if (!existing.empty) {
+                                    batch.update(existing.docs[0].ref, { nama, tanggalLahir, kelas, status, keterangan, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                                } else {
+                                    const ref = db.collection('kelulusan').doc();
+                                    batch.set(ref, { nisn, nama, tanggalLahir, kelas, status, keterangan, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                                }
+                                uploadedCount++;
+                            }
+                        }
+
+                        await batch.commit();
+                        document.getElementById('statUploaded').textContent = uploadedCount;
+                        showToast('success', 'Upload Berhasil', `${uploadedCount} data berhasil diupload!`);
+                        loadData();
+                        updateStats();
+                        resolve();
+                    },
+                    error: (error) => {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        // ============================================
+        // PROCESS PDF (Ekstrak teks)
+        // ============================================
+        async function processPDF(file) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const pageText = content.items.map(item => item.str).join(' ');
+                fullText += pageText + '\n';
+            }
+
+            // Parse text as CSV-like
+            const lines = fullText.split('\n').filter(line => line.trim().length > 0);
+            const csvContent = lines.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            await processCSV(blob);
+        }
+
+        // ============================================
+        // LOAD DATA
+        // ============================================
+        async function loadData() {
+            try {
+                const snapshot = await db.collection('kelulusan').orderBy('nisn').get();
+                allData = [];
+                snapshot.forEach(doc => allData.push({ id: doc.id, ...doc.data() }));
+                renderTable(allData);
+                updateStats();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('dataBody').innerHTML = '<tr><td colspan="6" class="empty-state">Gagal memuat data</td></tr>';
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('dataBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-info-circle"></i> Belum ada data kelulusan</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(d => `
+                <tr>
+                    <td><strong>${d.nisn}</strong></td>
+                    <td>${d.nama}</td>
+                    <td>${d.tanggalLahir || '-'}</td>
+                    <td>${d.kelas || '-'}</td>
+                    <td><span class="badge ${d.status}">${d.status === 'lulus' ? 'LULUS' : 'TIDAK LULUS'}</span></td>
+                    <td><button class="btn btn-danger" onclick="deleteData('${d.id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            const total = allData.length;
+            const lulus = allData.filter(d => d.status === 'lulus').length;
+            const tidakLulus = allData.filter(d => d.status === 'tidak-lulus').length;
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statLulus').textContent = lulus;
+            document.getElementById('statTidakLulus').textContent = tidakLulus;
+        }
+
+        // ============================================
+        // DELETE DATA
+        // ============================================
+        async function deleteData(id) {
+            if (!confirm('Hapus data ini?')) return;
+            try {
+                await db.collection('kelulusan').doc(id).delete();
+                showToast('success', 'Data Dihapus', 'Data kelulusan berhasil dihapus.');
+                loadData();
+            } catch (error) {
+                showToast('error', 'Gagal', 'Terjadi kesalahan.');
+            }
+        }
+
+        // ============================================
+        // DELETE ALL
+        // ============================================
+        document.getElementById('btnDeleteAll').addEventListener('click', async () => {
+            if (!confirm('HAPUS SEMUA data kelulusan? Tindakan ini tidak dapat dibatalkan!')) return;
+            if (!confirm('Ketik OK untuk melanjutkan:') || !confirm('Ini adalah konfirmasi terakhir. Lanjutkan?')) return;
+            
+            try {
+                const snapshot = await db.collection('kelulusan').get();
+                const batch = db.batch();
+                snapshot.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+                showToast('success', 'Semua Data Dihapus', `${snapshot.size} data berhasil dihapus.`);
+                loadData();
+            } catch (error) {
+                showToast('error', 'Gagal', 'Terjadi kesalahan.');
+            }
+        });
+
+        // ============================================
+        // EXPORT CSV
+        // ============================================
+        document.getElementById('btnExportCSV').addEventListener('click', () => {
+            if (allData.length === 0) {
+                showToast('warning', 'Tidak Ada Data', 'Tidak ada data untuk diexport.');
+                return;
+            }
+            
+            let csv = 'NISN,Nama,Tanggal Lahir,Kelas,Status,Keterangan\n';
+            allData.forEach(d => {
+                csv += `${d.nisn},"${d.nama}",${d.tanggalLahir || ''},${d.kelas || ''},${d.status},${d.keterangan || ''}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kelulusan-kelas12-sman68-${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('success', 'Export Berhasil', 'File CSV telah didownload.');
+        });
+
+        // ============================================
+        // SEARCH & FILTER
+        // ============================================
+        document.getElementById('searchInput').addEventListener('input', filterData);
+        document.getElementById('filterKelas').addEventListener('change', filterData);
+
+        function filterData() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const kelas = document.getElementById('filterKelas').value;
+            
+            let filtered = allData;
+            if (search) filtered = filtered.filter(d => d.nisn.includes(search) || (d.nama || '').toLowerCase().includes(search));
+            if (kelas) filtered = filtered.filter(d => d.kelas === kelas);
+            
+            renderTable(filtered);
+        }
+
+        // ============================================
+        // MANUAL INPUT FORM
+        // ============================================
+        document.getElementById('kelulusanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nisn = document.getElementById('nisn').value.trim();
+            const nama = document.getElementById('nama').value.trim();
+            const status = document.getElementById('status').value;
+            const tanggalLahir = document.getElementById('tanggalLahir').value;
+            const kelas = document.getElementById('kelas').value;
+            const keterangan = document.getElementById('keterangan').value.trim();
+            
+            if (!nisn || !nama || !status || !tanggalLahir || !kelas) {
+                showToast('error', 'Data Tidak Lengkap', 'Semua field wajib diisi!');
+                return;
+            }
+
+            try {
+                const existing = await db.collection('kelulusan').where('nisn', '==', nisn).get();
+                if (!existing.empty) {
+                    await db.collection('kelulusan').doc(existing.docs[0].id).update({
+                        nama, status, tanggalLahir, kelas, keterangan,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showToast('success', 'Data Diperbarui', `Data NISN ${nisn} berhasil diperbarui.`);
+                } else {
+                    await db.collection('kelulusan').add({
+                        nisn, nama, status, tanggalLahir, kelas, keterangan,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showToast('success', 'Data Tersimpan', `Data NISN ${nisn} berhasil disimpan.`);
+                }
+                
+                document.getElementById('kelulusanForm').reset();
+                loadData();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('error', 'Gagal Menyimpan', 'Terjadi kesalahan.');
+            }
+        });
+
+        // ============================================
+        // GLOBAL FUNCTIONS
+        // ============================================
+        window.deleteData = deleteData;
+
+        console.log('✅ Operator Kelulusan SMAN 68 Jakarta - Loaded');
+        console.log('📧 Login: operator@sman68jkt.sch.id / operator123');
+    </script>
+</body>
+</html>

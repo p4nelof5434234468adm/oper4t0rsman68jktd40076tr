@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Operator Panel - SMAN 68 Jakarta</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="operator-siswa-guru.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-logo-wrapper">
+                <div class="login-logo-ring"></div>
+                <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="SMAN 68" class="login-logo">
+            </div>
+            <h2>Operator Panel</h2>
+            <p>SMAN 68 Jakarta</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email Operator" required value="operator@sman68jkt.sch.id">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" required value="operator123">
+                    <i class="fas fa-eye toggle-pass" id="loginPassToggle"></i>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+            </form>
+            <p class="login-info">Default: operator@sman68jkt.sch.id / operator123</p>
+        </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel" id="mainPanel" style="display:none;">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo">
+                <div>
+                    <h3>Operator</h3>
+                    <span>SMAN 68 Jakarta</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-page="siswa-pending">
+                    <i class="fas fa-user-graduate"></i> Pendaftaran Siswa
+                    <span class="badge" id="badgeSiswa">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="guru-pending">
+                    <i class="fas fa-chalkboard-user"></i> Pendaftaran Guru
+                    <span class="badge" id="badgeGuru">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="mutasi">
+                    <i class="fas fa-exchange-alt"></i> Pendaftaran Mutasi
+                    <span class="badge" id="badgeMutasi">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="absensi-siswa">
+                    <i class="fas fa-clipboard-list"></i> Absensi Siswa
+                </a>
+                <a href="#" class="nav-item" data-page="absensi-guru">
+                    <i class="fas fa-clipboard-check"></i> Absensi Guru
+                </a>
+                <a href="#" class="nav-item" data-page="data-siswa">
+                    <i class="fas fa-users"></i> Data Siswa
+                </a>
+                <a href="#" class="nav-item" data-page="data-guru">
+                    <i class="fas fa-person-chalkboard"></i> Data Guru
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info" id="userInfo">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Operator</span>
+                </div>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 id="pageTitle">Dashboard</h2>
+                <div class="topbar-right">
+                    <div class="notification-bell" id="notifBell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-count" id="notifCount">0</span>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-header">
+                                <h4>Notifikasi</h4>
+                                <button id="clearNotif">Tandai Semua Dibaca</button>
+                            </div>
+                            <div class="notif-list" id="notifList">
+                                <p class="no-notif">Tidak ada notifikasi</p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="datetime" id="datetime"></span>
+                </div>
+            </header>
+
+            <!-- Page Container -->
+            <div class="page-container" id="pageContainer"></div>
+        </main>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card" id="modalCard"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="operator-siswa-guru.js"></script>
+</body>
+</html>

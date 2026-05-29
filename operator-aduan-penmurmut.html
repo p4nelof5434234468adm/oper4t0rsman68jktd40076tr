@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operator Dashboard — Aduan Penmurmut | SMAN 68 Jakarta</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome v6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Firebase SDK compat v9.6.1 -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <link rel="stylesheet" href="operator-aduan-penmurmut.css" />
+</head>
+<body>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- ═══════════════════════════════
+       LOGIN SCREEN
+  ═══════════════════════════════ -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-bg-mesh">
+      <div class="mesh-orb mesh-orb-1"></div>
+      <div class="mesh-orb mesh-orb-2"></div>
+      <div class="mesh-orb mesh-orb-3"></div>
+    </div>
+
+    <div class="login-card" id="loginCard">
+      <div class="login-card-accent"></div>
+
+      <div class="login-brand">
+        <div class="login-logo-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"
+               alt="Logo SMAN 68 Jakarta" class="login-logo"
+               onerror="this.style.display='none'" />
+        </div>
+        <h1 class="login-title">Operator Dashboard</h1>
+        <p class="login-subtitle">Aduan Penmurmut — SMAN 68 Jakarta</p>
+      </div>
+
+      <div class="login-divider">
+        <span><i class="fas fa-lock"></i> Akses Terbatas</span>
+      </div>
+
+      <form id="loginForm" novalidate autocomplete="off">
+        <div class="login-field">
+          <label class="login-label" for="loginEmail">
+            <i class="fas fa-envelope"></i> Email Operator
+          </label>
+          <input type="email" id="loginEmail" class="login-input"
+                 placeholder="operator@sman68.sch.id"
+                 autocomplete="username" required />
+          <span class="login-err" id="loginEmailErr"></span>
+        </div>
+
+        <div class="login-field">
+          <label class="login-label" for="loginPassword">
+            <i class="fas fa-key"></i> Kata Sandi
+          </label>
+          <div class="login-input-wrap">
+            <input type="password" id="loginPassword" class="login-input"
+                   placeholder="••••••••••"
+                   autocomplete="current-password" required />
+            <button type="button" class="btn-toggle-pw" id="btnTogglePw"
+                    tabindex="-1" aria-label="Tampilkan/sembunyikan kata sandi">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <span class="login-err" id="loginPwErr"></span>
+        </div>
+
+        <span class="login-err login-err-global" id="loginGlobalErr"></span>
+
+        <button type="submit" class="btn-login" id="btnLogin">
+          <span class="btn-login-text">
+            <i class="fas fa-arrow-right-to-bracket"></i> Masuk Dashboard
+          </span>
+          <span class="btn-login-loading d-none">
+            <i class="fas fa-spinner fa-spin"></i> Memverifikasi…
+          </span>
+        </button>
+      </form>
+
+      <p class="login-footer-note">
+        <i class="fas fa-shield-halved"></i>
+        Sesi ini hanya untuk operator resmi yang telah terdaftar.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       DASHBOARD SCREEN
+  ═══════════════════════════════ -->
+  <div class="dashboard-wrap d-none" id="dashboardWrap">
+
+    <!-- TOP NAV -->
+    <nav class="top-nav" id="topNav">
+      <div class="top-nav-inner">
+        <div class="nav-brand">
+          <div class="nav-logo-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"
+                 alt="Logo" class="nav-logo"
+                 onerror="this.style.display='none'" />
+          </div>
+          <div class="nav-brand-text">
+            <span class="nav-brand-title">Aduan Penmurmut</span>
+            <span class="nav-brand-sub">SMAN 68 Jakarta</span>
+          </div>
+        </div>
+
+        <div class="nav-actions">
+          <div class="nav-user-info">
+            <div class="nav-user-avatar" id="navUserAvatar">O</div>
+            <div class="nav-user-detail">
+              <span class="nav-user-name" id="navUserName">Operator</span>
+              <span class="nav-user-role">Admin Sistem</span>
+            </div>
+          </div>
+          <button class="btn-logout" id="btnLogout">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="dash-main">
+
+      <!-- CENTERED HEADER -->
+      <header class="dash-header">
+        <div class="dash-header-inner">
+          <div class="dash-logo-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"
+                 alt="Logo SMAN 68 Jakarta" class="dash-logo"
+                 onerror="this.style.display='none'" />
+          </div>
+          <h1 class="dash-title">Dashboard Operator — Aduan Penmurmut</h1>
+          <p class="dash-subtitle">Sistem Manajemen Sanggah &amp; Pengaduan Berkas Mutasi SMAN 68 Jakarta</p>
+          <div class="dash-header-meta">
+            <span class="meta-item"><i class="fas fa-circle-dot live-dot"></i> Data real-time</span>
+            <span class="meta-sep">•</span>
+            <span class="meta-item" id="headerDate"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- STAT CARDS -->
+      <section class="stats-section">
+        <div class="stat-card stat-blue">
+          <div class="stat-icon-wrap"><i class="fas fa-inbox"></i></div>
+          <div class="stat-body">
+            <span class="stat-value" id="valTotal">—</span>
+            <span class="stat-label">Total Aduan</span>
+          </div>
+          <div class="stat-bg-icon"><i class="fas fa-inbox"></i></div>
+        </div>
+
+        <div class="stat-card stat-amber">
+          <div class="stat-icon-wrap"><i class="fas fa-clock"></i></div>
+          <div class="stat-body">
+            <span class="stat-value" id="valPending">—</span>
+            <span class="stat-label">Menunggu Tinjauan</span>
+          </div>
+          <div class="stat-bg-icon"><i class="fas fa-clock"></i></div>
+        </div>
+
+        <div class="stat-card stat-green">
+          <div class="stat-icon-wrap"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-body">
+            <span class="stat-value" id="valSelesai">—</span>
+            <span class="stat-label">Selesai Ditanggapi</span>
+          </div>
+          <div class="stat-bg-icon"><i class="fas fa-circle-check"></i></div>
+        </div>
+      </section>
+
+      <!-- TABLE SECTION -->
+      <section class="table-section">
+        <div class="table-controls">
+          <div class="control-left">
+            <div class="search-wrap">
+              <i class="fas fa-search search-ico"></i>
+              <input type="text" id="searchInput" class="search-input"
+                     placeholder="Cari nama siswa atau No. Aduan…" />
+              <button class="search-clear d-none" id="searchClear" aria-label="Hapus pencarian">
+                <i class="fas fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+          <div class="control-right">
+            <label class="filter-label" for="filterStatus">
+              <i class="fas fa-filter"></i>
+            </label>
+            <div class="select-wrap">
+              <select id="filterStatus" class="filter-select">
+                <option value="semua">Semua Status</option>
+                <option value="pending">Pending</option>
+                <option value="proses">Proses</option>
+                <option value="selesai">Selesai</option>
+              </select>
+              <i class="fas fa-chevron-down sel-arrow"></i>
+            </div>
+            <div class="row-count-info">
+              Tampil: <strong id="rowCountDisplay">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="aduan-table" id="aduanTable">
+            <thead>
+              <tr>
+                <th><i class="fas fa-calendar-days"></i> Tanggal Masuk</th>
+                <th><i class="fas fa-hashtag"></i> No. Aduan</th>
+                <th><i class="fas fa-user"></i> Nama Siswa</th>
+                <th><i class="fas fa-tag"></i> Kategori</th>
+                <th><i class="fas fa-circle-half-stroke"></i> Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+
+          <div class="empty-state d-none" id="emptyState">
+            <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+            <p class="empty-title">Tidak Ada Data</p>
+            <p class="empty-desc">Belum ada aduan yang cocok dengan filter yang dipilih.</p>
+          </div>
+
+          <div class="table-loading" id="tableLoading">
+            <div class="loading-spinner"></div>
+            <p>Memuat data dari server…</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="dash-footer">
+      <span><i class="fas fa-shield-halved"></i> Panel ini bersifat rahasia dan hanya untuk operator resmi.</span>
+      <span class="footer-sep">|</span>
+      <span>&copy; 2025 SMAN 68 Jakarta — Sistem Mutasi Digital</span>
+    </footer>
+
+  </div>
+
+  <!-- ═══════════════════════════════
+       MODAL DETAIL ADUAN
+  ═══════════════════════════════ -->
+  <div class="modal-overlay d-none" id="modalOverlay"
+       role="dialog" aria-modal="true" aria-labelledby="modalAduanTitle">
+    <div class="modal-panel" id="modalPanel">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-header-icon"><i class="fas fa-file-lines"></i></div>
+          <div>
+            <h2 class="modal-title" id="modalAduanTitle">Detail Aduan</h2>
+            <p class="modal-no-aduan-display" id="modalNoAduanDisplay">ADM-XXXXXXXX</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Tutup modal">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+
+        <!-- Info Pelapor -->
+        <div class="modal-section">
+          <div class="modal-section-title">
+            <i class="fas fa-user-circle"></i> Informasi Pelapor
+          </div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-key">No. Pendaftaran Asal</span>
+              <span class="detail-val mono" id="dNoPendaftaran">—</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-key">Nama Lengkap</span>
+              <span class="detail-val" id="dNama">—</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-key">Email Aktif</span>
+              <a class="detail-val detail-link" id="dEmail" href="#" target="_blank">—</a>
+            </div>
+            <div class="detail-item">
+              <span class="detail-key">Nomor WhatsApp</span>
+              <a class="detail-val detail-link wa-link" id="dWhatsapp" href="#" target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i> <span id="dWhatsappText">—</span>
+              </a>
+            </div>
+            <div class="detail-item">
+              <span class="detail-key">Kategori Aduan</span>
+              <span class="detail-val" id="dKategori">—</span>
+            </div>
+            <div class="detail-item detail-item-full">
+              <span class="detail-key">Tanggal Pengajuan</span>
+              <span class="detail-val" id="dCreatedAt">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Masalah -->
+        <div class="modal-section">
+          <div class="modal-section-title">
+            <i class="fas fa-comment-dots"></i> Detail Masalah / Sanggahan
+          </div>
+          <div class="detail-text-box" id="dDetail">—</div>
+        </div>
+
+        <!-- Bukti Pendukung -->
+        <div class="modal-section" id="sectionBukti">
+          <div class="modal-section-title">
+            <i class="fab fa-google-drive"></i> Bukti Pendukung
+          </div>
+          <a class="drive-link-btn" id="dLinkBukti" href="#" target="_blank" rel="noopener">
+            <i class="fab fa-google-drive"></i>
+            <span id="dLinkBuktiText">Buka di Google Drive</span>
+            <i class="fas fa-arrow-up-right-from-square drive-ext-ico"></i>
+          </a>
+          <p class="no-bukti-note d-none" id="noBuktiNote">
+            <i class="fas fa-circle-info"></i> Pelapor tidak melampirkan bukti pendukung.
+          </p>
+        </div>
+
+        <!-- Area Tanggapan -->
+        <div class="modal-section response-section">
+          <div class="modal-section-title">
+            <i class="fas fa-pen-nib"></i> Tanggapan Operator
+          </div>
+
+          <div class="template-area">
+            <p class="template-label"><i class="fas fa-bolt"></i> Template Tanggapan Cepat:</p>
+            <div class="template-btns">
+              <button class="tpl-btn tpl-approve" data-tpl="approve">
+                <i class="fas fa-circle-check"></i> Berkas Disetujui
+              </button>
+              <button class="tpl-btn tpl-drive" data-tpl="drive">
+                <i class="fab fa-google-drive"></i> Link Drive Rusak
+              </button>
+              <button class="tpl-btn tpl-reject" data-tpl="reject">
+                <i class="fas fa-ban"></i> Ditolak Tetap
+              </button>
+            </div>
+          </div>
+
+          <div class="response-field">
+            <label class="response-label" for="responseText">
+              Tulis atau edit tanggapan di bawah ini:
+            </label>
+            <textarea id="responseText" class="response-textarea" rows="5"
+              placeholder="Ketik tanggapan atau pilih template di atas…"></textarea>
+            <div class="resp-char-counter">
+              <span id="respCharCount">0</span> / 600 karakter
+            </div>
+          </div>
+
+          <div class="response-actions">
+            <div class="status-change-wrap">
+              <label class="response-label small-label" for="statusSelect">
+                <i class="fas fa-circle-half-stroke"></i> Ubah Status:
+              </label>
+              <div class="select-wrap">
+                <select id="statusSelect" class="filter-select status-select">
+                  <option value="" disabled selected>— Pilih status —</option>
+                  <option value="proses">Proses</option>
+                  <option value="selesai">Selesai</option>
+                </select>
+                <i class="fas fa-chevron-down sel-arrow"></i>
+              </div>
+            </div>
+
+            <button class="btn-save-response" id="btnSaveResponse">
+              <span class="btn-save-text">
+                <i class="fas fa-paper-plane"></i> Simpan &amp; Kirim Tanggapan
+              </span>
+              <span class="btn-save-loading d-none">
+                <i class="fas fa-spinner fa-spin"></i> Menyimpan…
+              </span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="operator-aduan-penmurmut.js"></script>
+</body>
+</html>

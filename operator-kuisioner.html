@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <title>Operator Dashboard – Kuisioner SMAN 68 Jakarta</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+  <!-- CSS Terpisah -->
+  <link rel="stylesheet" href="operator-kuisioner.css"/>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- SortableJS – drag & drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+  <!-- SheetJS – Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Mammoth.js – Word parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+
+<!-- TOASTS -->
+<div class="op-toasts" id="opToasts"></div>
+
+<!-- ═══════════════════════════════
+     LOGIN GATE
+═══════════════════════════════ -->
+<div class="login-gate" id="loginGate">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68"
+           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2232%22 font-size=%2228%22>🏫</text></svg>'"/>
+    </div>
+    <div class="login-title">Operator Dashboard</div>
+    <div class="login-sub">SMAN 68 Jakarta · Kuisioner Digital<br/>Masuk untuk mengakses panel operator.</div>
+    <div id="loginError" class="login-error"></div>
+    <div class="login-fields" id="loginForm">
+      <div class="login-field-wrap">
+        <span class="login-field-ico"><i data-lucide="mail"></i></span>
+        <input type="email" id="loginEmail" class="login-inp" placeholder="Email operator" autocomplete="email"/>
+      </div>
+      <div class="login-field-wrap">
+        <span class="login-field-ico"><i data-lucide="lock"></i></span>
+        <input type="password" id="loginPassword" class="login-inp" placeholder="Password" autocomplete="current-password"/>
+      </div>
+    </div>
+    <button class="login-btn" id="loginSubmitBtn">
+      <i data-lucide="loader-2" class="login-spinner"></i>
+      <span class="login-btn-text"><i data-lucide="log-in" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px"></i>Masuk</span>
+    </button>
+    <div class="login-footer">
+      Buat akun lewat Firebase Console ›<br/>
+      Authentication → Add user
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="appLayout" style="display:none">
+<!-- ═══════════════════════════════
+     SIDEBAR
+═══════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68"
+         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2232%22 font-size=%2228%22>🏫</text></svg>'"/>
+    <div class="sl-text">
+      <strong>SMAN 68</strong>
+      <span>Operator Panel</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-sec">Utama</div>
+    <button class="nav-item active" data-page="dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</button>
+    <button class="nav-item" data-page="surveys"><i data-lucide="clipboard-list"></i> Survey</button>
+    <button class="nav-item" data-page="questions"><i data-lucide="list-checks"></i> Pertanyaan</button>
+    <div class="nav-sec">Analitik</div>
+    <button class="nav-item" data-page="responses"><i data-lucide="inbox"></i> Responden</button>
+    <button class="nav-item" data-page="statistics"><i data-lucide="bar-chart-3"></i> Statistik</button>
+    <div class="nav-sec">Lainnya</div>
+    <button class="nav-item" data-page="settings"><i data-lucide="settings-2"></i> Pengaturan</button>
+    <button class="nav-item" onclick="window.open('form68.html','_blank')">
+      <i data-lucide="external-link"></i> Buka Form Siswa
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <i data-lucide="shield-check" style="color:var(--gold);width:17px;height:17px;flex-shrink:0"></i>
+    <div class="sf-text">
+      <strong>Operator</strong>
+      SMAN 68 Jakarta
+      <span class="sf-version">v2.0 · Firebase RTDB</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════ -->
+<div class="main-content" id="mainContent">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="btn btn-icon" id="btnToggleSidebar" title="Toggle sidebar"><i data-lucide="menu"></i></button>
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    </div>
+    <div class="topbar-actions">
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        Live
+      </div>
+      <button class="btn btn-icon" id="btnTheme" title="Ganti tema"><i data-lucide="sun" id="themeIco"></i></button>
+      <button class="btn btn-ghost btn-sm" id="btnLogout" title="Logout" style="display:flex;align-items:center;gap:.35rem">
+        <i data-lucide="log-out"></i><span style="font-size:.75rem">Keluar</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════ DASHBOARD ══════ -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h2>Selamat Datang 👋</h2>
+      <p>Pantau kuisioner SMAN 68 Jakarta secara realtime.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card glass">
+        <div class="stat-label">Total Survey</div>
+        <div class="stat-value" id="stTotal">–</div>
+        <div class="stat-sub">Survey dibuat</div>
+        <div class="stat-ico"><i data-lucide="clipboard-list"></i></div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-label">Total Respons</div>
+        <div class="stat-value" id="stResp">–</div>
+        <div class="stat-sub">Semua jawaban</div>
+        <div class="stat-ico"><i data-lucide="inbox"></i></div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-label">Survey Aktif</div>
+        <div class="stat-value" id="stActive">–</div>
+        <div class="stat-sub">Dipublikasikan</div>
+        <div class="stat-ico"><i data-lucide="activity"></i></div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-label">Hari Ini</div>
+        <div class="stat-value" id="stToday">–</div>
+        <div class="stat-sub">Respons hari ini</div>
+        <div class="stat-ico"><i data-lucide="user-check"></i></div>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="card-header">
+        <div>
+          <span class="card-title">Respons Terbaru</span>
+          <div class="card-subtitle">8 aktivitas terakhir dari semua survey</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="switchPage('responses')">
+          <i data-lucide="arrow-right"></i> Lihat Semua
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Nama</th><th>Peran</th><th>Survey</th><th>Waktu</th><th>Status</th></tr>
+          </thead>
+          <tbody id="recentBody">
+            <tr><td colspan="5" class="empty-msg">Memuat…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /dashboard -->
+
+  <!-- ══════ SURVEYS ══════ -->
+  <div class="page" id="page-surveys">
+    <div class="page-header">
+      <h2>Manajemen Survey</h2>
+      <p>Buat, edit, kelola, dan publikasikan survey kuisioner.</p>
+    </div>
+    <div class="card glass">
+      <div class="card-header">
+        <span class="card-title">Daftar Survey</span>
+        <button class="btn btn-primary" id="btnNewSurvey">
+          <i data-lucide="plus"></i> Buat Survey
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Judul</th><th>T.A.</th><th>Deadline</th>
+              <th>Respons</th><th>1x Jawab</th><th>Status</th><th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="surveysBody">
+            <tr><td colspan="7" class="empty-msg">Memuat…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /surveys -->
+
+  <!-- ══════ QUESTIONS ══════ -->
+  <div class="page" id="page-questions">
+    <div class="page-header">
+      <h2>Editor Pertanyaan</h2>
+      <p>Drag-drop untuk atur urutan. Bisa import dari Word, Excel, atau CSV.</p>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="card glass" style="margin-bottom:.9rem">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:.65rem;flex-wrap:wrap">
+          <label class="form-label" style="margin:0;white-space:nowrap">Survey:</label>
+          <select class="form-control" id="qSurveySelect" style="width:auto;min-width:200px"></select>
+        </div>
+        <div style="display:flex;gap:.45rem;flex-wrap:wrap">
+          <select class="form-control" id="newQType" style="width:auto;min-width:155px">
+            <option value="short">Short Answer</option>
+            <option value="paragraph">Paragraf</option>
+            <option value="multiple_choice">Multiple Choice</option>
+            <option value="checkbox">Checkbox</option>
+            <option value="dropdown">Dropdown</option>
+            <option value="date">Date Picker</option>
+            <option value="time">Time Picker</option>
+            <option value="linear_scale">Linear Scale</option>
+            <option value="rating">Rating Bintang</option>
+            <option value="matrix">Matrix Radio</option>
+            <option value="matrix_checkbox">Matrix Checkbox</option>
+            <option value="email">Email</option>
+            <option value="phone">Telepon</option>
+            <option value="number">Number</option>
+            <option value="url">URL</option>
+            <option value="signature">Tanda Tangan</option>
+            <option value="image_url">Gambar (URL)</option>
+            <option value="captcha">CAPTCHA</option>
+            <option value="section">── Section Header ──</option>
+          </select>
+          <button class="btn btn-primary" id="btnAddQ"><i data-lucide="plus"></i> Tambah</button>
+          <button class="btn btn-secondary" id="btnImportFile"><i data-lucide="upload"></i> Import File</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="questionsList" class="q-list">
+      <div class="empty-msg glass" style="border-radius:var(--r-md)">
+        <i data-lucide="clipboard-list"></i>
+        <p>Pilih survey untuk mulai mengedit pertanyaan.</p>
+      </div>
+    </div>
+  </div><!-- /questions -->
+
+  <!-- ══════ RESPONSES ══════ -->
+  <div class="page" id="page-responses">
+    <div class="page-header">
+      <h2>Data Responden</h2>
+      <p>Lihat <strong>semua jawaban</strong> pengguna secara realtime. Klik kartu untuk expand jawaban.</p>
+    </div>
+    <div class="card glass">
+      <div class="resp-filters">
+        <select class="form-control" id="respSurveyFilter" style="width:auto;min-width:200px"></select>
+        <input class="search-inp" id="respSearch" placeholder="Cari nama / email / peran / kelas…"/>
+        <button class="btn btn-secondary" id="btnExportXLSX"><i data-lucide="download"></i> Excel</button>
+        <button class="btn btn-secondary" id="btnExportJSON"><i data-lucide="file-json"></i> JSON</button>
+      </div>
+      <div id="responseCards">
+        <div class="empty-msg">
+          <i data-lucide="inbox"></i>
+          <p>Pilih survey untuk melihat responden.</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /responses -->
+
+  <!-- ══════ STATISTICS ══════ -->
+  <div class="page" id="page-statistics">
+    <div class="page-header">
+      <h2>Statistik &amp; Grafik</h2>
+      <p>Analitik visual jawaban responden per survey.</p>
+    </div>
+    <div class="card glass" style="margin-bottom:1rem">
+      <select class="form-control" id="statSurveySelect" style="width:auto;min-width:220px"></select>
+    </div>
+    <div class="charts-grid" id="chartsGrid">
+      <div class="empty-msg glass" style="border-radius:var(--r-md);grid-column:1/-1">
+        <i data-lucide="bar-chart-3"></i>
+        <p>Pilih survey untuk melihat grafik.</p>
+      </div>
+    </div>
+  </div><!-- /statistics -->
+
+  <!-- ══════ SETTINGS ══════ -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <h2>Pengaturan</h2>
+      <p>Konfigurasi tampilan dan platform kuisioner.</p>
+    </div>
+    <div class="card glass" style="max-width:530px">
+      <div class="card-title" style="margin-bottom:1.15rem">Preferensi Tampilan</div>
+      <div class="form-group">
+        <label class="form-label">Tema</label>
+        <select class="form-control" id="settingTheme">
+          <option value="dark">Dark (Default)</option>
+          <option value="light">Light</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL Form Siswa</label>
+        <input class="form-control" id="settingFormUrl" readonly/>
+      </div>
+      <button class="btn btn-primary" id="btnSaveSettings">
+        <i data-lucide="save"></i> Simpan Pengaturan
+      </button>
+    </div>
+  </div><!-- /settings -->
+
+</div><!-- /main-content -->
+</div><!-- /layout -->
+
+<!-- ═══════════════════════════════
+     MODAL: SURVEY
+═══════════════════════════════ -->
+<div class="modal-overlay" id="surveyModal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="surveyModalTitle">Buat Survey</span>
+      <button class="modal-close-btn" id="btnCloseSurveyModal"><i data-lucide="x"></i></button>
+    </div>
+    <input type="hidden" id="editingSurveyId"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Judul Survey *</label>
+        <input class="form-control" id="fTitle" placeholder="Evaluasi Pembelajaran…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tahun Ajaran</label>
+        <input class="form-control" id="fSchoolYear" placeholder="2024/2025"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <textarea class="form-control" id="fDesc" placeholder="Deskripsi singkat survey…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Deadline</label>
+        <input type="datetime-local" class="form-control" id="fDeadline"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Batas Respons</label>
+        <input type="number" class="form-control" id="fRespLimit" placeholder="0 = tidak terbatas" min="0"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL Banner Survey (PNG/JPG/WebP)</label>
+      <input type="url" class="form-control" id="fBannerUrl" placeholder="https://…/banner.jpg"/>
+      <img id="bannerPreview" class="img-preview" alt="Preview banner" loading="lazy"/>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:.8rem">
+      <label class="form-label" style="margin:0">Publikasikan</label>
+      <button type="button" class="toggle-sw" id="fPublishToggle"></button>
+      <span id="fPublishLabel" style="font-size:.75rem;color:var(--text-m)">Draft</span>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:.8rem">
+      <label class="form-label" style="margin:0;display:flex;align-items:center;gap:.4rem">
+        <i data-lucide="shield-alert" style="width:14px;height:14px;color:var(--gold)"></i>
+        Hanya Sekali Jawab
+      </label>
+      <button type="button" class="toggle-sw" id="fOneTimeToggle"></button>
+      <span id="fOneTimeLabel" style="font-size:.75rem;color:var(--text-m)">Tidak</span>
+      <span style="font-size:.7rem;color:var(--text-faint)">(1x per nama &amp; email)</span>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnCancelSurvey">Batal</button>
+      <button class="btn btn-primary" id="btnSaveSurvey">
+        <i data-lucide="save"></i> Simpan Survey
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     MODAL: FILE IMPORT
+═══════════════════════════════ -->
+<div class="modal-overlay" id="importModal" style="display:none">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-title">
+      <span>Import Pertanyaan dari File</span>
+      <button class="modal-close-btn" id="btnCloseImport"><i data-lucide="x"></i></button>
+    </div>
+
+    <!-- Format Guide -->
+    <div style="background:var(--bg-hover);border-radius:var(--r-sm);padding:.9rem 1rem;margin-bottom:1rem;font-size:.78rem;color:var(--text-s);line-height:1.7">
+      <strong style="color:var(--text-p);display:block;margin-bottom:.4rem">📌 Format File yang Didukung:</strong>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;margin-top:.4rem">
+        <div>
+          <span class="fmt-badge fmt-docx">WORD .docx</span><br/>
+          Setiap baris = 1 pertanyaan.<br/>
+          Awali pilihan dengan <code style="background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:4px">- </code> atau <code style="background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:4px">A. </code><br/>
+          Tulis <code style="background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:4px">[section] Judul</code> untuk section.
+        </div>
+        <div>
+          <span class="fmt-badge fmt-xlsx">EXCEL .xlsx/.xls</span><br/>
+          Kolom A = Pertanyaan<br/>
+          Kolom B = Tipe (<code style="background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:4px">short/mc/cb/drop/date/rating/scale/section</code>)<br/>
+          Kolom C = Pilihan (pisah koma)
+        </div>
+        <div>
+          <span class="fmt-badge fmt-csv">CSV .csv</span><br/>
+          Format sama dengan Excel.<br/>
+          Header: <code style="background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:4px">pertanyaan,tipe,pilihan</code><br/>
+          Contoh: <code style="background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:4px">Nama kamu?,short,</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drop zone -->
+    <div class="import-panel" id="importDropZone">
+      <input type="file" id="importFileInput" accept=".docx,.xlsx,.xls,.csv"/>
+      <div class="import-icon"><i data-lucide="file-up"></i></div>
+      <div class="import-title">Klik atau seret file ke sini</div>
+      <div class="import-sub">Mendukung Word (.docx), Excel (.xlsx/.xls), dan CSV (.csv)</div>
+      <div class="import-formats">
+        <span class="fmt-badge fmt-docx"><i data-lucide="file-text"></i> DOCX</span>
+        <span class="fmt-badge fmt-xlsx"><i data-lucide="table"></i> XLSX/XLS</span>
+        <span class="fmt-badge fmt-csv"><i data-lucide="file-spreadsheet"></i> CSV</span>
+      </div>
+    </div>
+
+    <!-- Parsed preview -->
+    <div id="importPreviewWrap" style="display:none;margin-top:.95rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;flex-wrap:wrap;gap:.5rem">
+        <span style="font-size:.82rem;font-weight:700;color:var(--text-p)" id="importPreviewCount"></span>
+        <div style="display:flex;gap:.4rem">
+          <button class="btn btn-ghost btn-sm" id="btnSelectAllImport">Pilih Semua</button>
+          <button class="btn btn-ghost btn-sm" id="btnDeselectAllImport">Batalkan Semua</button>
+        </div>
+      </div>
+      <div class="import-preview" id="importPreview"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnCancelImport">Batal</button>
+      <button class="btn btn-primary" id="btnConfirmImport" disabled>
+        <i data-lucide="check"></i> Tambahkan ke Survey
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- JS Terpisah -->
+<script src="operator-kuisioner.js"></script>
+</body>
+</html>
