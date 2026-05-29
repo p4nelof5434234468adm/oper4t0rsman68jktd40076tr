@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal SMAN 68 Jakarta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green:     #1a7a5e;
+      --green-mid: #25a97e;
+      --green-lt:  #4ecba0;
+      --blue:      #1e6fa8;
+      --blue-mid:  #2d9fd8;
+      --blue-lt:   #7dd4f5;
+      --teal:      #1b8fa0;
+      --teal-lt:   #a8ecf5;
+      --bg:        #eaf7f5;
+      --card:      #ffffff;
+      --text:      #0f2d26;
+      --muted:     #5a8a80;
+      --border:    rgba(30,111,168,0.13);
+      --shadow:    0 8px 40px rgba(30,111,168,0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND MESH ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 10% 20%, rgba(37,169,126,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 80%, rgba(45,159,216,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 55% 50%, rgba(78,203,160,.10) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 52px 24px 36px;
+      gap: 0;
+    }
+
+    .logo-ring {
+      width: 128px; height: 128px;
+      border-radius: 50%;
+      padding: 6px;
+      background: linear-gradient(135deg, var(--green-lt), var(--blue-mid));
+      box-shadow: 0 8px 32px rgba(30,111,168,.22), 0 2px 8px rgba(37,169,126,.18);
+      animation: float 4s ease-in-out infinite;
+    }
+    .logo-ring img {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #fff;
+      display: block;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    .school-name {
+      margin-top: 22px;
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      letter-spacing: -.5px;
+      background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .school-sub {
+      margin-top: 6px;
+      font-size: .85rem;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .divider {
+      margin: 28px auto 0;
+      width: 56px; height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--green-mid), var(--blue-mid));
+    }
+
+    /* ── MAIN ── */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 12px 20px 60px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 20px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 20px;
+      animation: slideUp .55s ease both;
+    }
+    .card:nth-child(2) { animation-delay: .08s; }
+    .card:nth-child(3) { animation-delay: .16s; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s;
+    }
+    .card-header:hover { background: rgba(37,169,126,.05); }
+
+    .card-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .card-icon.green { background: linear-gradient(135deg, #d0f5e8, #a8eccc); }
+    .card-icon.blue  { background: linear-gradient(135deg, #d0eeff, #a8d8f5); }
+    .card-icon.teal  { background: linear-gradient(135deg, #ccf3f8, #a0e4ee); }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+    }
+    .card-subtitle {
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .chevron {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      transition: transform .3s ease;
+      flex-shrink: 0;
+    }
+    .card.open .chevron { transform: rotate(180deg); }
+
+    /* ── LINK LIST ── */
+    .link-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s cubic-bezier(.4,0,.2,1);
+    }
+    .card.open .link-list { max-height: 600px; }
+
+    .link-list-inner {
+      border-top: 1px solid var(--border);
+      padding: 8px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: .88rem;
+      font-weight: 600;
+      transition: background .18s, transform .18s, box-shadow .18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .link-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      border-radius: 12px;
+      transition: opacity .2s;
+    }
+    .link-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 3px 14px rgba(30,111,168,.10);
+    }
+
+    .link-item.green::before { background: linear-gradient(90deg, rgba(37,169,126,.12), transparent); }
+    .link-item.blue::before  { background: linear-gradient(90deg, rgba(45,159,216,.12), transparent); }
+    .link-item.teal::before  { background: linear-gradient(90deg, rgba(27,143,160,.12), transparent); }
+
+    .link-item:hover::before { opacity: 1; }
+
+    .link-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .green .link-dot { background: var(--green-mid); }
+    .blue  .link-dot { background: var(--blue-mid); }
+    .teal  .link-dot { background: var(--teal); }
+
+    .link-arrow {
+      margin-left: auto;
+      font-size: .75rem;
+      opacity: .35;
+      transition: opacity .18s, transform .18s;
+    }
+    .link-item:hover .link-arrow {
+      opacity: .9;
+      transform: translateX(3px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 20px 30px;
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: .3px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-ring">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68 Jakarta" />
+    </div>
+    <h1 class="school-name">SMAN 68 Jakarta</h1>
+    <p class="school-sub">Portal Sistem Informasi Sekolah</p>
+    <div class="divider"></div>
+  </header>
+
+  <main>
+    <p class="section-label">Pilih Panel Akses</p>
+
+    <!-- ADMIN -->
+    <div class="card" id="card-admin">
+      <div class="card-header" onclick="toggle('card-admin')">
+        <div class="card-icon green">🛡️</div>
+        <div>
+          <div class="card-title">Panel Admin</div>
+          <div class="card-subtitle">Manajemen sistem & konfigurasi</div>
+        </div>
+        <div class="chevron">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="link-list">
+        <div class="link-list-inner">
+          <a class="link-item green" href="./admin.html">
+            <span class="link-dot"></span>
+            Dashboard Admin
+            <span class="link-arrow">→</span>
+          </a>
+          <a class="link-item green" href="./setup-admin.html">
+            <span class="link-dot"></span>
+            Setup Admin
+            <span class="link-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPERATOR -->
+    <div class="card" id="card-operator">
+      <div class="card-header" onclick="toggle('card-operator')">
+        <div class="card-icon blue">🖥️</div>
+        <div>
+          <div class="card-title">Panel Operator</div>
+          <div class="card-subtitle">Pengelolaan data & layanan siswa</div>
+        </div>
+        <div class="chevron">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="link-list">
+        <div class="link-list-inner">
+          <a class="link-item blue" href="./operator-aduan-penmurmut.html">
+            <span class="link-dot"></span>
+            Operator Aduan Penmurmut
+            <span class="link-arrow">→</span>
+          </a>
+          <a class="link-item blue" href="./operator-kuisioner.html">
+            <span class="link-dot"></span>
+            Operator Kuisioner
+            <span class="link-arrow">→</span>
+          </a>
+          <a class="link-item blue" href="./operator-siswa-guru.html">
+            <span class="link-dot"></span>
+            Operator Siswa & Guru
+            <span class="link-arrow">→</span>
+          </a>
+          <a class="link-item blue" href="./operator-siswa-mutasi.html">
+            <span class="link-dot"></span>
+            Operator Siswa Mutasi
+            <span class="link-arrow">→</span>
+          </a>
+          <a class="link-item blue" href="./operator-kelulusan.html">
+            <span class="link-dot"></span>
+            Operator Kelulusan
+            <span class="link-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2025 SMAN 68 Jakarta &mdash; Sistem Informasi Sekolah
+  </footer>
+
+  <script>
+    function toggle(id) {
+      const card = document.getElementById(id);
+      card.classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>
