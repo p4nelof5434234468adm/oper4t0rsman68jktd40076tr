@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Operator Panel — Seleksi Mutasi SMAN 68 Jakarta</title>
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- SheetJS for Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- PDF.js for PDF parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    /* ═══════════ ROOT ═══════════ */
+    :root{
+      --navy:#0d1b4b;--navy2:#162260;--blue:#1e40af;--blue2:#2563eb;
+      --gold:#f0a500;--gold2:#fbbf24;
+      --green:#059669;--green2:#10b981;
+      --red:#dc2626;--red2:#ef4444;
+      --orange:#d97706;--orange2:#f59e0b;
+      --slate50:#f8fafc;--slate100:#f1f5f9;--slate200:#e2e8f0;
+      --slate300:#cbd5e1;--slate400:#94a3b8;--slate500:#64748b;
+      --slate700:#334155;--slate800:#1e293b;--slate900:#0f172a;
+      --white:#fff;
+      --shadow-xl:0 24px 60px rgba(0,0,0,.18);
+      --shadow-lg:0 10px 28px rgba(0,0,0,.12);
+      --shadow-md:0 4px 14px rgba(0,0,0,.08);
+      --r-sm:6px;--r-md:10px;--r-lg:16px;--r-xl:22px;--r-2xl:28px;
+      --trans:.22s cubic-bezier(.4,0,.2,1);
+      --sidebar-w:260px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{font-size:15px;-webkit-font-smoothing:antialiased;}
+    body{font-family:'Sora',sans-serif;background:var(--slate100);color:var(--slate800);min-height:100vh;display:flex;flex-direction:column;}
+
+    /* ═══════════ LOGIN GATE ═══════════ */
+    #loginGate{
+      position:fixed;inset:0;z-index:9000;
+      background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 50%,#0a1a5c 100%);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+    }
+    .login-box{
+      background:rgba(255,255,255,.06);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:var(--r-2xl);padding:44px 40px;
+      width:100%;max-width:400px;text-align:center;
+      box-shadow:var(--shadow-xl);
+    }
+    .login-box img{width:70px;height:70px;object-fit:contain;margin-bottom:16px;filter:drop-shadow(0 4px 12px rgba(240,165,0,.4));}
+    .login-box h1{font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:.3px;line-height:1.4;margin-bottom:4px;}
+    .login-box p{font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:28px;}
+    .lg-field{margin-bottom:14px;text-align:left;}
+    .lg-field label{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:6px;display:block;}
+    .lg-field input{
+      width:100%;padding:11px 14px;
+      background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);
+      border-radius:var(--r-md);color:#fff;font-family:'Sora',sans-serif;font-size:.88rem;
+      transition:all var(--trans);
+    }
+    .lg-field input::placeholder{color:rgba(255,255,255,.35);}
+    .lg-field input:focus{outline:none;border-color:var(--gold2);background:rgba(255,255,255,.15);}
+    .btn-login-gate{
+      width:100%;padding:12px;margin-top:8px;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));
+      color:var(--navy);border:none;border-radius:var(--r-md);
+      font-family:'Sora',sans-serif;font-size:.92rem;font-weight:800;
+      cursor:pointer;transition:all var(--trans);letter-spacing:.3px;
+    }
+    .btn-login-gate:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(240,165,0,.4);}
+    #lgErr{font-size:.75rem;color:#fca5a5;margin-top:8px;min-height:18px;}
+
+    /* ═══════════ LAYOUT ═══════════ */
+    #appShell{display:none;flex:1;flex-direction:column;}
+    #appShell.visible{display:flex;}
+
+    /* Topbar */
+    .topbar{
+      position:sticky;top:0;z-index:500;
+      background:linear-gradient(90deg,var(--navy),var(--navy2));
+      border-bottom:2px solid rgba(240,165,0,.25);
+      display:flex;align-items:center;gap:12px;
+      padding:0 20px;height:58px;
+    }
+    .topbar-brand{display:flex;align-items:center;gap:10px;flex:1;}
+    .topbar-logo{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(240,165,0,.35));}
+    .topbar-texts .t-title{font-size:.82rem;font-weight:800;color:#fff;letter-spacing:.3px;}
+    .topbar-texts .t-sub{font-size:.62rem;color:rgba(255,255,255,.55);}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
+    .topbar-clock{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:var(--gold2);}
+    .btn-topbar{
+      display:flex;align-items:center;gap:6px;
+      padding:7px 14px;border-radius:var(--r-md);
+      background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+      color:#fff;font-family:'Sora',sans-serif;font-size:.75rem;font-weight:600;
+      cursor:pointer;transition:all var(--trans);
+    }
+    .btn-topbar:hover{background:rgba(255,255,255,.18);}
+    /* Hamburger for mobile */
+    #menuToggle{display:none;background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:4px;}
+
+    /* Sidebar */
+    .sidebar{
+      position:fixed;top:58px;left:0;bottom:0;
+      width:var(--sidebar-w);
+      background:#fff;border-right:1px solid var(--slate200);
+      overflow-y:auto;z-index:400;
+      transition:transform var(--trans);
+    }
+    .sidebar-nav{padding:16px 12px;}
+    .nav-section-label{
+      font-size:.62rem;font-weight:700;color:var(--slate400);
+      text-transform:uppercase;letter-spacing:1.5px;
+      padding:16px 10px 6px;
+    }
+    .nav-item{
+      display:flex;align-items:center;gap:10px;
+      padding:9px 12px;border-radius:var(--r-md);
+      cursor:pointer;transition:all var(--trans);
+      font-size:.82rem;font-weight:500;color:var(--slate600);
+      margin-bottom:2px;
+    }
+    .nav-item i{width:18px;text-align:center;font-size:.85rem;flex-shrink:0;}
+    .nav-item:hover{background:var(--slate100);color:var(--blue2);}
+    .nav-item.active{background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--blue2);font-weight:700;}
+    .nav-item.active i{color:var(--blue2);}
+    .nav-badge{
+      margin-left:auto;background:var(--red2);color:#fff;
+      font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:99px;
+    }
+
+    /* Content area */
+    .content{
+      margin-left:var(--sidebar-w);
+      padding:24px 24px 40px;
+      flex:1;min-width:0;
+    }
+
+    /* ═══════════ CARDS / PANELS ═══════════ */
+    .page-header{margin-bottom:22px;}
+    .page-header h2{font-size:1.25rem;font-weight:800;color:var(--slate900);display:flex;align-items:center;gap:10px;}
+    .page-header h2 i{color:var(--blue2);font-size:1.1rem;}
+    .page-header p{font-size:.78rem;color:var(--slate500);margin-top:4px;}
+    .tab-section{display:none;}
+    .tab-section.active{display:block;animation:fadeUp .3s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Stat cards */
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+    .stat-card{
+      background:#fff;border-radius:var(--r-lg);padding:18px 16px;
+      box-shadow:var(--shadow-md);border:1px solid var(--slate100);
+      display:flex;align-items:flex-start;gap:12px;
+    }
+    .stat-ic{
+      width:42px;height:42px;border-radius:var(--r-md);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;flex-shrink:0;
+    }
+    .stat-ic.blue{background:#eff6ff;color:var(--blue2);}
+    .stat-ic.green{background:#ecfdf5;color:var(--green);}
+    .stat-ic.red{background:#fff1f2;color:var(--red);}
+    .stat-ic.orange{background:#fffbeb;color:var(--orange);}
+    .stat-ic.purple{background:#faf5ff;color:#7c3aed;}
+    .stat-num{font-size:1.6rem;font-weight:800;color:var(--slate900);line-height:1;}
+    .stat-lbl{font-size:.68rem;font-weight:500;color:var(--slate500);margin-top:3px;}
+
+    /* Panel card */
+    .panel{background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-md);border:1px solid var(--slate100);margin-bottom:20px;overflow:hidden;}
+    .panel-head{
+      padding:16px 22px;border-bottom:1px solid var(--slate100);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    }
+    .panel-head h3{font-size:.92rem;font-weight:700;color:var(--slate900);display:flex;align-items:center;gap:8px;}
+    .panel-head h3 i{color:var(--blue2);}
+    .panel-body{padding:22px;}
+    .panel-body.no-pad{padding:0;}
+
+    /* Form controls */
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    .frow.full{grid-template-columns:1fr;}
+    .frow.three{grid-template-columns:1fr 1fr 1fr;}
+    .fg{display:flex;flex-direction:column;gap:5px;}
+    .fg label{font-size:.75rem;font-weight:600;color:var(--slate700);display:flex;align-items:center;gap:6px;}
+    .fg label i{color:var(--blue2);font-size:.7rem;}
+    .fg input,.fg select,.fg textarea{
+      padding:10px 13px;border:1.5px solid var(--slate200);border-radius:var(--r-md);
+      font-family:'Sora',sans-serif;font-size:.83rem;color:var(--slate900);
+      background:#fff;transition:all var(--trans);
+    }
+    .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+    .fg textarea{resize:vertical;min-height:80px;}
+    .fg .hint{font-size:.67rem;color:var(--slate400);}
+
+    /* Status select colors */
+    select.s-lolos{border-color:var(--green2);color:var(--green);}
+    select.s-tidak{border-color:var(--red2);color:var(--red);}
+    select.s-curang{border-color:var(--orange2);color:var(--orange);}
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;
+      padding:10px 18px;border-radius:var(--r-md);
+      font-family:'Sora',sans-serif;font-size:.82rem;font-weight:700;
+      cursor:pointer;border:none;transition:all var(--trans);
+      white-space:nowrap;
+    }
+    .btn-primary{background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.3);}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(37,99,235,.4);}
+    .btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3);}
+    .btn-green:hover{transform:translateY(-1px);}
+    .btn-red{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;}
+    .btn-red:hover{transform:translateY(-1px);}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-weight:800;}
+    .btn-gold:hover{transform:translateY(-1px);}
+    .btn-ghost{background:var(--slate100);color:var(--slate700);border:1.5px solid var(--slate200);}
+    .btn-ghost:hover{background:var(--slate200);}
+    .btn-sm{padding:7px 13px;font-size:.75rem;}
+    .btn-xs{padding:5px 10px;font-size:.7rem;}
+    .btn-icon{padding:8px;width:34px;height:34px;}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+
+    /* Tables */
+    .tbl-wrap{overflow-x:auto;}
+    .data-tbl{width:100%;border-collapse:collapse;font-size:.78rem;}
+    .data-tbl th{
+      background:var(--slate50);padding:10px 12px;
+      text-align:left;font-weight:700;color:var(--slate600);
+      border-bottom:2px solid var(--slate200);white-space:nowrap;
+    }
+    .data-tbl td{
+      padding:10px 12px;border-bottom:1px solid var(--slate100);
+      vertical-align:middle;
+    }
+    .data-tbl tr:hover td{background:var(--slate50);}
+    .data-tbl .mono{font-family:'JetBrains Mono',monospace;letter-spacing:.5px;}
+
+    /* Status badges */
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:.68rem;font-weight:700;}
+    .badge-lolos{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;}
+    .badge-tidak{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
+    .badge-curang{background:#ffedd5;color:#92400e;border:1px solid #fed7aa;}
+    .badge-pending{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;}
+
+    /* Upload zone */
+    .upload-zone{
+      border:2px dashed var(--slate300);border-radius:var(--r-lg);
+      padding:28px 20px;text-align:center;
+      transition:all var(--trans);cursor:pointer;background:var(--slate50);
+    }
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--blue2);background:#eff6ff;}
+    .upload-zone i{font-size:2rem;color:var(--slate400);margin-bottom:10px;}
+    .upload-zone.drag i{color:var(--blue2);}
+    .upload-zone p{font-size:.8rem;color:var(--slate500);}
+    .upload-zone strong{color:var(--blue2);}
+
+    /* Countdown settings card */
+    .cd-settings-card{
+      background:linear-gradient(135deg,var(--navy),var(--navy2));
+      border-radius:var(--r-xl);padding:24px;color:#fff;margin-bottom:20px;
+    }
+    .cd-settings-card h3{font-size:.95rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+    .cd-settings-card h3 i{color:var(--gold2);}
+    .cd-settings-card p{font-size:.75rem;color:rgba(255,255,255,.65);margin-bottom:20px;}
+    .cd-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end;}
+    .cd-row .fg label{color:rgba(255,255,255,.8);}
+    .cd-row .fg input{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff;}
+    .cd-row .fg input:focus{border-color:var(--gold2);background:rgba(255,255,255,.15);}
+    .cd-status-bar{
+      display:flex;align-items:center;gap:8px;margin-top:12px;
+      padding:10px 14px;background:rgba(255,255,255,.08);
+      border-radius:var(--r-md);font-size:.78rem;
+    }
+    .cd-status-bar .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .dot-open{background:var(--green2);}
+    .dot-closed{background:var(--gold2);animation:blink 1s ease infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* Pagination */
+    .pager{display:flex;align-items:center;gap:8px;padding:14px 22px;border-top:1px solid var(--slate100);flex-wrap:wrap;}
+    .pager span{font-size:.75rem;color:var(--slate500);}
+    .pager .btn-xs{min-width:30px;}
+
+    /* Import preview */
+    .import-preview{max-height:260px;overflow-y:auto;}
+    .preview-row{
+      display:flex;align-items:center;gap:8px;
+      padding:8px 12px;border-bottom:1px solid var(--slate100);font-size:.75rem;
+    }
+    .preview-row:last-child{border-bottom:none;}
+    .pr-num{
+      width:24px;height:24px;border-radius:99px;
+      background:var(--slate100);color:var(--slate500);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.65rem;font-weight:700;flex-shrink:0;
+    }
+    .pr-name{font-weight:600;flex:1;}
+    .pr-nd{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--slate500);}
+
+    /* Progress bar */
+    .prog-wrap{margin:12px 0;}
+    .prog-bar-bg{background:var(--slate200);border-radius:99px;height:8px;overflow:hidden;}
+    .prog-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue2),var(--green2));transition:width .4s ease;}
+    .prog-label{font-size:.72rem;color:var(--slate500);margin-top:4px;}
+
+    /* Alert boxes */
+    .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--r-md);font-size:.78rem;margin-bottom:14px;}
+    .alert i{margin-top:1px;flex-shrink:0;}
+    .alert-info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
+    .alert-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+    .alert-success{background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;}
+
+    /* Toast */
+    #toastWrap{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+    .t-toast{
+      display:flex;align-items:center;gap:10px;padding:11px 16px;
+      background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-lg);
+      font-size:.78rem;font-weight:600;border-left:4px solid #ccc;
+      animation:slideR .3s ease;pointer-events:all;max-width:320px;
+    }
+    .t-toast.success{border-left-color:var(--green);}.t-toast.success i{color:var(--green);}
+    .t-toast.error{border-left-color:var(--red);}.t-toast.error i{color:var(--red);}
+    .t-toast.info{border-left-color:var(--blue2);}.t-toast.info i{color:var(--blue2);}
+    @keyframes slideR{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+    /* Modal */
+    .modal-bg{
+      position:fixed;inset:0;z-index:800;
+      background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+      display:none;align-items:center;justify-content:center;padding:16px;
+    }
+    .modal-bg.open{display:flex;}
+    .modal-box{
+      background:#fff;border-radius:var(--r-2xl);
+      box-shadow:var(--shadow-xl);width:100%;max-width:560px;
+      max-height:90vh;overflow-y:auto;
+      animation:fadeUp .25s ease;
+    }
+    .modal-head{
+      padding:18px 22px;border-bottom:1px solid var(--slate100);
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;background:#fff;z-index:1;
+    }
+    .modal-head h3{font-size:.95rem;font-weight:700;color:var(--slate900);display:flex;align-items:center;gap:8px;}
+    .modal-body{padding:22px;}
+    .modal-foot{padding:14px 22px;border-top:1px solid var(--slate100);display:flex;gap:10px;justify-content:flex-end;}
+    .btn-close-modal{background:none;border:none;font-size:1.1rem;color:var(--slate400);cursor:pointer;padding:4px;}
+    .btn-close-modal:hover{color:var(--slate700);}
+
+    /* Sidebar overlay on mobile */
+    #sideOverlay{display:none;position:fixed;inset:0;z-index:399;background:rgba(0,0,0,.5);}
+
+    /* ═══════════ RESPONSIVE ═══════════ */
+    @media(max-width:900px){
+      :root{--sidebar-w:240px;}
+    }
+    @media(max-width:720px){
+      .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)));}
+      .sidebar.open{transform:translateX(0);}
+      #menuToggle{display:block;}
+      #sideOverlay.show{display:block;}
+      .content{margin-left:0;padding:16px;}
+      .frow{grid-template-columns:1fr;}
+      .frow.three{grid-template-columns:1fr 1fr;}
+      .stat-grid{grid-template-columns:repeat(2,1fr);}
+    }
+    @media(max-width:480px){
+      .topbar{padding:0 12px;height:52px;}
+      .topbar-clock{display:none;}
+      .frow.three{grid-template-columns:1fr;}
+      .stat-grid{grid-template-columns:repeat(2,1fr);}
+      .modal-box{border-radius:var(--r-xl);}
+      .login-box{padding:32px 24px;}
+    }
+
+    .hidden{display:none!important;}
+    .mt-4{margin-top:4px;}.mt-8{margin-top:8px;}.mt-12{margin-top:12px;}.mt-16{margin-top:16px;}
+    .flex{display:flex;}.items-center{align-items:center;}.gap-8{gap:8px;}.gap-12{gap:12px;}.flex-wrap{flex-wrap:wrap;}
+    .ml-auto{margin-left:auto;}
+    .w-full{width:100%;}
+    .text-sm{font-size:.78rem;}
+    .text-xs{font-size:.68rem;}
+    .fw-700{font-weight:700;}
+    .color-green{color:var(--green);}
+    .color-red{color:var(--red);}
+    .color-orange{color:var(--orange);}
+    .color-blue{color:var(--blue2);}
+  </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toastWrap"></div>
+
+<!-- ════════════════════ LOGIN GATE ════════════════════ -->
+<div id="loginGate">
+  <div class="login-box">
+    <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo">
+    <h1>Panel Operator<br>Seleksi Murid Mutasi</h1>
+    <p>SMAN 68 Jakarta &mdash; T.A 2026/2027</p>
+    <div class="lg-field">
+      <label><i class="fas fa-user"></i> Username Operator</label>
+      <input type="text" id="lgUser" placeholder="operator68" autocomplete="off">
+    </div>
+    <div class="lg-field">
+      <label><i class="fas fa-lock"></i> Password</label>
+      <input type="password" id="lgPass" placeholder="••••••••" id="lgPass">
+    </div>
+    <button class="btn-login-gate" id="btnLoginGate"><i class="fas fa-right-to-bracket"></i> Masuk Panel</button>
+    <div id="lgErr"></div>
+  </div>
+</div>
+
+<!-- ════════════════════ APP SHELL ════════════════════ -->
+<div id="appShell">
+  <!-- Topbar -->
+  <div class="topbar">
+    <button id="menuToggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="topbar-brand">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo" class="topbar-logo">
+      <div class="topbar-texts">
+        <div class="t-title">SMAN 68 JAKARTA &mdash; Operator Seleksi Mutasi</div>
+        <div class="t-sub">Panel Manajemen Data Peserta &amp; Pengumuman</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-clock" id="topClock">00:00</span>
+      <button class="btn-topbar" onclick="logout()"><i class="fas fa-right-from-bracket"></i> Keluar</button>
+    </div>
+  </div>
+
+  <!-- Sidebar overlay -->
+  <div id="sideOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Dashboard</div>
+      <div class="nav-item active" onclick="switchTab('dashboard',this)">
+        <i class="fas fa-gauge-high"></i> Dashboard
+      </div>
+
+      <div class="nav-section-label">Pengumuman</div>
+      <div class="nav-item" onclick="switchTab('countdown',this)">
+        <i class="fas fa-clock"></i> Atur Countdown
+      </div>
+      <div class="nav-item" onclick="switchTab('hasilSeleksi',this)">
+        <i class="fas fa-trophy"></i> Input Hasil Seleksi
+        <span class="nav-badge" id="hasilBadge" style="background:var(--green)">0</span>
+      </div>
+
+      <div class="nav-section-label">Data Peserta</div>
+      <div class="nav-item" onclick="switchTab('tambah',this)">
+        <i class="fas fa-user-plus"></i> Tambah Manual
+      </div>
+      <div class="nav-item" onclick="switchTab('import',this)">
+        <i class="fas fa-file-import"></i> Import CSV/Excel/PDF
+      </div>
+      <div class="nav-item" onclick="switchTab('daftar',this)">
+        <i class="fas fa-list-ul"></i> Daftar Peserta
+        <span class="nav-badge" id="totalBadge">0</span>
+      </div>
+
+      <div class="nav-section-label">Sistem</div>
+      <div class="nav-item" onclick="switchTab('pengaturan',this)">
+        <i class="fas fa-gear"></i> Pengaturan
+      </div>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="tab-dashboard" class="tab-section active">
+      <div class="page-header">
+        <h2><i class="fas fa-gauge-high"></i> Dashboard Operator</h2>
+        <p>Ringkasan data peserta dan status pengumuman hasil seleksi murid mutasi.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-ic blue"><i class="fas fa-users"></i></div>
+          <div><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Total Peserta</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic green"><i class="fas fa-circle-check"></i></div>
+          <div><div class="stat-num" id="statLolos">0</div><div class="stat-lbl">Dinyatakan Lolos</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic red"><i class="fas fa-circle-xmark"></i></div>
+          <div><div class="stat-num" id="statTidak">0</div><div class="stat-lbl">Tidak Lolos</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic orange"><i class="fas fa-ban"></i></div>
+          <div><div class="stat-num" id="statCurang">0</div><div class="stat-lbl">Terindikasi Curang</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic purple"><i class="fas fa-hourglass-half"></i></div>
+          <div><div class="stat-num" id="statPending">0</div><div class="stat-lbl">Belum Diproses</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-clock"></i> Status Pengumuman</h3>
+          <button class="btn btn-gold btn-sm" onclick="switchTab('countdown', document.querySelector('.nav-item:nth-child(5)'))">
+            <i class="fas fa-pen"></i> Ubah
+          </button>
+        </div>
+        <div class="panel-body">
+          <div id="dashCdStatus" class="cd-status-bar">
+            <div class="dot dot-closed"></div>
+            <span id="dashCdText">Memuat status...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-clock-rotate-left"></i> Aktivitas Terbaru</h3>
+        </div>
+        <div class="panel-body no-pad">
+          <div id="recentActivity" class="tbl-wrap">
+            <table class="data-tbl">
+              <thead><tr><th>Waktu</th><th>Aksi</th><th>Peserta</th></tr></thead>
+              <tbody id="recentBody"><tr><td colspan="3" style="text-align:center;padding:20px;color:var(--slate400)">Memuat...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ COUNTDOWN ═══ -->
+    <div id="tab-countdown" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-clock"></i> Atur Countdown Pembukaan</h2>
+        <p>Atur tanggal & waktu pembukaan hasil seleksi. Halaman peserta akan sinkron secara real-time.</p>
+      </div>
+      <div class="alert alert-info"><i class="fas fa-circle-info"></i><span>Perubahan akan langsung diterapkan ke halaman peserta tanpa perlu reload. Gunakan format tanggal dan waktu yang sesuai zona waktu WIB.</span></div>
+      <div class="cd-settings-card">
+        <h3><i class="fas fa-hourglass-half"></i> Pengaturan Waktu Pembukaan</h3>
+        <p>Setelah waktu ini tercapai, halaman hasil seleksi peserta akan otomatis membuka form pengecekan.</p>
+        <div class="cd-row">
+          <div class="fg">
+            <label style="color:rgba(255,255,255,.8)"><i class="fas fa-calendar"></i> Tanggal & Waktu Pembukaan</label>
+            <input type="datetime-local" id="cdDatetime" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff;">
+          </div>
+          <button class="btn btn-gold" id="btnSaveCountdown" onclick="saveCountdown()">
+            <i class="fas fa-save"></i> Simpan
+          </button>
+        </div>
+        <div class="cd-status-bar mt-12" id="cdLiveStatus">
+          <div class="dot dot-closed"></div>
+          <span id="cdStatusText">Memuat...</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-circle-info"></i> Panduan</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-warn"><i class="fas fa-triangle-exclamation"></i><span><strong>Kosongkan tanggal</strong> dan klik Simpan jika ingin membuka hasil seleksi secara langsung tanpa countdown.</span></div>
+          <ul style="font-size:.8rem;color:var(--slate600);line-height:2;padding-left:18px;">
+            <li>Halaman peserta akan menampilkan countdown jika waktu pembukaan belum tercapai.</li>
+            <li>Setelah waktu tercapai, halaman otomatis berpindah ke form pengecekan hasil.</li>
+            <li>Perubahan bersifat real-time — tidak perlu minta peserta reload halaman.</li>
+            <li>Background halaman peserta menampilkan foto gedung SMAN 68 Jakarta.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TAMBAH MANUAL ═══ -->
+    <div id="tab-tambah" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-user-plus"></i> Tambah Peserta Manual</h2>
+        <p>Isi data peserta secara manual sesuai format data pendaftaran mutasi.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-id-card"></i> Data Peserta</h3></div>
+        <div class="panel-body">
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-hashtag"></i> Nomor Pendaftaran <span style="color:var(--red)">*</span></label>
+              <input type="text" id="mNoDaftar" placeholder="14 digit angka" maxlength="14" inputmode="numeric">
+              <span class="hint">Contoh: 19816820260001</span>
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-user"></i> Nama Lengkap <span style="color:var(--red)">*</span></label>
+              <input type="text" id="mNama" placeholder="Nama sesuai akta kelahiran">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-cake-candles"></i> Tanggal Lahir <span style="color:var(--red)">*</span></label>
+              <input type="date" id="mTglLahir">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-venus-mars"></i> Jenis Kelamin</label>
+              <select id="mJK">
+                <option value="L">Laki-laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-school"></i> Asal Sekolah</label>
+              <input type="text" id="mSekolah" placeholder="Nama sekolah asal">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-building-columns"></i> NPSN Sekolah Asal</label>
+              <input type="text" id="mNpsn" placeholder="8 digit NPSN">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-id-badge"></i> NISN</label>
+              <input type="text" id="mNisn" placeholder="Nomor Induk Siswa Nasional">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-envelope"></i> Email</label>
+              <input type="email" id="mEmail" placeholder="Email aktif">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-phone"></i> No. HP Siswa</label>
+              <input type="tel" id="mTelpSiswa" placeholder="08xxx">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-phone-volume"></i> No. HP Orang Tua</label>
+              <input type="tel" id="mTelpOrtu" placeholder="08xxx">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-chalkboard-user"></i> Kelas Saat Ini</label>
+              <input type="text" id="mKelasSaatIni" placeholder="Contoh: X IPA 3">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-right-long"></i> Mutasi ke Kelas</label>
+              <input type="text" id="mMutasiKe" placeholder="Contoh: XI IPA 1">
+            </div>
+          </div>
+          <div class="frow full">
+            <div class="fg">
+              <label><i class="fas fa-right-left"></i> Alasan Pindah</label>
+              <textarea id="mAlasan" placeholder="Alasan pindah / mutasi sekolah"></textarea>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--slate200);margin:18px 0;">
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-flag"></i> Status Seleksi <span style="color:var(--red)">*</span></label>
+              <select id="mStatus" onchange="updateStatusUI()">
+                <option value="">— Pilih Status —</option>
+                <option value="lolos">✅ Lolos / Diterima</option>
+                <option value="tidak-lolos">❌ Tidak Lolos</option>
+                <option value="curang">⚠️ Tidak Terseleksi (Kecurangan)</option>
+              </select>
+            </div>
+          </div>
+          <div class="frow full hidden" id="alasanCurangWrap">
+            <div class="fg">
+              <label><i class="fas fa-triangle-exclamation"></i> Alasan Tidak Terseleksi (Kecurangan)</label>
+              <textarea id="mAlasanCurang" placeholder="Tuliskan alasan detail mengapa peserta tidak terseleksi karena kecurangan. Teks ini akan tampil di halaman hasil seleksi peserta."></textarea>
+            </div>
+          </div>
+          <div class="mt-16 flex gap-8 flex-wrap">
+            <button class="btn btn-primary" onclick="simpanPeserta()"><i class="fas fa-save"></i> Simpan Data</button>
+            <button class="btn btn-ghost" onclick="resetForm()"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ IMPORT ═══ -->
+    <div id="tab-import" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-file-import"></i> Import Data CSV / Excel / PDF</h2>
+        <p>Upload file data peserta. Sistem akan membaca dan mengimpor data ke Firestore.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-download"></i> Template & Format</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-info"><i class="fas fa-circle-info"></i>
+            <span>Kolom wajib: <strong>noDaftar, namaLengkap, tglLahir</strong>. Kolom opsional: asalSekolah, npsn, nisn, jk, agama, email, telpMurid, telpOrtu, kelasSaatIni, mutasiKe, alasanPindah, status, alasanTidakLolos.</span>
+          </div>
+          <div class="flex gap-8 flex-wrap">
+            <button class="btn btn-ghost btn-sm" onclick="downloadTemplate('csv')"><i class="fas fa-file-csv"></i> Unduh Template CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="downloadTemplate('xlsx')"><i class="fas fa-file-excel"></i> Unduh Template Excel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-upload"></i> Upload File</h3></div>
+        <div class="panel-body">
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="handleDrop(event)">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p><strong>Klik untuk pilih file</strong> atau seret ke sini</p>
+            <p style="margin-top:6px;font-size:.72rem;">CSV, Excel (.xlsx/.xls), atau PDF &mdash; maks. 5MB</p>
+          </div>
+          <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.pdf" class="hidden" onchange="handleFileSelect(event)">
+          <div id="fileInfo" class="hidden mt-12"></div>
+          <div id="importPreviewWrap" class="hidden mt-12">
+            <div class="flex items-center gap-8 mb-8">
+              <span class="fw-700 text-sm" id="previewCount">0 baris ditemukan</span>
+              <span class="ml-auto text-xs" style="color:var(--slate400)">Pratinjau 10 baris pertama</span>
+            </div>
+            <div class="import-preview" id="importPreview"></div>
+          </div>
+          <div id="importActions" class="hidden mt-12 flex gap-8 flex-wrap">
+            <button class="btn btn-primary" id="btnImport" onclick="importData()"><i class="fas fa-database"></i> Import ke Firestore</button>
+            <button class="btn btn-ghost" onclick="cancelImport()"><i class="fas fa-times"></i> Batal</button>
+          </div>
+          <div id="importProgress" class="hidden">
+            <div class="prog-wrap">
+              <div class="prog-bar-bg"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
+              <div class="prog-label" id="progLabel">Memproses...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DAFTAR PESERTA ═══ -->
+    <div id="tab-daftar" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-list-ul"></i> Daftar Peserta</h2>
+        <p>Lihat, ubah status, dan kelola data peserta seleksi mutasi.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-filter"></i> Filter & Cari</h3>
+          <button class="btn btn-primary btn-sm" onclick="loadPeserta()"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="panel-body" style="padding-bottom:14px;">
+          <div class="frow three">
+            <div class="fg">
+              <label><i class="fas fa-search"></i> Cari Nama / No. Daftar</label>
+              <input type="text" id="filterSearch" placeholder="Ketik untuk mencari..." oninput="filterTable()">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-flag"></i> Filter Status</label>
+              <select id="filterStatus" onchange="filterTable()">
+                <option value="">Semua Status</option>
+                <option value="lolos">Lolos</option>
+                <option value="tidak-lolos">Tidak Lolos</option>
+                <option value="curang">Kecurangan</option>
+                <option value="">Belum Diproses</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-sort"></i> Urutkan</label>
+              <select id="filterSort" onchange="filterTable()">
+                <option value="nama">Nama A-Z</option>
+                <option value="noDaftar">No. Pendaftaran</option>
+                <option value="status">Status</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body no-pad">
+          <div class="tbl-wrap">
+            <table class="data-tbl" id="pesertaTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>No. Daftar</th>
+                  <th>Nama Lengkap</th>
+                  <th>Asal Sekolah</th>
+                  <th>Tgl. Lahir</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="pesertaBody">
+                <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager">
+            <span id="pagerInfo">—</span>
+            <div class="flex gap-8 ml-auto">
+              <button class="btn btn-ghost btn-xs" id="btnPrev" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i></button>
+              <span id="pagerPages">1</span>
+              <button class="btn btn-ghost btn-xs" id="btnNext" onclick="changePage(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PENGATURAN ═══ -->
+    <div id="tab-pengaturan" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-gear"></i> Pengaturan Sistem</h2>
+        <p>Ubah kredensial operator dan pengaturan umum panel.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-lock"></i> Ubah Kredensial Operator</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-info"><i class="fas fa-circle-info"></i><span>Username bisa berupa teks biasa <strong>atau email</strong>. Kredensial disimpan secara aman di <strong>Firebase</strong> (password di-hash SHA-256) — bukan di browser lokal.</span></div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-user"></i> Username / Email Baru</label>
+              <input type="text" id="setUser" placeholder="Contoh: operator68 atau admin@sman68.sch.id" autocomplete="off">
+              <span class="hint">Bisa berupa username teks atau alamat email</span>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-lock"></i> Password Baru</label>
+              <input type="password" id="setPass" placeholder="Minimal 6 karakter" autocomplete="new-password">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-lock-open"></i> Konfirmasi Password</label>
+              <input type="password" id="setPassConfirm" placeholder="Ulangi password baru" autocomplete="new-password">
+            </div>
+          </div>
+          <div class="alert alert-warn hidden" id="credMatchErr"><i class="fas fa-triangle-exclamation"></i><span id="credMatchErrText">Password tidak cocok.</span></div>
+          <button class="btn btn-primary" id="btnSaveCred" onclick="saveCredentials()"><i class="fas fa-save"></i> Simpan Kredensial ke Firebase</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-trash-can"></i> Reset Data</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-warn"><i class="fas fa-triangle-exclamation"></i><span>Hapus semua data peserta dari Firestore. Tindakan ini <strong>tidak dapat dibatalkan</strong>.</span></div>
+          <button class="btn btn-red" onclick="confirmResetAll()"><i class="fas fa-trash-can"></i> Hapus Semua Data Peserta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ HASIL SELEKSI ═══ -->
+    <div id="tab-hasilSeleksi" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-trophy"></i> Input Hasil Seleksi</h2>
+        <p>Tetapkan & ubah status hasil seleksi peserta — lolos, tidak lolos, atau terindikasi kecurangan. Khusus untuk pengumuman hasil, terpisah dari pendaftaran data siswa.</p>
+      </div>
+
+      <!-- Stats mini -->
+      <div class="stat-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr));margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-ic green"><i class="fas fa-circle-check"></i></div>
+          <div><div class="stat-num" id="hsLolos">0</div><div class="stat-lbl">Lolos</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic red"><i class="fas fa-circle-xmark"></i></div>
+          <div><div class="stat-num" id="hsTidak">0</div><div class="stat-lbl">Tidak Lolos</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic orange"><i class="fas fa-ban"></i></div>
+          <div><div class="stat-num" id="hsCurang">0</div><div class="stat-lbl">Kecurangan</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic purple"><i class="fas fa-hourglass-half"></i></div>
+          <div><div class="stat-num" id="hsPending">0</div><div class="stat-lbl">Belum Diproses</div></div>
+        </div>
+      </div>
+
+      <!-- Input status individual -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-flag"></i> Tetapkan Status Peserta</h3>
+        </div>
+        <div class="panel-body">
+          <div class="alert alert-info"><i class="fas fa-circle-info"></i><span>Cari peserta berdasarkan nomor pendaftaran atau nama, lalu tetapkan status seleksinya. Perubahan langsung tersimpan ke Firebase.</span></div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-search"></i> Cari Peserta (Nama / No. Daftar)</label>
+              <input type="text" id="hsSearch" placeholder="Ketik untuk mencari..." oninput="hsFilterTable()">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-filter"></i> Filter Status</label>
+              <select id="hsFilterStatus" onchange="hsFilterTable()">
+                <option value="">Semua Status</option>
+                <option value="lolos">✅ Lolos</option>
+                <option value="tidak-lolos">❌ Tidak Lolos</option>
+                <option value="curang">⚠️ Kecurangan</option>
+                <option value="pending">⏳ Belum Diproses</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body no-pad">
+          <div class="tbl-wrap">
+            <table class="data-tbl" id="hsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>No. Daftar</th>
+                  <th>Nama Lengkap</th>
+                  <th>Asal Sekolah</th>
+                  <th>Status Seleksi</th>
+                  <th>Aksi Cepat</th>
+                </tr>
+              </thead>
+              <tbody id="hsBody">
+                <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pager" id="hsPager">
+            <span id="hsPagerInfo">—</span>
+            <div class="flex gap-8 ml-auto">
+              <button class="btn btn-ghost btn-xs" id="btnHsPrev" onclick="hsChangePage(-1)"><i class="fas fa-chevron-left"></i></button>
+              <span id="hsPagerPages">1</span>
+              <button class="btn btn-ghost btn-xs" id="btnHsNext" onclick="hsChangePage(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk update -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-layer-group"></i> Update Massal</h3>
+        </div>
+        <div class="panel-body">
+          <div class="alert alert-warn"><i class="fas fa-triangle-exclamation"></i><span>Update status semua peserta yang <strong>belum diproses</strong> sekaligus. Hati-hati — tidak dapat dibatalkan.</span></div>
+          <div class="flex gap-8 flex-wrap">
+            <button class="btn btn-green btn-sm" onclick="bulkUpdateStatus('lolos')"><i class="fas fa-circle-check"></i> Set Semua Pending → Lolos</button>
+            <button class="btn btn-red btn-sm" onclick="bulkUpdateStatus('tidak-lolos')"><i class="fas fa-circle-xmark"></i> Set Semua Pending → Tidak Lolos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /appShell -->
+
+<!-- ═══ MODAL EDIT PESERTA ═══ -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-pen-to-square"></i> Edit Data &amp; Status Peserta</h3>
+      <button class="btn-close-modal" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editDocId">
+      <div class="frow">
+        <div class="fg"><label><i class="fas fa-hashtag"></i> No. Pendaftaran</label><input type="text" id="editNoDaftar" readonly style="background:var(--slate100)"></div>
+        <div class="fg"><label><i class="fas fa-user"></i> Nama Lengkap</label><input type="text" id="editNama"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label><i class="fas fa-cake-candles"></i> Tgl. Lahir</label><input type="date" id="editTglLahir"></div>
+        <div class="fg"><label><i class="fas fa-school"></i> Asal Sekolah</label><input type="text" id="editSekolah"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label><i class="fas fa-building-columns"></i> NPSN</label><input type="text" id="editNpsn"></div>
+        <div class="fg"><label><i class="fas fa-id-badge"></i> NISN</label><input type="text" id="editNisn"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label><i class="fas fa-chalkboard-user"></i> Kelas Saat Ini</label><input type="text" id="editKelas"></div>
+        <div class="fg"><label><i class="fas fa-right-long"></i> Mutasi ke Kelas</label><input type="text" id="editMutasi"></div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--slate200);margin:14px 0;">
+      <div class="frow full">
+        <div class="fg">
+          <label><i class="fas fa-flag"></i> Status Seleksi <span style="color:var(--red)">*</span></label>
+          <select id="editStatus" onchange="updateEditStatusUI()">
+            <option value="">— Pilih Status —</option>
+            <option value="lolos">✅ Lolos / Diterima</option>
+            <option value="tidak-lolos">❌ Tidak Lolos</option>
+            <option value="curang">⚠️ Tidak Terseleksi (Kecurangan)</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow full hidden" id="editAlasanWrap">
+        <div class="fg">
+          <label><i class="fas fa-triangle-exclamation"></i> Alasan Kecurangan</label>
+          <textarea id="editAlasanCurang" placeholder="Alasan detail kecurangan yang akan tampil ke peserta"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn-red btn-sm" onclick="hapusPeserta()"><i class="fas fa-trash"></i> Hapus</button>
+      <button class="btn btn-primary" onclick="updatePeserta()"><i class="fas fa-save"></i> Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+// ══════════════════════════════════════════════════
+// FIREBASE
+// ══════════════════════════════════════════════════
+const firebaseConfig={
+  apiKey:"AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
+  authDomain:"upnvjdatsystem.firebaseapp.com",
+  projectId:"upnvjdatsystem",
+  storageBucket:"upnvjdatsystem.firebasestorage.app",
+  messagingSenderId:"57095309946",
+  appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+// ══════════════════════════════════════════════════
+// AUTH — Firestore-based, password di-hash SHA-256
+// Dokumen: operatorSettings/credentials
+// Field: username (string), passwordHash (hex string)
+// Default pertama kali: operator68 / admin68
+// ══════════════════════════════════════════════════
+
+// SHA-256 via Web Crypto API (native browser, tanpa library)
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Cek apakah dokumen credentials sudah ada di Firestore;
+// kalau belum (pertama kali pakai), buat otomatis dengan default.
+async function ensureDefaultCredentials(){
+  const ref=db.collection('operatorSettings').doc('credentials');
+  const snap=await ref.get();
+  if(!snap.exists){
+    const defaultHash=await sha256('admin68');
+    await ref.set({
+      username:'operator68',
+      passwordHash:defaultHash,
+      createdAt:new Date().toISOString(),
+      updatedAt:new Date().toISOString()
+    });
+  }
+}
+
+function isLoggedIn(){return sessionStorage.getItem('op68_auth')==='1';}
+function logout(){sessionStorage.removeItem('op68_auth');location.reload();}
+
+// Login: ambil kredensial dari Firestore, bandingkan hash
+document.getElementById('btnLoginGate').onclick=async()=>{
+  const u=document.getElementById('lgUser').value.trim().toLowerCase();
+  const p=document.getElementById('lgPass').value;
+  const errEl=document.getElementById('lgErr');
+  const btn=document.getElementById('btnLoginGate');
+  if(!u||!p){errEl.textContent='Username dan password wajib diisi.';return;}
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+  errEl.textContent='';
+  try{
+    await ensureDefaultCredentials();
+    const snap=await db.collection('operatorSettings').doc('credentials').get();
+    if(!snap.exists){errEl.textContent='Konfigurasi sistem tidak ditemukan.';btn.disabled=false;btn.innerHTML='<i class="fas fa-right-to-bracket"></i> Masuk Panel';return;}
+    const cred=snap.data();
+    const inputHash=await sha256(p);
+    // username bisa berupa teks biasa atau email, case-insensitive
+    const storedUser=(cred.username||'').toLowerCase();
+    if(u===storedUser&&inputHash===cred.passwordHash){
+      sessionStorage.setItem('op68_auth','1');
+      sessionStorage.setItem('op68_displayUser',cred.username);
+      document.getElementById('loginGate').style.display='none';
+      document.getElementById('appShell').classList.add('visible');
+      init();
+    } else {
+      errEl.textContent='Username/email atau password salah.';
+    }
+  }catch(e){
+    errEl.textContent='Gagal terhubung ke server. Periksa koneksi Anda.';
+  }
+  btn.disabled=false;
+  btn.innerHTML='<i class="fas fa-right-to-bracket"></i> Masuk Panel';
+};
+document.getElementById('lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btnLoginGate').click();});
+document.getElementById('lgUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lgPass').focus();});
+
+// Simpan kredensial baru ke Firestore (hash password dulu)
+async function saveCredentials(){
+  const u=document.getElementById('setUser').value.trim();
+  const p=document.getElementById('setPass').value;
+  const pc=document.getElementById('setPassConfirm').value;
+  if(!u){toast('Username atau email wajib diisi.','error');return;}
+  if(p.length<6){toast('Password minimal 6 karakter.','error');return;}
+  if(p!==pc){toast('Konfirmasi password tidak cocok.','error');return;}
+  const btn=document.getElementById('btnSaveCred');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+  try{
+    const hash=await sha256(p);
+    await db.collection('operatorSettings').doc('credentials').set({
+      username:u,
+      passwordHash:hash,
+      updatedAt:new Date().toISOString()
+    },{merge:true});
+    toast('Kredensial berhasil disimpan ke Firebase! Gunakan username/password baru saat login berikutnya.','success');
+    logActivity('Ubah Kredensial Operator','—');
+    document.getElementById('setPass').value='';
+    document.getElementById('setPassConfirm').value='';
+    document.getElementById('setUser').value=u;
+    // Perbarui tampilan nama di topbar
+    sessionStorage.setItem('op68_displayUser',u);
+    updateDisplayUser();
+  }catch(e){
+    toast('Gagal menyimpan: '+e.message,'error');
+  }
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Simpan Kredensial';
+}
+
+function updateDisplayUser(){
+  const u=sessionStorage.getItem('op68_displayUser')||'Operator';
+  const el=document.getElementById('topbarUser');
+  if(el)el.textContent=u;
+}
+
+if(isLoggedIn()){
+  document.getElementById('loginGate').style.display='none';
+  document.getElementById('appShell').classList.add('visible');
+}
+
+// Muat username saat ini ke form pengaturan
+async function loadCurrentCredentials(){
+  try{
+    const snap=await db.collection('operatorSettings').doc('credentials').get();
+    if(snap.exists){
+      const u=snap.data().username||'';
+      document.getElementById('setUser').value=u;
+      sessionStorage.setItem('op68_displayUser',u);
+      updateDisplayUser();
+    }
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════════════
+setInterval(()=>{
+  const n=new Date();
+  document.getElementById('topClock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+},1000);
+
+// ══════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════
+function toast(msg,type='info'){
+  const w=document.getElementById('toastWrap');
+  const el=document.createElement('div');
+  el.className=`t-toast ${type}`;
+  const ic={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-circle-info'};
+  el.innerHTML=`<i class="fas ${ic[type]||ic.info}"></i><span>${msg}</span>`;
+  w.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(110%)';el.style.transition='.3s ease';setTimeout(()=>el.remove(),300);},4000);
+}
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function switchTab(name,el){
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const sec=document.getElementById('tab-'+name);
+  if(sec)sec.classList.add('active');
+  if(el)el.classList.add('active');
+  else{
+    document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+name+"'"))n.classList.add('active');});
+  }
+  if(window.innerWidth<=720)closeSidebar();
+  if(name==='daftar')loadPeserta();
+  if(name==='dashboard')loadDashboard();
+  if(name==='hasilSeleksi')loadHasilSeleksi();
+  if(name==='pengaturan')loadCurrentCredentials();
+}
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');
+  const o=document.getElementById('sideOverlay');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sideOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════
+// COUNTDOWN SETTINGS
+// ══════════════════════════════════════════════════
+let liveTargetDate=null;
+
+function loadCountdownStatus(){
+  db.collection('operatorSettings').doc('config').onSnapshot(doc=>{
+    if(doc.exists){
+      const d=doc.data();
+      liveTargetDate=d.targetDate||null;
+      const dt=document.getElementById('cdDatetime');
+      if(liveTargetDate&&dt){
+        const local=new Date(liveTargetDate);
+        const offset=local.getTimezoneOffset();
+        const adj=new Date(local.getTime()-offset*60000);
+        dt.value=adj.toISOString().slice(0,16);
+      }
+    }
+    updateCdStatusUI();
+  });
+}
+
+function updateCdStatusUI(){
+  const texts=[document.getElementById('cdStatusText'),document.getElementById('dashCdText')];
+  const dots=[
+    document.querySelector('#cdLiveStatus .dot'),
+    document.querySelector('#dashCdStatus .dot')
+  ];
+  if(!liveTargetDate){
+    texts.forEach(t=>{if(t)t.textContent='Pengumuman sudah dibuka (tidak ada countdown aktif)';});
+    dots.forEach(d=>{if(d){d.classList.remove('dot-closed');d.classList.add('dot-open');}});
+    return;
+  }
+  const diff=new Date(liveTargetDate).getTime()-Date.now();
+  if(diff<=0){
+    texts.forEach(t=>{if(t)t.textContent='Pengumuman sudah dibuka — peserta dapat memeriksa hasil seleksi.';});
+    dots.forEach(d=>{if(d){d.classList.remove('dot-closed');d.classList.add('dot-open');}});
+  } else {
+    const d2=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+    const fmt=`${d2}h ${h}j ${m}m ${s}d`;
+    texts.forEach(t=>{if(t)t.textContent=`Countdown aktif — Pengumuman terbuka dalam ${fmt}`;});
+    dots.forEach(d=>{if(d){d.classList.remove('dot-open');d.classList.add('dot-closed');}});
+  }
+}
+setInterval(updateCdStatusUI,1000);
+
+async function saveCountdown(){
+  const val=document.getElementById('cdDatetime').value;
+  const btn=document.getElementById('btnSaveCountdown');
+  btn.disabled=true;
+  try{
+    await db.collection('operatorSettings').doc('config').set({
+      targetDate:val?new Date(val).toISOString():null,
+      updatedAt:new Date().toISOString()
+    },{merge:true});
+    liveTargetDate=val?new Date(val).toISOString():null;
+    toast('Countdown berhasil disimpan! Halaman peserta sinkron otomatis.','success');
+    logActivity('Atur Countdown','—');
+  }catch(e){
+    toast('Gagal menyimpan: '+e.message,'error');
+  }
+  btn.disabled=false;
+}
+
+// ══════════════════════════════════════════════════
+// HELPER
+// ══════════════════════════════════════════════════
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+function fmtTgl(t){
+  if(!t)return'—';
+  try{const d=new Date(t);return isNaN(d)?t:d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});}catch{return t;}
+}
+function statusBadge(st){
+  const s=(st||'').toLowerCase();
+  if(['lolos','diterima'].includes(s))return`<span class="badge badge-lolos"><i class="fas fa-check"></i> Lolos</span>`;
+  if(['tidak-lolos','ditolak'].includes(s))return`<span class="badge badge-tidak"><i class="fas fa-times"></i> Tidak Lolos</span>`;
+  if(['curang','kecurangan','tidak-terseleksi'].includes(s))return`<span class="badge badge-curang"><i class="fas fa-ban"></i> Kecurangan</span>`;
+  return`<span class="badge badge-pending"><i class="fas fa-minus"></i> Pending</span>`;
+}
+function normalizeStatus(s){
+  s=(s||'').toLowerCase().trim();
+  if(['lolos','diterima','lulus','accepted','terima'].includes(s))return'lolos';
+  if(['tidak lolos','tidak-lolos','ditolak','gagal','rejected','tidak'].includes(s))return'tidak-lolos';
+  if(['curang','kecurangan','tidak terseleksi','tidak-terseleksi','cheat'].includes(s))return'curang';
+  return s||'';
+}
+
+// ══════════════════════════════════════════════════
+// STATUS UI (form tambah)
+// ══════════════════════════════════════════════════
+function updateStatusUI(){
+  const st=document.getElementById('mStatus').value;
+  document.getElementById('alasanCurangWrap').classList.toggle('hidden',st!=='curang');
+}
+function updateEditStatusUI(){
+  const st=document.getElementById('editStatus').value;
+  document.getElementById('editAlasanWrap').classList.toggle('hidden',st!=='curang');
+}
+
+// ══════════════════════════════════════════════════
+// SIMPAN PESERTA
+// ══════════════════════════════════════════════════
+async function simpanPeserta(){
+  const nd=document.getElementById('mNoDaftar').value.trim();
+  const nm=document.getElementById('mNama').value.trim();
+  const tl=document.getElementById('mTglLahir').value;
+  const st=document.getElementById('mStatus').value;
+  if(!/^\d{14}$/.test(nd)){toast('Nomor pendaftaran harus 14 digit angka.','error');return;}
+  if(!nm){toast('Nama lengkap wajib diisi.','error');return;}
+  if(!tl){toast('Tanggal lahir wajib diisi.','error');return;}
+  const data={
+    noDaftar:nd,namaLengkap:nm,nama:nm,tglLahir:tl,
+    jk:document.getElementById('mJK').value,
+    asalSekolah:document.getElementById('mSekolah').value.trim(),
+    sekolahAsal:document.getElementById('mSekolah').value.trim(),
+    npsn:document.getElementById('mNpsn').value.trim(),
+    nisn:document.getElementById('mNisn').value.trim(),
+    email:document.getElementById('mEmail').value.trim(),
+    telpMurid:document.getElementById('mTelpSiswa').value.trim(),
+    telpOrtu:document.getElementById('mTelpOrtu').value.trim(),
+    kelasSaatIni:document.getElementById('mKelasSaatIni').value.trim(),
+    mutasiKe:document.getElementById('mMutasiKe').value.trim(),
+    alasanPindah:document.getElementById('mAlasan').value.trim(),
+    status:st,
+    alasanTidakLolos:st==='curang'?document.getElementById('mAlasanCurang').value.trim():'',
+    createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
+  };
+  try{
+    await db.collection('pendaftaranMutasi').add(data);
+    toast(`Data ${nm} berhasil disimpan!`,'success');
+    logActivity('Tambah Peserta',nm);
+    resetForm();
+    updateStats();
+  }catch(e){toast('Gagal menyimpan: '+e.message,'error');}
+}
+function resetForm(){
+  ['mNoDaftar','mNama','mTglLahir','mSekolah','mNpsn','mNisn','mEmail','mTelpSiswa','mTelpOrtu','mKelasSaatIni','mMutasiKe','mAlasan','mAlasanCurang']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('mStatus').value='';
+  document.getElementById('mJK').value='L';
+  updateStatusUI();
+}
+
+// ══════════════════════════════════════════════════
+// PESERTA TABLE
+// ══════════════════════════════════════════════════
+let allPeserta=[],filteredPeserta=[];
+let currentPage=1;const perPage=15;
+
+async function loadPeserta(){
+  document.getElementById('pesertaBody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>`;
+  try{
+    const snap=await db.collection('pendaftaranMutasi').orderBy('namaLengkap').get();
+    allPeserta=snap.docs.map(d=>({id:d.id,...d.data()}));
+    filteredPeserta=[...allPeserta];
+    currentPage=1;
+    renderTable();
+    document.getElementById('totalBadge').textContent=allPeserta.length;
+  }catch(e){
+    document.getElementById('pesertaBody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--red)">Gagal memuat data: ${e.message}</td></tr>`;
+  }
+}
+function filterTable(){
+  const q=document.getElementById('filterSearch').value.toLowerCase();
+  const fs=document.getElementById('filterStatus').value;
+  const sort=document.getElementById('filterSort').value;
+  filteredPeserta=allPeserta.filter(p=>{
+    const nm=(p.namaLengkap||p.nama||'').toLowerCase();
+    const nd=(p.noDaftar||'').toLowerCase();
+    const matchQ=!q||(nm.includes(q)||nd.includes(q));
+    const matchS=!fs||normalizeStatus(p.status)===fs;
+    return matchQ&&matchS;
+  });
+  filteredPeserta.sort((a,b)=>{
+    if(sort==='noDaftar')return(a.noDaftar||'').localeCompare(b.noDaftar||'');
+    if(sort==='status')return(a.status||'').localeCompare(b.status||'');
+    return(a.namaLengkap||a.nama||'').localeCompare(b.namaLengkap||b.nama||'');
+  });
+  currentPage=1;renderTable();
+}
+function renderTable(){
+  const tbody=document.getElementById('pesertaBody');
+  const total=filteredPeserta.length;
+  const start=(currentPage-1)*perPage;
+  const slice=filteredPeserta.slice(start,start+perPage);
+  if(!slice.length){tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--slate400)">Tidak ada data ditemukan</td></tr>`;updatePager(0);return;}
+  tbody.innerHTML=slice.map((p,i)=>`
+    <tr>
+      <td>${start+i+1}</td>
+      <td class="mono">${esc(p.noDaftar)||'—'}</td>
+      <td>${esc(p.namaLengkap||p.nama)}</td>
+      <td>${esc(p.asalSekolah||p.sekolahAsal)||'—'}</td>
+      <td>${fmtTgl(p.tglLahir)}</td>
+      <td>${statusBadge(p.status)}</td>
+      <td>
+        <button class="btn btn-ghost btn-xs" onclick="openEditModal('${p.id}')"><i class="fas fa-pen"></i> Edit</button>
+      </td>
+    </tr>`).join('');
+  updatePager(total);
+}
+function updatePager(total){
+  const totalPages=Math.ceil(total/perPage)||1;
+  document.getElementById('pagerInfo').textContent=`${total} peserta ditemukan`;
+  document.getElementById('pagerPages').textContent=`${currentPage} / ${totalPages}`;
+  document.getElementById('btnPrev').disabled=currentPage<=1;
+  document.getElementById('btnNext').disabled=currentPage>=totalPages;
+}
+function changePage(dir){
+  const total=Math.ceil(filteredPeserta.length/perPage)||1;
+  currentPage=Math.max(1,Math.min(total,currentPage+dir));
+  renderTable();
+}
+
+// ══════════════════════════════════════════════════
+// EDIT MODAL
+// ══════════════════════════════════════════════════
+let currentEditData=null;
+function openEditModal(docId){
+  const p=allPeserta.find(x=>x.id===docId);
+  if(!p)return;
+  currentEditData=p;
+  document.getElementById('editDocId').value=docId;
+  document.getElementById('editNoDaftar').value=p.noDaftar||'';
+  document.getElementById('editNama').value=p.namaLengkap||p.nama||'';
+  document.getElementById('editTglLahir').value=p.tglLahir||'';
+  document.getElementById('editSekolah').value=p.asalSekolah||p.sekolahAsal||'';
+  document.getElementById('editNpsn').value=p.npsn||'';
+  document.getElementById('editNisn').value=p.nisn||'';
+  document.getElementById('editKelas').value=p.kelasSaatIni||'';
+  document.getElementById('editMutasi').value=p.mutasiKe||'';
+  document.getElementById('editStatus').value=normalizeStatus(p.status)||'';
+  document.getElementById('editAlasanCurang').value=p.alasanTidakLolos||'';
+  updateEditStatusUI();
+  document.getElementById('editModal').classList.add('open');
+}
+function closeModal(){document.getElementById('editModal').classList.remove('open');}
+async function updatePeserta(){
+  const docId=document.getElementById('editDocId').value;
+  const nm=document.getElementById('editNama').value.trim();
+  const st=document.getElementById('editStatus').value;
+  if(!nm){toast('Nama lengkap wajib diisi.','error');return;}
+  const data={
+    namaLengkap:nm,nama:nm,
+    tglLahir:document.getElementById('editTglLahir').value,
+    asalSekolah:document.getElementById('editSekolah').value.trim(),
+    sekolahAsal:document.getElementById('editSekolah').value.trim(),
+    npsn:document.getElementById('editNpsn').value.trim(),
+    nisn:document.getElementById('editNisn').value.trim(),
+    kelasSaatIni:document.getElementById('editKelas').value.trim(),
+    mutasiKe:document.getElementById('editMutasi').value.trim(),
+    status:st,
+    alasanTidakLolos:st==='curang'?document.getElementById('editAlasanCurang').value.trim():'',
+    updatedAt:new Date().toISOString()
+  };
+  try{
+    await db.collection('pendaftaranMutasi').doc(docId).update(data);
+    toast(`Data ${nm} berhasil diperbarui!`,'success');
+    logActivity('Update Status: '+st,nm);
+    closeModal();
+    loadPeserta();
+    updateStats();
+  }catch(e){toast('Gagal update: '+e.message,'error');}
+}
+async function hapusPeserta(){
+  if(!confirm('Yakin hapus data peserta ini? Tindakan tidak dapat dibatalkan.'))return;
+  const docId=document.getElementById('editDocId').value;
+  try{
+    await db.collection('pendaftaranMutasi').doc(docId).delete();
+    toast('Data peserta berhasil dihapus.','success');
+    closeModal();loadPeserta();updateStats();
+  }catch(e){toast('Gagal hapus: '+e.message,'error');}
+}
+document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ══════════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════════
+async function updateStats(){
+  try{
+    const snap=await db.collection('pendaftaranMutasi').get();
+    let total=0,lolos=0,tidak=0,curang=0,pending=0;
+    snap.docs.forEach(d=>{
+      total++;
+      const st=normalizeStatus(d.data().status);
+      if(st==='lolos')lolos++;
+      else if(st==='tidak-lolos')tidak++;
+      else if(st==='curang')curang++;
+      else pending++;
+    });
+    document.getElementById('statTotal').textContent=total;
+    document.getElementById('statLolos').textContent=lolos;
+    document.getElementById('statTidak').textContent=tidak;
+    document.getElementById('statCurang').textContent=curang;
+    document.getElementById('statPending').textContent=pending;
+    document.getElementById('totalBadge').textContent=total;
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════════════
+// ACTIVITY LOG
+// ══════════════════════════════════════════════════
+const actLog=[];
+function logActivity(aksi,peserta){
+  const now=new Date();
+  const t=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  actLog.unshift({t,aksi,peserta});
+  if(actLog.length>20)actLog.pop();
+  renderActivity();
+}
+function renderActivity(){
+  const tbody=document.getElementById('recentBody');
+  if(!actLog.length){tbody.innerHTML=`<tr><td colspan="3" style="text-align:center;padding:16px;color:var(--slate400)">Belum ada aktivitas</td></tr>`;return;}
+  tbody.innerHTML=actLog.slice(0,10).map(a=>`<tr><td class="mono" style="color:var(--slate500)">${a.t}</td><td>${esc(a.aksi)}</td><td>${esc(a.peserta)}</td></tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════
+function loadDashboard(){updateStats();renderActivity();}
+
+// ══════════════════════════════════════════════════
+// IMPORT FILE
+// ══════════════════════════════════════════════════
+let importRows=[];
+function handleFileSelect(e){processFile(e.target.files[0]);}
+function handleDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('drag');processFile(e.dataTransfer.files[0]);}
+
+async function processFile(file){
+  if(!file){return;}
+  if(file.size>5*1024*1024){toast('File terlalu besar (maks. 5MB).','error');return;}
+  const ext=file.name.split('.').pop().toLowerCase();
+  document.getElementById('fileInfo').innerHTML=`<div class="alert alert-info"><i class="fas fa-file"></i> <span><strong>${esc(file.name)}</strong> (${(file.size/1024).toFixed(1)} KB) &mdash; Memproses...</span></div>`;
+  document.getElementById('fileInfo').classList.remove('hidden');
+  document.getElementById('importPreviewWrap').classList.add('hidden');
+  document.getElementById('importActions').classList.add('hidden');
+  importRows=[];
+
+  try{
+    if(ext==='csv'){
+      const text=await file.text();
+      importRows=parseCSV(text);
+    } else if(ext==='xlsx'||ext==='xls'){
+      importRows=await parseExcel(file);
+    } else if(ext==='pdf'){
+      importRows=await parsePDF(file);
+    } else {
+      toast('Format file tidak didukung. Gunakan CSV, Excel, atau PDF.','error');return;
+    }
+    showPreview();
+  }catch(e){
+    toast('Gagal membaca file: '+e.message,'error');
+  }
+}
+
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/);
+  if(lines.length<2)throw new Error('File CSV kosong atau tidak valid.');
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/^["']|["']$/g,'').toLowerCase());
+  return lines.slice(1).filter(l=>l.trim()).map(line=>{
+    const vals=line.split(',').map(v=>v.trim().replace(/^["']|["']$/g,''));
+    const row={};headers.forEach((h,i)=>row[h]=vals[i]||'');
+    return normalizeRow(row);
+  }).filter(r=>r.noDaftar||r.namaLengkap);
+}
+
+async function parseExcel(file){
+  const buf=await file.arrayBuffer();
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const data=XLSX.utils.sheet_to_json(ws,{defval:''});
+  return data.map(row=>{
+    const norm={};
+    Object.keys(row).forEach(k=>norm[k.toLowerCase().trim().replace(/\s+/g,'')]=String(row[k]));
+    return normalizeRow(norm);
+  }).filter(r=>r.noDaftar||r.namaLengkap);
+}
+
+async function parsePDF(file){
+  const buf=await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  let text='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const content=await page.getTextContent();
+    text+=content.items.map(s=>s.str).join(' ')+'\n';
+  }
+  // Try to parse tabular lines: assume each line is a row, space/tab separated
+  const lines=text.split('\n').filter(l=>l.trim().length>5);
+  const rows=[];
+  lines.forEach(line=>{
+    const parts=line.trim().split(/\s{2,}|\t/).map(p=>p.trim()).filter(Boolean);
+    if(parts.length>=2){
+      // Heuristic: if first part looks like noDaftar (14 digits)
+      if(/^\d{14}$/.test(parts[0])){
+        rows.push({noDaftar:parts[0],namaLengkap:parts[1]||'',tglLahir:parts[2]||'',asalSekolah:parts[3]||'',npsn:parts[4]||'',status:normalizeStatus(parts[5]||'')});
+      }
+    }
+  });
+  if(!rows.length)throw new Error('Tidak dapat mengurai data dari PDF. Pastikan PDF menggunakan tabel dengan format yang sesuai.');
+  return rows;
+}
+
+function normalizeRow(r){
+  // Try multiple possible column name variants
+  const nd=r.nodaftar||r.no_daftar||r['nomorpendaftaran']||r.nopendaftaran||r['no.daftar']||r.registrationno||'';
+  const nm=r.namalengkap||r['nama lengkap']||r.namaLengkap||r.nama||r.name||'';
+  const tl=r.tgllahir||r['tanggal lahir']||r.tglLahir||r.birthdate||r.tanggallahir||'';
+  const sk=r.asalsekolah||r['asal sekolah']||r.asalSekolah||r.sekolahasal||r.school||'';
+  const np=r.npsn||'';
+  const ni=r.nisn||'';
+  const st=normalizeStatus(r.status||r['status seleksi']||'');
+  const al=r.alasantidaklolos||r.alasan||r.reason||'';
+  return{noDaftar:String(nd).replace(/\D/g,''),namaLengkap:nm,tglLahir:tl,asalSekolah:sk,sekolahAsal:sk,npsn:np,nisn:ni,status:st,alasanTidakLolos:al,nama:nm};
+}
+
+function showPreview(){
+  document.getElementById('previewCount').textContent=`${importRows.length} baris data ditemukan`;
+  const preview=importRows.slice(0,10);
+  document.getElementById('importPreview').innerHTML=preview.map((r,i)=>`
+    <div class="preview-row">
+      <div class="pr-num">${i+1}</div>
+      <div>
+        <div class="pr-name">${esc(r.namaLengkap)||'—'}</div>
+        <div class="pr-nd">${esc(r.noDaftar)||'—'} &bull; ${esc(r.asalSekolah)||'—'}</div>
+      </div>
+      <div style="margin-left:auto">${statusBadge(r.status)}</div>
+    </div>`).join('');
+  document.getElementById('importPreviewWrap').classList.remove('hidden');
+  document.getElementById('importActions').classList.remove('hidden');
+}
+
+async function importData(){
+  if(!importRows.length){toast('Tidak ada data untuk diimport.','error');return;}
+  document.getElementById('importActions').classList.add('hidden');
+  document.getElementById('importProgress').classList.remove('hidden');
+  const fill=document.getElementById('progFill');
+  const lbl=document.getElementById('progLabel');
+  let done=0;const total=importRows.length;
+  const batch=db.batch();
+  const batchSize=500;
+  for(let i=0;i<total;i++){
+    const row=importRows[i];
+    const ref=db.collection('pendaftaranMutasi').doc();
+    batch.set(ref,{...row,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    done++;
+    if(done%50===0||done===total){
+      const pct=Math.round(done/total*100);
+      fill.style.width=pct+'%';
+      lbl.textContent=`Mengimport ${done} dari ${total} data... (${pct}%)`;
+      await new Promise(r=>setTimeout(r,10));
+    }
+  }
+  try{
+    await batch.commit();
+    fill.style.width='100%';
+    lbl.textContent=`✓ ${total} data berhasil diimport!`;
+    toast(`${total} data peserta berhasil diimport ke Firestore!`,'success');
+    logActivity(`Import ${total} Peserta`,'—');
+    setTimeout(()=>{document.getElementById('importProgress').classList.add('hidden');},2000);
+    updateStats();
+  }catch(e){
+    toast('Gagal commit batch: '+e.message,'error');
+  }
+}
+
+function cancelImport(){
+  importRows=[];
+  document.getElementById('importPreviewWrap').classList.add('hidden');
+  document.getElementById('importActions').classList.add('hidden');
+  document.getElementById('fileInfo').classList.add('hidden');
+  document.getElementById('fileInput').value='';
+}
+
+// ══════════════════════════════════════════════════
+// TEMPLATE DOWNLOAD
+// ══════════════════════════════════════════════════
+function downloadTemplate(type){
+  const headers=['noDaftar','namaLengkap','tglLahir','asalSekolah','npsn','nisn','jk','agama','email','telpMurid','telpOrtu','kelasSaatIni','mutasiKe','alasanPindah','status','alasanTidakLolos'];
+  const sample=['19816820260001','Nama Lengkap Siswa','2009-07-15','SMP Negeri 1 Jakarta','20111902','0123456789','L','Islam','email@gmail.com','08123456789','08987654321','X','XI IPA 1','Pindah domisili','lolos',''];
+  if(type==='csv'){
+    const csv=[headers.join(','),sample.join(',')].join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='template_peserta_mutasi68.csv';a.click();
+  } else {
+    const ws=XLSX.utils.aoa_to_sheet([headers,sample]);
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Peserta');
+    XLSX.writeFile(wb,'template_peserta_mutasi68.xlsx');
+  }
+  toast('Template berhasil diunduh!','success');
+}
+
+// ══════════════════════════════════════════════════
+// RESET ALL
+// ══════════════════════════════════════════════════
+async function confirmResetAll(){
+  if(!confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA data peserta dari Firestore.\nTindakan ini tidak dapat dibatalkan.\n\nKetik "HAPUS SEMUA" untuk konfirmasi.'))return;
+  const conf=prompt('Ketik HAPUS SEMUA untuk konfirmasi:');
+  if(conf!=='HAPUS SEMUA'){toast('Reset dibatalkan.','info');return;}
+  toast('Menghapus semua data...','info');
+  try{
+    const snap=await db.collection('pendaftaranMutasi').get();
+    const batch=db.batch();
+    snap.docs.forEach(d=>batch.delete(d.ref));
+    await batch.commit();
+    toast('Semua data peserta berhasil dihapus.','success');
+    allPeserta=[];filteredPeserta=[];renderTable();updateStats();
+  }catch(e){toast('Gagal reset: '+e.message,'error');}
+}
+
+// ══════════════════════════════════════════════════
+// HASIL SELEKSI
+// ══════════════════════════════════════════════════
+let hsAllPeserta=[];let hsFiltered=[];let hsPage=1;const hsPerPage=20;
+
+async function loadHasilSeleksi(){
+  document.getElementById('hsBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>';
+  try{
+    const snap=await db.collection('pendaftaranMutasi').orderBy('namaLengkap').get();
+    hsAllPeserta=snap.docs.map(d=>({id:d.id,...d.data()}));
+    hsFiltered=[...hsAllPeserta];
+    hsPage=1;
+    updateHsStats();
+    renderHsTable();
+  }catch(e){
+    document.getElementById('hsBody').innerHTML=`<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--red)">${e.message}</td></tr>`;
+  }
+}
+
+function updateHsStats(){
+  const l=hsAllPeserta.filter(p=>p.status==='lolos').length;
+  const t=hsAllPeserta.filter(p=>p.status==='tidak-lolos').length;
+  const c=hsAllPeserta.filter(p=>p.status==='curang').length;
+  const pend=hsAllPeserta.filter(p=>!p.status||p.status==='').length;
+  document.getElementById('hsLolos').textContent=l;
+  document.getElementById('hsTidak').textContent=t;
+  document.getElementById('hsCurang').textContent=c;
+  document.getElementById('hsPending').textContent=pend;
+  const badgeEl=document.getElementById('hasilBadge');
+  if(badgeEl)badgeEl.textContent=l;
+}
+
+function hsFilterTable(){
+  const q=document.getElementById('hsSearch').value.toLowerCase();
+  const st=document.getElementById('hsFilterStatus').value;
+  hsFiltered=hsAllPeserta.filter(p=>{
+    const matchQ=!q||(p.namaLengkap||p.nama||'').toLowerCase().includes(q)||(p.noDaftar||'').includes(q);
+    let matchSt=true;
+    if(st==='pending') matchSt=!p.status||p.status==='';
+    else if(st) matchSt=(p.status||'')=== st;
+    return matchQ&&matchSt;
+  });
+  hsPage=1;renderHsTable();
+}
+
+function renderHsTable(){
+  const start=(hsPage-1)*hsPerPage;const end=start+hsPerPage;
+  const pageData=hsFiltered.slice(start,end);
+  const totalPages=Math.ceil(hsFiltered.length/hsPerPage)||1;
+  if(!pageData.length){
+    document.getElementById('hsBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--slate400)">Tidak ada data ditemukan</td></tr>';
+  } else {
+    document.getElementById('hsBody').innerHTML=pageData.map((p,i)=>`
+      <tr>
+        <td>${start+i+1}</td>
+        <td class="mono">${esc(p.noDaftar)||'—'}</td>
+        <td style="font-weight:600">${esc(p.namaLengkap||p.nama)||'—'}</td>
+        <td style="font-size:.75rem;color:var(--slate500)">${esc(p.asalSekolah||p.sekolahAsal)||'—'}</td>
+        <td>${statusBadge(p.status)}</td>
+        <td>
+          <div class="flex gap-8 flex-wrap">
+            <button class="btn btn-green btn-xs" title="Lolos" onclick="quickSetStatus('${p.id}','lolos','${esc(p.namaLengkap||p.nama||'')}')"><i class="fas fa-check"></i> Lolos</button>
+            <button class="btn btn-red btn-xs" title="Tidak Lolos" onclick="quickSetStatus('${p.id}','tidak-lolos','${esc(p.namaLengkap||p.nama||'')}')"><i class="fas fa-times"></i> TL</button>
+            <button class="btn btn-xs" style="background:var(--orange2);color:var(--navy)" title="Kecurangan" onclick="openCheatModal('${p.id}','${esc(p.namaLengkap||p.nama||'')}','${esc(p.alasanTidakLolos||'')}')"><i class="fas fa-ban"></i></button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+  document.getElementById('hsPagerInfo').textContent=`Menampilkan ${start+1}–${Math.min(end,hsFiltered.length)} dari ${hsFiltered.length} peserta`;
+  document.getElementById('hsPagerPages').textContent=`${hsPage} / ${totalPages}`;
+  document.getElementById('btnHsPrev').disabled=hsPage<=1;
+  document.getElementById('btnHsNext').disabled=hsPage>=totalPages;
+}
+
+function hsChangePage(dir){hsPage+=dir;renderHsTable();}
+
+async function quickSetStatus(docId,status,nama){
+  try{
+    await db.collection('pendaftaranMutasi').doc(docId).update({status,updatedAt:new Date().toISOString()});
+    const idx=hsAllPeserta.findIndex(p=>p.id===docId);
+    if(idx>-1)hsAllPeserta[idx].status=status;
+    const idxF=hsFiltered.findIndex(p=>p.id===docId);
+    if(idxF>-1)hsFiltered[idxF].status=status;
+    renderHsTable();updateHsStats();updateStats();
+    const lbl=status==='lolos'?'LOLOS':status==='tidak-lolos'?'TIDAK LOLOS':'KECURANGAN';
+    toast(`${nama}: status → ${lbl}`,'success');
+    logActivity(`Set Status ${lbl}`,nama);
+  }catch(e){toast('Gagal update: '+e.message,'error');}
+}
+
+function openCheatModal(docId,nama,alasanLama){
+  const alasan=prompt(`Set status KECURANGAN untuk:\n${nama}\n\nMasukkan alasan kecurangan:`,alasanLama||'Terindikasi melakukan kecurangan saat ujian seleksi murid mutasi.');
+  if(alasan===null)return;
+  db.collection('pendaftaranMutasi').doc(docId).update({
+    status:'curang',alasanTidakLolos:alasan,updatedAt:new Date().toISOString()
+  }).then(()=>{
+    const idx=hsAllPeserta.findIndex(p=>p.id===docId);
+    if(idx>-1){hsAllPeserta[idx].status='curang';hsAllPeserta[idx].alasanTidakLolos=alasan;}
+    const idxF=hsFiltered.findIndex(p=>p.id===docId);
+    if(idxF>-1){hsFiltered[idxF].status='curang';hsFiltered[idxF].alasanTidakLolos=alasan;}
+    renderHsTable();updateHsStats();updateStats();
+    toast(`${nama}: status → KECURANGAN`,'success');
+    logActivity('Set Status KECURANGAN',nama);
+  }).catch(e=>toast('Gagal update: '+e.message,'error'));
+}
+
+async function bulkUpdateStatus(targetStatus){
+  const pending=hsAllPeserta.filter(p=>!p.status||p.status==='');
+  if(!pending.length){toast('Tidak ada peserta yang belum diproses.','info');return;}
+  const lbl=targetStatus==='lolos'?'LOLOS':'TIDAK LOLOS';
+  if(!confirm(`Update ${pending.length} peserta yang belum diproses → ${lbl}?\n\nTindakan ini tidak dapat dibatalkan.`))return;
+  toast(`Mengupdate ${pending.length} data...`,'info');
+  const batch=db.batch();
+  pending.forEach(p=>{
+    const ref=db.collection('pendaftaranMutasi').doc(p.id);
+    batch.update(ref,{status:targetStatus,updatedAt:new Date().toISOString()});
+  });
+  try{
+    await batch.commit();
+    pending.forEach(p=>{
+      const idx=hsAllPeserta.findIndex(x=>x.id===p.id);
+      if(idx>-1)hsAllPeserta[idx].status=targetStatus;
+    });
+    hsFiltered=[...hsAllPeserta];
+    renderHsTable();updateHsStats();updateStats();
+    toast(`${pending.length} peserta berhasil diupdate → ${lbl}`,'success');
+    logActivity(`Bulk Update ${pending.length} → ${lbl}`,'—');
+  }catch(e){toast('Gagal bulk update: '+e.message,'error');}
+}
+
+
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+function init(){
+  loadCountdownStatus();
+  loadDashboard();
+}
+if(isLoggedIn())init();
+</script>
+</body>
+</html>
