@@ -1242,3 +1242,693 @@ tbody td {
 .stagger > *:nth-child(4) { animation-delay: .2s; }
 .stagger > *:nth-child(5) { animation-delay: .25s; }
 .stagger > *:nth-child(6) { animation-delay: .3s; }
+
+/* ── First Login / Setup Badge ── */
+.setup-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    background: var(--primary-soft);
+    color: var(--primary-text);
+    font-size: .75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 12px;
+}
+[data-theme="dark"] .setup-badge { background: rgba(74,222,128,.12); color: var(--green-400); }
+
+/* ── Field Hint ── */
+.field-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: .73rem;
+    color: var(--text-4);
+}
+
+/* ── Password Strength ── */
+.password-strength {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 10px;
+}
+.ps-bar {
+    flex: 1; height: 4px;
+    background: var(--surface-3);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+.ps-fill {
+    height: 100%; width: 0;
+    border-radius: var(--radius-full);
+    transition: width .3s var(--ease), background .3s var(--ease);
+}
+.ps-fill.weak   { width: 33%; background: var(--rose-500); }
+.ps-fill.medium { width: 66%; background: var(--amber-500); }
+.ps-fill.strong { width: 100%; background: var(--primary); }
+.ps-label {
+    font-size: .72rem; font-weight: 600;
+    white-space: nowrap;
+}
+.ps-label.weak   { color: var(--rose-500); }
+.ps-label.medium { color: var(--amber-500); }
+.ps-label.strong { color: var(--primary-text); }
+[data-theme="dark"] .ps-label.strong { color: var(--green-400); }
+
+/* ── Info Notice ── */
+.info-notice {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(37,99,235,.2);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    font-size: .8rem; color: var(--accent-text);
+    line-height: 1.5;
+}
+.info-notice i { flex-shrink: 0; margin-top: 1px; font-size: .85rem; }
+[data-theme="dark"] .info-notice { color: var(--blue-400); border-color: rgba(96,165,250,.2); }
+
+/* ── Pengaturan Akun Page ── */
+.settings-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-xs);
+    animation: cardFadeIn .35s var(--ease) both;
+}
+.settings-section-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+}
+.settings-section-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; flex-shrink: 0;
+}
+.settings-section-icon.green  { background: var(--primary-soft); color: var(--primary-text); }
+.settings-section-icon.blue   { background: var(--accent-soft); color: var(--accent-text); }
+.settings-section-icon.rose   { background: rgba(244,63,94,.1); color: var(--rose-500); }
+[data-theme="dark"] .settings-section-icon.green { background: rgba(74,222,128,.12); color: var(--green-400); }
+[data-theme="dark"] .settings-section-icon.blue  { background: rgba(96,165,250,.12); color: var(--blue-400); }
+.settings-section-title h4 {
+    font-family: var(--font-head); font-size: .95rem;
+    font-weight: 700; color: var(--text);
+}
+.settings-section-title p { font-size: .78rem; color: var(--text-3); }
+.settings-section-body { padding: 22px; }
+.settings-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+@media (max-width: 600px) { .settings-row { grid-template-columns: 1fr; } }
+.settings-actions {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+}
+
+/* ── Info Row (read-only display) ── */
+.info-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row-label {
+    font-size: .78rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-4);
+}
+.info-row-value {
+    font-size: .88rem; font-weight: 600;
+    color: var(--text);
+}
+
+/* ── Absensi Page ── */
+.absensi-filter-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+.absensi-filter-bar label {
+    font-size: .78rem; font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase; letter-spacing: .06em;
+    white-space: nowrap;
+}
+.absensi-filter-bar select, .absensi-filter-bar input[type="date"] {
+    padding: 8px 12px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: .85rem; color: var(--text);
+    outline: none;
+    transition: border-color var(--trans), box-shadow var(--trans);
+    cursor: pointer;
+}
+.absensi-filter-bar select:focus, .absensi-filter-bar input[type="date"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ── Absensi Summary Cards ── */
+.absensi-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px; padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+}
+.absensi-sum-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-align: center;
+}
+.absensi-sum-card .sum-num {
+    font-family: var(--font-head);
+    font-size: 1.6rem; font-weight: 700; color: var(--text);
+    line-height: 1;
+}
+.absensi-sum-card .sum-label {
+    font-size: .75rem; color: var(--text-3); margin-top: 4px;
+    font-weight: 500;
+}
+.absensi-sum-card.hadir .sum-num  { color: var(--primary-text); }
+.absensi-sum-card.sakit .sum-num  { color: var(--amber-500); }
+.absensi-sum-card.izin .sum-num   { color: var(--accent-text); }
+.absensi-sum-card.alpha .sum-num  { color: var(--rose-500); }
+[data-theme="dark"] .absensi-sum-card.hadir .sum-num { color: var(--green-400); }
+[data-theme="dark"] .absensi-sum-card.izin  .sum-num { color: var(--blue-400); }
+
+/* ── Mutasi Page ── */
+.mutasi-type-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: .72rem; font-weight: 700;
+}
+.mutasi-type-badge.masuk { background: var(--primary-soft); color: var(--primary-text); }
+.mutasi-type-badge.keluar { background: rgba(244,63,94,.1); color: var(--rose-500); }
+[data-theme="dark"] .mutasi-type-badge.masuk { background: rgba(74,222,128,.12); color: var(--green-400); }
+
+/* ── Reset Password Page ── */
+.reset-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex; align-items: flex-start; gap: 16px;
+    box-shadow: var(--shadow-xs);
+    margin-bottom: 12px;
+    transition: border-color var(--trans), box-shadow var(--trans);
+}
+.reset-card:hover { border-color: var(--border-2); box-shadow: var(--shadow-sm); }
+.reset-card-icon {
+    width: 42px; height: 42px; flex-shrink: 0;
+    border-radius: var(--radius);
+    background: var(--primary-soft);
+    color: var(--primary-text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+}
+[data-theme="dark"] .reset-card-icon { background: rgba(74,222,128,.12); color: var(--green-400); }
+.reset-card-info { flex: 1; min-width: 0; }
+.reset-card-info h4 {
+    font-size: .9rem; font-weight: 700; color: var(--text);
+    margin-bottom: 2px;
+}
+.reset-card-info p { font-size: .8rem; color: var(--text-3); }
+.reset-card-time { font-size: .73rem; color: var(--text-4); margin-top: 4px; }
+.reset-card-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* ── Pagination ── */
+.pagination {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 16px 18px;
+    border-top: 1px solid var(--border);
+}
+.pagination-btn {
+    width: 32px; height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .82rem; font-weight: 600;
+    color: var(--text-3);
+    background: var(--surface-3);
+    transition: background var(--trans), color var(--trans);
+    border: 1px solid var(--border);
+}
+.pagination-btn:hover { background: var(--surface-2); color: var(--text); }
+.pagination-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+.pagination-btn:disabled { opacity: .4; pointer-events: none; }
+
+/* ── Dashboard Activity ── */
+.activity-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-xs);
+    animation: cardFadeIn .4s var(--ease) .3s both;
+    margin-top: 24px;
+}
+.activity-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+}
+.activity-head h4 { font-family: var(--font-head); font-size: .95rem; font-weight: 700; color: var(--text); }
+.activity-body { padding: 4px 20px; }
+
+/* ── Quick Actions (dashboard) ── */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-top: 8px;
+}
+.quick-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    display: flex; align-items: center; gap: 14px;
+    transition: border-color var(--trans), transform var(--trans), box-shadow var(--trans);
+    cursor: pointer;
+}
+.quick-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+.quick-card-icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .95rem;
+}
+.quick-card-label { font-size: .85rem; font-weight: 600; color: var(--text-2); }
+.quick-card-count { font-size: .75rem; color: var(--text-4); margin-top: 2px; }
+
+/* ── Highlight row (pending) ── */
+tbody tr.row-pending { background: rgba(245,158,11,.04); }
+tbody tr.row-pending:hover { background: rgba(245,158,11,.08); }
+
+/* ── Select custom ── */
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+/* ============================================================
+   TAMBAHAN CSS — Feature Toggle, Kelola Akun Siswa,
+   Table Person Avatar, Form Textarea, dan semua elemen
+   yang dipakai JS tapi belum ada di CSS sebelumnya
+   ============================================================ */
+
+/* ── Feature Toggle Wrap (Data Siswa page header) ── */
+.feature-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 8px 16px;
+    box-shadow: var(--shadow-xs);
+    transition: border-color var(--trans), box-shadow var(--trans);
+}
+.feature-toggle-wrap:hover {
+    border-color: var(--border-2);
+    box-shadow: var(--shadow-sm);
+}
+
+.feature-toggle-label {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.feature-toggle-label i {
+    color: var(--text-4);
+    font-size: .78rem;
+}
+
+/* ── Toggle Switch (the actual pill button) ── */
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: var(--radius-full);
+    background: var(--surface-3);
+    border: 1.5px solid var(--border-2);
+    cursor: pointer;
+    transition: background .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease);
+    flex-shrink: 0;
+    outline: none;
+}
+.toggle-switch:hover {
+    box-shadow: 0 0 0 3px var(--border);
+}
+.toggle-switch.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(22, 163, 74, .35);
+}
+.toggle-switch:focus-visible {
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    transition: transform .25s var(--ease-spring), background .25s var(--ease);
+}
+.toggle-switch.active .toggle-knob {
+    transform: translateX(20px);
+}
+[data-theme="dark"] .toggle-knob {
+    background: var(--surface-3);
+}
+[data-theme="dark"] .toggle-switch.active .toggle-knob {
+    background: #0d1117;
+}
+
+.toggle-status {
+    font-size: .78rem;
+    font-weight: 700;
+    min-width: 52px;
+}
+
+/* ── Table Person Cell ── */
+.td-person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.td-person strong {
+    display: block;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.td-person small {
+    display: block;
+    font-size: .75rem;
+    color: var(--text-4);
+    margin-top: 1px;
+    font-family: 'Courier New', monospace;
+}
+
+/* ── Table Avatar (initial circle) ── */
+.td-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-soft);
+    color: var(--primary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .82rem;
+    font-weight: 700;
+    font-family: var(--font-head);
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+[data-theme="dark"] .td-avatar {
+    background: rgba(74,222,128,.12);
+    color: var(--green-400);
+}
+.td-avatar.td-avatar-blue {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+}
+[data-theme="dark"] .td-avatar.td-avatar-blue {
+    background: rgba(96,165,250,.12);
+    color: var(--blue-400);
+}
+
+/* Large avatar used in modals */
+.td-avatar-lg {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+    border-radius: var(--radius);
+}
+
+/* ── Akun Profile Row (top of kelola modal) ── */
+.akun-profile-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+}
+.akun-profile-row strong {
+    display: block;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+/* ── Akun Status Grid ── */
+.akun-status-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+/* ── Akun Status Option Card ── */
+.akun-status-opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color .2s var(--ease), background .2s var(--ease),
+                box-shadow .2s var(--ease), transform .15s var(--ease);
+    position: relative;
+    user-select: none;
+}
+.akun-status-opt:hover {
+    background: var(--surface-2);
+    border-color: var(--border-2);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-xs);
+}
+.akun-status-opt.active {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+}
+[data-theme="dark"] .akun-status-opt.active {
+    border-color: var(--primary);
+    background: rgba(74,222,128,.08);
+    box-shadow: 0 0 0 3px rgba(74,222,128,.08);
+}
+
+/* Nonaktif sementara active = amber tint */
+.akun-status-opt[data-val="nonaktif_sementara"].active {
+    border-color: var(--amber-500);
+    background: rgba(245,158,11,.08);
+    box-shadow: 0 0 0 3px rgba(245,158,11,.1);
+}
+/* Nonaktif permanen active = rose tint */
+.akun-status-opt[data-val="nonaktif_permanen"].active {
+    border-color: var(--rose-500);
+    background: rgba(244,63,94,.08);
+    box-shadow: 0 0 0 3px rgba(244,63,94,.1);
+}
+
+.akun-status-opt strong {
+    display: block;
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+.akun-status-opt p {
+    font-size: .78rem;
+    color: var(--text-3);
+    line-height: 1.4;
+}
+
+/* ── Akun Status Option Icon ── */
+.aso-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: background .2s var(--ease);
+}
+.aso-icon.green {
+    background: var(--primary-soft);
+    color: var(--primary-text);
+}
+.aso-icon.amber {
+    background: rgba(245,158,11,.12);
+    color: var(--amber-500);
+}
+.aso-icon.rose {
+    background: rgba(244,63,94,.1);
+    color: var(--rose-500);
+}
+[data-theme="dark"] .aso-icon.green {
+    background: rgba(74,222,128,.12);
+    color: var(--green-400);
+}
+
+/* Active state — icon gets solid bg */
+.akun-status-opt.active .aso-icon.green {
+    background: var(--primary);
+    color: #fff;
+}
+.akun-status-opt[data-val="nonaktif_sementara"].active .aso-icon.amber {
+    background: var(--amber-500);
+    color: #fff;
+}
+.akun-status-opt[data-val="nonaktif_permanen"].active .aso-icon.rose {
+    background: var(--rose-500);
+    color: #fff;
+}
+
+/* ── Checkmark badge (active option) ── */
+.aso-check {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .62rem;
+    animation: asoCheckPop .25s var(--ease-spring) both;
+}
+.akun-status-opt[data-val="nonaktif_sementara"] .aso-check {
+    background: var(--amber-500);
+}
+.akun-status-opt[data-val="nonaktif_permanen"] .aso-check {
+    background: var(--rose-500);
+}
+@keyframes asoCheckPop {
+    from { transform: scale(0) rotate(-45deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* ── Form Textarea ── */
+.form-textarea {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: .88rem;
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.6;
+    font-family: var(--font-body);
+    transition: border-color var(--trans), box-shadow var(--trans), background var(--trans);
+}
+.form-textarea:focus {
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.form-textarea::placeholder {
+    color: var(--text-4);
+}
+
+/* ── Form Label (uppercase small label) ── */
+.form-label {
+    display: block;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-3);
+    margin-bottom: 8px;
+}
+
+/* ── Alasan group visibility ── */
+#alasanAkunGroup {
+    margin-top: 4px;
+}
+
+/* ── statusBadge helper classes (used by statusBadge() fn) ── */
+.badge-status-aktif {
+    background: var(--primary-soft);
+    color: var(--primary-text);
+}
+.badge-status-nonaktif_sementara {
+    background: rgba(245,158,11,.12);
+    color: var(--amber-500);
+}
+.badge-status-nonaktif_permanen {
+    background: rgba(244,63,94,.1);
+    color: var(--rose-500);
+}
+[data-theme="dark"] .badge-status-aktif {
+    background: rgba(74,222,128,.12);
+    color: var(--green-400);
+}
+
+/* ── Responsive tweaks for feature-toggle-wrap ── */
+@media (max-width: 640px) {
+    .feature-toggle-wrap {
+        flex-wrap: wrap;
+        border-radius: var(--radius-lg);
+        gap: 8px;
+    }
+    .feature-toggle-label {
+        font-size: .78rem;
+    }
+    .akun-status-opt {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+    .aso-icon {
+        width: 36px;
+        height: 36px;
+        font-size: .9rem;
+    }
+}
