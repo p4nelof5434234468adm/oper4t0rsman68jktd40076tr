@@ -326,6 +326,10 @@ function setupNav() {
 }
 
 function navigateTo(page) {
+    // Lepas listener realtime halaman reset jika pindah ke halaman lain
+    if (page !== 'reset-password-guru' && _resetPageUnsub) {
+        _resetPageUnsub(); _resetPageUnsub = null;
+    }
     State.page = page;
     qsa('.nav-item').forEach(n => n.classList.remove('active'));
     qs(`.nav-item[data-page="${page}"]`)?.classList.add('active');
@@ -1184,33 +1188,33 @@ async function viewGuruDetail(id) {
 // ======================================================
 // RESET PASSWORD GURU
 // ======================================================
-async function loadResetPasswordGuru() {
-    DOM.pageContainer.innerHTML = renderLoadingPage();
-    try {
-        const snapshot = await db.collection('resetPasswordRequests').get();
-        const sorted   = snapshot.docs.slice().sort((a,b)=>(b.data().createdAt?.toMillis?.()||0)-(a.data().createdAt?.toMillis?.()||0));
+// Simpan unsubscribe listener halaman reset agar bisa dilepas saat pindah halaman
+let _resetPageUnsub = null;
 
-        const header = `<div class="page-header slide-up">
+function _renderResetTable(docs) {
+    const sorted = docs.slice().sort((a,b) =>
+        (b.data().createdAt?.toMillis?.() || 0) - (a.data().createdAt?.toMillis?.() || 0)
+    );
+    const header = `<div class="page-header slide-up">
             <div class="page-header-left">
                 <h2>Request Reset Password Guru</h2>
-                <p>${snapshot.size} total request</p>
+                <p>${docs.length} total request</p>
             </div>
         </div>`;
 
-        if (snapshot.empty) {
-            DOM.pageContainer.innerHTML = header + renderEmpty('Tidak ada request reset password','fas fa-key');
-            return;
-        }
+    if (sorted.length === 0) {
+        DOM.pageContainer.innerHTML = header + renderEmpty('Tidak ada request reset password','fas fa-key');
+        return;
+    }
 
-        const rows = sorted.map(doc => {
-            const d = doc.data();
-            let statusStr = d.status||'pending';
-            // valid = guru sudah reset, proses = link dikirim belum reset
-            const badge = statusStr === 'approved'
-                ? (d.passwordChanged ? statusBadge('valid') : statusBadge('proses'))
-                : statusBadge(statusStr);
+    const rows = sorted.map(doc => {
+        const d = doc.data();
+        let statusStr = d.status || 'pending';
+        const badge = statusStr === 'approved'
+            ? (d.passwordChanged ? statusBadge('valid') : statusBadge('proses'))
+            : statusBadge(statusStr);
 
-            return `<tr>
+        return `<tr>
                 <td>
                     <div class="td-person">
                         <div class="td-avatar td-avatar-blue">${(d.nama||'?')[0].toUpperCase()}</div>
@@ -1233,17 +1237,28 @@ async function loadResetPasswordGuru() {
                     ` : ''}
                 </div></td>
             </tr>`;
-        }).join('');
+    }).join('');
 
-        DOM.pageContainer.innerHTML = header + renderSearchTable(
-            ['Guru','NUPTK','Tgl Request','Status Reset','Aksi'],
-            rows, snapshot.size, 'request'
-        );
-        attachTableSearch();
-    } catch(e) {
-        console.error(e);
-        DOM.pageContainer.innerHTML = renderEmpty('Gagal memuat data','fas fa-exclamation-triangle', e.message);
-    }
+    DOM.pageContainer.innerHTML = header + renderSearchTable(
+        ['Guru','NUPTK','Tgl Request','Status Reset','Aksi'],
+        rows, docs.length, 'request'
+    );
+    attachTableSearch();
+}
+
+function loadResetPasswordGuru() {
+    // Lepas listener lama jika masih aktif
+    if (_resetPageUnsub) { _resetPageUnsub(); _resetPageUnsub = null; }
+
+    DOM.pageContainer.innerHTML = renderLoadingPage();
+
+    _resetPageUnsub = db.collection('resetPasswordRequests')
+        .onSnapshot(snapshot => {
+            _renderResetTable(snapshot.docs);
+        }, err => {
+            console.error(err);
+            DOM.pageContainer.innerHTML = renderEmpty('Gagal memuat data','fas fa-exclamation-triangle', err.message);
+        });
 }
 
 async function viewResetDetail(id) {
@@ -1306,7 +1321,6 @@ async function approveResetRequest(id) {
             passwordChanged: false,
         });
         showToast('Request disetujui. Guru dapat mereset password menggunakan link.','success');
-        loadResetPasswordGuru();
     } catch(e) { showToast('Gagal menyetujui','error'); }
 }
 
@@ -1338,7 +1352,6 @@ async function confirmRejectReset(id) {
         });
         closeModal();
         showToast('Request ditolak.','success');
-        loadResetPasswordGuru();
     } catch(e) { showToast('Gagal','error'); }
 }
 
@@ -1374,7 +1387,6 @@ async function kirimLinkReset(id) {
                 </button>
                 <button class="btn btn-ghost" onclick="closeModal()">Tutup</button>
             </div>`);
-        loadResetPasswordGuru();
     } catch(e) { showToast('Gagal membuat link reset','error'); }
 }
 
