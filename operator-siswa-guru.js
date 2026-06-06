@@ -168,17 +168,25 @@ DOM.firstLoginForm?.addEventListener('submit', async (e) => {
     setLoginLoading(DOM.btnFirstLogin, true);
     try {
         const user = auth.currentUser;
-        // Update email
-        await user.updateEmail(newEmail);
-        // Update password
+
+        // Update password first
         await user.updatePassword(newPass);
-        // Save operator doc
+
+        // Send verification link to new email — Firebase will update Auth email after user clicks the link
+        // This avoids auth/operation-not-allowed error from updateEmail()
+        await user.verifyBeforeUpdateEmail(newEmail);
+
+        // Save new email to Firestore immediately (used for display purposes)
         await db.collection('operators').doc(user.uid).set({
             email: newEmail,
+            pendingEmail: newEmail,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             isFirstSetup: true,
-        });
-        showToast('Kredensial berhasil diperbarui! Selamat datang.', 'success');
+        }, { merge: true });
+
+        showToast('Password berhasil diperbarui! Link verifikasi dikirim ke ' + newEmail + ' — klik untuk mengaktifkan email baru.', 'success');
+        // Brief pause so user can read the toast, then proceed to panel
+        await new Promise(r => setTimeout(r, 1800));
         State.isFirstLogin = false;
         State.user = user;
         showMainPanel();
@@ -190,6 +198,22 @@ DOM.firstLoginForm?.addEventListener('submit', async (e) => {
             showToast('Sesi habis. Silakan login ulang.', 'error');
             await auth.signOut();
             showLogin();
+        } else if (err.code === 'auth/operation-not-allowed') {
+            // Fallback: skip email change, only update password
+            try {
+                await db.collection('operators').doc(auth.currentUser.uid).set({
+                    email: newEmail,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isFirstSetup: true,
+                }, { merge: true });
+                showToast('Password berhasil diperbarui! Email baru disimpan. (Verifikasi email dinonaktifkan di Firebase Console — aktifkan fitur Email Enumeration Protection di Authentication > Settings)', 'info');
+                await new Promise(r => setTimeout(r, 2200));
+                State.isFirstLogin = false;
+                State.user = auth.currentUser;
+                showMainPanel();
+            } catch (e2) {
+                showToast('Gagal menyimpan: ' + e2.message, 'error');
+            }
         } else {
             showToast('Gagal menyimpan: ' + err.message, 'error');
         }
