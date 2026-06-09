@@ -2489,11 +2489,19 @@ function markNotificationRead(index) {
 // ============================================================
 function setupRealtimeListeners() {
     // Feedback badge + notifikasi
+    // Flag untuk skip initial load — saat pertama kali onSnapshot dipanggil,
+    // Firebase menganggap semua dokumen existing sebagai 'added', sehingga
+    // tanpa flag ini notifikasi akan banjir setiap kali admin login.
+    let feedbackInitialLoad = true;
     db.collection('feedbacks').where('status', '==', 'pending').onSnapshot((snap) => {
         const badge = $('feedbackBadge');
         if (badge) {
             badge.textContent = snap.size;
             badge.style.display = snap.size > 0 ? 'inline-flex' : 'none';
+        }
+        if (feedbackInitialLoad) {
+            feedbackInitialLoad = false;
+            return; // skip notifikasi saat initial load
         }
         snap.docChanges().forEach(change => {
             if (change.type === 'added') {
@@ -2509,7 +2517,12 @@ function setupRealtimeListeners() {
     });
 
     // Announcement changes
+    let announcementInitialLoad = true;
     db.collection('announcements').onSnapshot((snap) => {
+        if (announcementInitialLoad) {
+            announcementInitialLoad = false;
+            return; // skip notifikasi saat initial load
+        }
         snap.docChanges().forEach(change => {
             if (change.type === 'added' && change.doc.data().active) {
                 const d = change.doc.data();
@@ -2520,11 +2533,17 @@ function setupRealtimeListeners() {
 }
 
 function setupGlobalChatListener() {
+    // Flag untuk skip initial load — sama seperti di setupRealtimeListeners
+    let chatInitialLoad = true;
     db.collection('chatSessions').where('status', '==', 'active').onSnapshot((snap) => {
         const badge = $('chatBadge');
         if (badge) {
             badge.textContent = snap.size;
             badge.style.display = snap.size > 0 ? 'inline-flex' : 'none';
+        }
+        if (chatInitialLoad) {
+            chatInitialLoad = false;
+            return; // skip notifikasi saat initial load
         }
         snap.docChanges().forEach(change => {
             if (change.type === 'added') {
