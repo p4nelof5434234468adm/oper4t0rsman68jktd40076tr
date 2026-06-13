@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Operator Panel – SMAN 68 Jakarta</title>
+<title>Panel Operator – SMAN 68 Jakarta</title>
 <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -12,153 +12,201 @@
   --g9:#0a4a2e;--g8:#0d5c38;--g7:#0f7045;--g6:#12885a;--g5:#16a068;--g4:#22c07a;--g3:#4dd99a;--g2:#a8f0cc;--g1:#e6faf2;
   --b9:#0b2a4a;--b8:#0e3a6b;--b7:#1050a0;--b6:#1a65c8;--b5:#2278e8;--b4:#4a9af5;--b2:#b3d9ff;--b1:#e8f4ff;
   --white:#fff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;
-  --gray-300:#cbd5e1;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;
-  --red:#ef4444;--yellow:#f59e0b;--radius:14px;--radius-sm:8px;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.12);--shadow-lg:0 8px 32px rgba(0,0,0,.18);
+  --gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;
+  --red:#ef4444;--yellow:#f59e0b;--orange:#f97316;
+  --radius:14px;--radius-sm:9px;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.12);--shadow-lg:0 8px 32px rgba(0,0,0,.18);
+  --t:.18s cubic-bezier(.4,0,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#eef6f1;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:#eef6f1;min-height:100vh;overflow-x:hidden}
 
 /* LOGIN */
 #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;
   background:linear-gradient(135deg,var(--g9) 0%,var(--b9) 100%);padding:20px}
-.login-card{background:#fff;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:var(--shadow-lg)}
-.login-logo{text-align:center;margin-bottom:24px}
-.login-logo img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--g4);box-shadow:0 0 20px rgba(22,160,104,.3)}
-.login-logo h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--g9);margin-top:12px}
+.login-card{background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:400px;
+  box-shadow:var(--shadow-lg);animation:popIn .35s cubic-bezier(.34,1.4,.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.login-logo{text-align:center;margin-bottom:22px}
+.login-logo img{width:68px;height:68px;border-radius:50%;object-fit:cover;border:3px solid var(--g4);box-shadow:0 0 20px rgba(22,160,104,.3)}
+.login-logo h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:800;color:var(--g9);margin-top:11px}
 .login-logo p{font-size:12px;color:var(--gray-500);margin-top:3px}
-.login-err{background:#fff0f0;color:#c00;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none}
-.login-group{margin-bottom:16px}
-.login-group label{display:block;font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.login-group input{width:100%;padding:11px 14px;border:2px solid var(--gray-200);border-radius:10px;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:.2s}
-.login-group input:focus{border-color:var(--g4)}
-.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--g6),var(--b6));color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:.2s}
-.login-btn:hover{opacity:.9}
+.login-err{background:#fff0f0;color:#c00;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:12px;display:none;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.login-group{margin-bottom:14px}
+.login-group label{display:block;font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.login-group input{width:100%;padding:11px 14px;border:2px solid var(--gray-200);border-radius:10px;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:var(--t)}
+.login-group input:focus{border-color:var(--g4);box-shadow:0 0 0 3px rgba(34,192,122,.1)}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--g6),var(--b6));color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:var(--t)}
+.login-btn:hover{opacity:.9;transform:translateY(-1px)}
 
 /* APP */
 #appScreen{display:none}
-
-/* SIDEBAR */
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:linear-gradient(180deg,var(--g9) 0%,var(--b9) 100%);
-  z-index:200;display:flex;flex-direction:column;transition:transform .3s}
-.sidebar-logo{padding:20px 18px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--g4)}
-.sidebar-logo div h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;color:#fff;line-height:1.3}
-.sidebar-logo div p{font-size:10px;color:var(--g3);font-weight:500}
-.sidebar-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;color:rgba(255,255,255,.7);
-  cursor:pointer;transition:.2s;font-size:13px;font-weight:600;font-family:'Inter',sans-serif}
-.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.15);color:#fff}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;
+  background:linear-gradient(180deg,var(--g9) 0%,var(--b9) 100%);
+  z-index:200;display:flex;flex-direction:column;transition:transform var(--t);overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sidebar-logo img{width:38px;height:38px;border-radius:50%;border:2px solid var(--g4)}
+.sidebar-logo div h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;color:#fff}
+.sidebar-logo div p{font-size:10px;color:var(--g3)}
+.sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:3px}
+.nav-section-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;padding:8px 10px 2px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;color:rgba(255,255,255,.7);
+  cursor:pointer;transition:var(--t);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.14);color:#fff}
 .nav-item.active{background:var(--g7)}
-.nav-item i{width:18px;text-align:center}
-.sidebar-bottom{padding:14px 10px;border-top:1px solid rgba(255,255,255,.1)}
-.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;color:rgba(255,255,255,.7);
-  cursor:pointer;font-size:13px;font-weight:600;transition:.2s;width:100%;background:none;border:none;font-family:'Inter',sans-serif}
-.logout-btn:hover{background:rgba(255,0,0,.15);color:#ff8080}
+.nav-item i{width:17px;text-align:center;font-size:13px}
+.sidebar-bottom{padding:12px 10px;border-top:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.logout-btn{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;
+  color:rgba(255,255,255,.65);cursor:pointer;font-size:13px;font-weight:600;transition:var(--t);
+  width:100%;background:none;border:none;font-family:'Inter',sans-serif}
+.logout-btn:hover{background:rgba(239,68,68,.18);color:#ff8080}
 
-/* MAIN */
-.main-wrap{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:#fff;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;
+.main-wrap{margin-left:240px;min-height:100vh;display:flex;flex-direction:column;transition:margin var(--t)}
+.topbar{background:#fff;padding:0 22px;height:58px;display:flex;align-items:center;justify-content:space-between;
   box-shadow:var(--shadow-sm);position:sticky;top:0;z-index:100}
-.topbar-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:var(--g9)}
-.topbar-user{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--gray-700)}
+.topbar-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:var(--g9)}
+.topbar-user{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--gray-700)}
 .topbar-user i{color:var(--g5)}
-.hamburger-menu{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-700)}
-
-.main-content{padding:24px;flex:1}
-.page{display:none}
-.page.active{display:block}
+.hamburger-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-700);padding:4px}
+.main-content{padding:22px;flex:1}
+.page{display:none}.page.active{display:block;animation:fadeIn .2s ease}
 
 /* CARDS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:#fff;border-radius:var(--radius);padding:18px;border-left:4px solid;box-shadow:var(--shadow-sm)}
-.stat-card.green{border-color:var(--g5)}.stat-card.blue{border-color:var(--b5)}.stat-card.yellow{border-color:var(--yellow)}.stat-card.red{border-color:var(--red)}
-.stat-card .stat-label{font-size:12px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
-.stat-card .stat-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:var(--g9);margin-top:4px}
-.card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);margin-bottom:18px}
-.card-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:var(--g9);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.stat-card{background:#fff;border-radius:var(--radius);padding:16px;border-left:4px solid;box-shadow:var(--shadow-sm);transition:var(--t)}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card.green{border-color:var(--g5)}.stat-card.blue{border-color:var(--b5)}
+.stat-card.yellow{border-color:var(--yellow)}.stat-card.red{border-color:var(--red)}
+.stat-card.orange{border-color:var(--orange)}
+.stat-card .stat-label{font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.stat-card .stat-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:var(--g9);margin-top:4px}
+.card{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);margin-bottom:16px}
+.card-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:800;color:var(--g9);margin-bottom:14px;display:flex;align-items:center;gap:7px}
 .card-title i{color:var(--g5)}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
-.page-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--g9)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.page-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:800;color:var(--g9)}
+
+/* SERVER CAPACITY CARD */
+.capacity-card{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1.5px solid #fde68a;border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.capacity-card .cap-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.capacity-card .cap-icon{width:44px;height:44px;background:linear-gradient(135deg,#f97316,#f59e0b);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+.capacity-card .cap-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#92400e}
+.capacity-card .cap-sub{font-size:12px;color:#b45309;margin-top:2px}
+.cap-input-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cap-number-input{border:2px solid #fde68a;border-radius:10px;padding:11px 16px;font-size:22px;font-weight:800;
+  color:var(--g9);width:110px;text-align:center;outline:none;background:#fff;font-family:'Plus Jakarta Sans',sans-serif;transition:var(--t)}
+.cap-number-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.15)}
+.cap-hint{font-size:12px;color:#92400e;flex:1;min-width:120px}
+.cap-live-badge{display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;
+  font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #86efac}
+.cap-live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+.cap-zero-hint{background:#fff;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;font-size:12px;color:#b45309;margin-top:10px}
+.cap-active-users{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #fde68a;margin-top:12px}
+.cap-active-title{font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.cap-users-list{font-size:12px;color:var(--gray-600);max-height:80px;overflow-y:auto}
 
 /* FORM */
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
-.form-control{width:100%;padding:10px 14px;border:2px solid var(--gray-200);border-radius:9px;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:.2s;background:#fff}
-.form-control:focus{border-color:var(--g4)}
+.form-group{margin-bottom:13px}
+.form-group label{display:block;font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.form-control{width:100%;padding:10px 13px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:14px;
+  outline:none;font-family:'Inter',sans-serif;transition:var(--t);background:#fff}
+.form-control:focus{border-color:var(--g4);box-shadow:0 0 0 3px rgba(34,192,122,.1)}
 select.form-control{cursor:pointer}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.btn{padding:10px 20px;border-radius:9px;border:none;font-weight:700;font-size:13px;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-.btn-primary{background:var(--g5);color:#fff}
-.btn-primary:hover{background:var(--g6)}
+textarea.form-control{resize:vertical;min-height:70px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.btn{padding:9px 18px;border-radius:var(--radius-sm);border:none;font-weight:700;font-size:13px;cursor:pointer;
+  transition:var(--t);font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,var(--g6),var(--b6));color:#fff}
+.btn-primary:hover{opacity:.88}
 .btn-secondary{background:var(--b5);color:#fff}
 .btn-secondary:hover{background:var(--b6)}
 .btn-danger{background:var(--red);color:#fff}
 .btn-danger:hover{opacity:.85}
 .btn-outline{background:#fff;color:var(--g7);border:2px solid var(--g5)}
-.btn-sm{padding:7px 14px;font-size:12px}
+.btn-outline:hover{background:var(--g1)}
+.btn-sm{padding:6px 13px;font-size:12px}
 .btn-yellow{background:var(--yellow);color:#fff}
 
 /* TABLE */
-.table-wrap{overflow-x:auto;border-radius:var(--radius-sm)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--gray-200)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-table th{background:linear-gradient(135deg,var(--g7),var(--b7));color:#fff;padding:11px 14px;text-align:left;font-weight:700;white-space:nowrap}
-table td{padding:10px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
+table th{background:linear-gradient(135deg,var(--g7),var(--b7));color:#fff;padding:10px 13px;text-align:left;font-weight:700;white-space:nowrap}
+table td{padding:9px 13px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:middle}
 table tr:last-child td{border-bottom:none}
 table tr:hover td{background:var(--g1)}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
 .badge-green{background:var(--g1);color:var(--g8)}.badge-blue{background:var(--b1);color:var(--b8)}
+.badge-red{background:#fff0f0;color:#991b1b}.badge-yellow{background:#fffbeb;color:#92400e}
 
-/* JADWAL TABLE EDITOR */
-.jadwal-rows-editor{border:1px solid var(--gray-200);border-radius:9px;overflow:hidden;margin-bottom:12px}
-.jadwal-row-edit{display:flex;gap:8px;padding:8px 10px;border-bottom:1px solid var(--gray-100);flex-wrap:wrap}
+/* JADWAL EDITOR */
+.jadwal-rows-editor{border:1px solid var(--gray-200);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:10px}
+.jadwal-row-edit{display:flex;gap:7px;padding:7px 10px;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;align-items:center}
 .jadwal-row-edit:last-child{border-bottom:none}
-.jadwal-row-edit input{flex:1;min-width:100px;padding:6px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:12px;outline:none}
+.jadwal-row-edit:hover{background:var(--g1)}
+.jadwal-row-edit input{flex:1;min-width:90px;padding:6px 9px;border:1px solid var(--gray-200);border-radius:6px;font-size:12px;outline:none;transition:var(--t)}
 .jadwal-row-edit input:focus{border-color:var(--g4)}
 
 /* COLORS */
-.color-dots{display:flex;gap:8px;flex-wrap:wrap}
-.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
+.color-dots{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.color-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:var(--t)}
 .color-dot:hover,.color-dot.selected{transform:scale(1.2);border-color:var(--gray-700)}
-.color-dot.red-dot{background:#ef4444}
-.color-dot.green-dot{background:#22c55e}
-.color-dot.yellow-dot{background:#f59e0b}
-.color-dot.blue-dot{background:#3b82f6}
+.color-dot.red-dot{background:#ef4444}.color-dot.green-dot{background:#22c55e}
+.color-dot.yellow-dot{background:#f59e0b}.color-dot.blue-dot{background:#3b82f6}
 .color-dot.none-dot{background:var(--gray-200)}
 
-/* AKADEMIK EVENTS */
-.event-edit-row{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap}
+/* EVENT EDITOR */
+.event-edit-row{display:flex;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap}
 .event-edit-row:last-child{border-bottom:none}
-.event-edit-row input{padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none}
+.event-edit-row input{padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none;transition:var(--t)}
 .event-edit-row input:focus{border-color:var(--g4)}
-.event-edit-row .ev-date{width:130px}
-.event-edit-row .ev-name{flex:1;min-width:120px}
-.event-edit-row select{padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none;background:#fff}
+.event-edit-row .ev-date{width:140px}.event-edit-row .ev-name{flex:1;min-width:120px}
+.event-edit-row select{padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:13px;background:#fff}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--g7);color:#fff;padding:13px 18px;
-  border-radius:10px;box-shadow:var(--shadow-lg);font-size:14px;font-weight:600;z-index:9999;
-  display:none;max-width:300px;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+#toast-stack{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none}
+.toast-item{background:var(--g8);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow-lg);
+  font-size:13px;font-weight:600;max-width:280px;animation:toastIn .3s cubic-bezier(.34,1.4,.64,1);pointer-events:all}
+@keyframes toastIn{from{opacity:0;transform:translateX(28px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+.toast-item.err{background:linear-gradient(135deg,#b91c1c,#7f1d1d)}
+.toast-item.fadeout{animation:toastOut .3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
 
 /* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:var(--radius);width:100%;max-width:500px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
-.modal-header{background:linear-gradient(135deg,var(--g7),var(--b7));color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0}
-.modal-header h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800}
-.modal-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
-.modal-body{padding:20px}
+.modal{background:#fff;border-radius:var(--radius);width:100%;max-width:520px;box-shadow:var(--shadow-lg);
+  max-height:90vh;overflow-y:auto;animation:modalPop .25s cubic-bezier(.34,1.4,.64,1)}
+@keyframes modalPop{from{transform:scale(.88) translateY(18px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-header{background:linear-gradient(135deg,var(--g7),var(--b7));color:#fff;padding:15px 20px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1;border-radius:var(--radius) var(--radius) 0 0}
+.modal-header h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:800}
+.modal-close{background:rgba(255,255,255,.18);border:none;color:#fff;width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:var(--t)}
+.modal-close:hover{background:rgba(255,255,255,.3)}
+.modal-body{padding:18px}
+.info-box{background:var(--g1);border:1px solid var(--g2);border-radius:9px;padding:12px 14px;font-size:13px;color:var(--g8);margin-bottom:14px}
+.warn-box{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:12px 14px;font-size:13px;color:#92400e;margin-bottom:14px}
+
+/* SIDEBAR OVERLAY */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199;display:none;backdrop-filter:blur(1px)}
+.sidebar-overlay.open{display:block}
 
 /* RESPONSIVE */
-@media(max-width:768px){
+@media(max-width:800px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .main-wrap{margin-left:0}
   .hamburger-menu{display:block}
   .form-row{grid-template-columns:1fr}
-  .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;display:none}
-  .sidebar-overlay.open{display:block}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:420px){
+  .stats-grid{grid-template-columns:1fr}
+  .main-content{padding:14px}
 }
 </style>
 </head>
@@ -173,15 +221,12 @@ table tr:hover td{background:var(--g1)}
       <p>SMAN 68 Jakarta – Sistem Manajemen Konten</p>
     </div>
     <div class="login-err" id="loginErr"></div>
-    <div class="login-group">
-      <label>Username</label>
-      <input type="text" id="loginUser" placeholder="Masukkan username" autocomplete="username"/>
-    </div>
-    <div class="login-group">
-      <label>Password</label>
-      <input type="password" id="loginPass" placeholder="Masukkan password" autocomplete="current-password"/>
-    </div>
+    <div class="login-group"><label>Username</label>
+      <input type="text" id="loginUser" placeholder="Masukkan username" autocomplete="username"/></div>
+    <div class="login-group"><label>Password</label>
+      <input type="password" id="loginPass" placeholder="Masukkan password" autocomplete="current-password"/></div>
     <button class="login-btn" onclick="doLogin()"><i class="fa fa-sign-in-alt"></i> Masuk</button>
+    <p style="font-size:11px;color:var(--gray-400);text-align:center;margin-top:14px">Default: <code>operator68</code> / <code>sman68jakarta</code></p>
   </div>
 </div>
 
@@ -194,26 +239,41 @@ table tr:hover td{background:var(--g1)}
       <div><h3>SMAN 68 Jakarta</h3><p>Panel Operator</p></div>
     </div>
     <nav class="sidebar-nav">
-      <div class="nav-item active" onclick="showPage('dashboard',this)"><i class="fa fa-tachometer-alt"></i> Dashboard</div>
-      <div class="nav-item" onclick="showPage('jadwal',this)"><i class="fa fa-calendar-alt"></i> Jadwal Pelajaran</div>
-      <div class="nav-item" onclick="showPage('akademik',this)"><i class="fa fa-book-open"></i> Kalender Akademik</div>
-      <div class="nav-item" onclick="showPage('colored',this)"><i class="fa fa-palette"></i> Warna Hari</div>
-      <div class="nav-item" onclick="showPage('unduh',this)"><i class="fa fa-download"></i> Dokumen Unduh</div>
-      <div class="nav-item" onclick="showPage('settings',this)"><i class="fa fa-cog"></i> Pengaturan Akun</div>
+      <span class="nav-section-lbl">Utama</span>
+      <button class="nav-item active" onclick="showPage('dashboard',this)"><i class="fa fa-gauge"></i> Dashboard</button>
+      <span class="nav-section-lbl">Jadwal</span>
+      <button class="nav-item" onclick="showPage('jadwal',this)"><i class="fa fa-calendar-alt"></i> Jadwal Pelajaran</button>
+      <span class="nav-section-lbl">Kalender</span>
+      <button class="nav-item" onclick="showPage('akademik',this)"><i class="fa fa-book-open"></i> Kalender Akademik</button>
+      <button class="nav-item" onclick="showPage('colored',this)"><i class="fa fa-palette"></i> Warna Hari</button>
+      <span class="nav-section-lbl">Dokumen</span>
+      <button class="nav-item" onclick="showPage('unduh',this)"><i class="fa fa-download"></i> Dokumen Unduh</button>
+      <span class="nav-section-lbl">Sistem</span>
+      <button class="nav-item" onclick="showPage('capacity',this)"><i class="fa fa-server"></i> Kapasitas Server</button>
+      <button class="nav-item" onclick="showPage('settings',this)"><i class="fa fa-cog"></i> Pengaturan Akun</button>
     </nav>
     <div class="sidebar-bottom">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);padding:4px 11px 8px;display:flex;align-items:center;gap:5px">
+        <i class="fa fa-user-shield" style="color:var(--g4)"></i>
+        <span id="sidebarUser">Operator</span>
+      </div>
       <button class="logout-btn" onclick="doLogout()"><i class="fa fa-sign-out-alt"></i> Keluar</button>
     </div>
   </aside>
 
   <div class="main-wrap">
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
         <button class="hamburger-menu" onclick="openSidebar()"><i class="fa fa-bars"></i></button>
         <span class="topbar-title" id="topbarTitle">Dashboard</span>
       </div>
-      <div class="topbar-user"><i class="fa fa-user-circle"></i><span id="topbarUser">Operator</span></div>
+      <div class="topbar-user">
+        <i class="fa fa-user-circle"></i>
+        <span id="topbarUser">Operator</span>
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--g4);animation:pulse 2s infinite;display:inline-block;margin-left:2px"></span>
+      </div>
     </div>
+
     <div class="main-content">
 
       <!-- DASHBOARD -->
@@ -222,12 +282,14 @@ table tr:hover td{background:var(--g1)}
           <div class="stat-card green"><div class="stat-label">Jadwal Aktif</div><div class="stat-val" id="statJadwal">–</div></div>
           <div class="stat-card blue"><div class="stat-label">Kalender Akademik</div><div class="stat-val" id="statAkademik">–</div></div>
           <div class="stat-card yellow"><div class="stat-label">Dokumen Unduh</div><div class="stat-val" id="statUnduh">–</div></div>
+          <div class="stat-card orange"><div class="stat-label">Pengguna Aktif</div><div class="stat-val" id="statActiveUsers">–</div></div>
+          <div class="stat-card red"><div class="stat-label">Maks. Kapasitas</div><div class="stat-val" id="statCapacity">–</div></div>
         </div>
         <div class="card">
           <div class="card-title"><i class="fa fa-info-circle"></i> Selamat Datang</div>
-          <p style="font-size:14px;color:var(--gray-700);line-height:1.7">Gunakan panel ini untuk mengelola konten website SMAN 68 Jakarta. Navigasi menu di samping untuk mengelola jadwal pelajaran, kalender akademik, warna hari khusus, dan dokumen unduh.</p>
-          <div style="margin-top:16px;padding:14px;background:var(--g1);border-radius:9px;font-size:13px;color:var(--g8);font-weight:600">
-            <i class="fa fa-lightbulb" style="margin-right:6px;color:var(--g5)"></i>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.7">Gunakan panel ini untuk mengelola konten website SMAN 68 Jakarta. Navigasi menu di samping untuk mengelola jadwal, kalender akademik, warna hari, dokumen unduh, dan kapasitas server.</p>
+          <div class="info-box" style="margin-top:14px;margin-bottom:0">
+            <i class="fa fa-lightbulb" style="color:var(--g5);margin-right:6px"></i>
             Pastikan untuk mengubah username dan password default di menu <strong>Pengaturan Akun</strong>.
           </div>
         </div>
@@ -238,25 +300,28 @@ table tr:hover td{background:var(--g1)}
         <div class="section-header">
           <div class="page-title"><i class="fa fa-calendar-alt" style="color:var(--g5);margin-right:8px"></i>Jadwal Pelajaran</div>
         </div>
-        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-          <button class="btn btn-primary" id="tabJadwalGenap" onclick="switchJadwalTab('genap')">📘 Semester Genap</button>
-          <button class="btn btn-outline" id="tabJadwalGanjil" onclick="switchJadwalTab('ganjil')">📗 Semester Ganjil</button>
+        <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap" id="jadwalTabBtns">
+          <button class="btn btn-primary btn-sm" id="tabJadwalGenap" onclick="switchJadwalTab('genap')">📘 Genap</button>
+          <button class="btn btn-outline btn-sm" id="tabJadwalGanjil" onclick="switchJadwalTab('ganjil')">📗 Ganjil</button>
+          <button class="btn btn-outline btn-sm" id="tabJadwalPTS" onclick="switchJadwalTab('pts')">📝 PTS</button>
+          <button class="btn btn-outline btn-sm" id="tabJadwalPAS" onclick="switchJadwalTab('pas')">📋 PAS</button>
         </div>
         <div id="jadwalEditorGenap" class="card"></div>
         <div id="jadwalEditorGanjil" class="card" style="display:none"></div>
+        <div id="jadwalEditorPts" class="card" style="display:none"></div>
+        <div id="jadwalEditorPas" class="card" style="display:none"></div>
       </div>
 
       <!-- KALENDER AKADEMIK -->
       <div class="page" id="page-akademik">
         <div class="section-header">
           <div class="page-title"><i class="fa fa-book-open" style="color:var(--g5);margin-right:8px"></i>Kalender Akademik</div>
-          <button class="btn btn-primary" onclick="openAkademikModal()"><i class="fa fa-plus"></i> Tambah Tahun Ajaran</button>
+          <button class="btn btn-primary" onclick="openAkademikModal()"><i class="fa fa-plus"></i> Tambah Tahun</button>
         </div>
         <div class="card">
           <div class="table-wrap">
-            <table>
-              <thead><tr><th>Tahun Ajaran</th><th>Gambar</th><th>Jumlah Event</th><th>Aksi</th></tr></thead>
-              <tbody id="akademikTable"><tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:30px">Belum ada data</td></tr></tbody>
+            <table><thead><tr><th>Tahun Ajaran</th><th>Gambar</th><th>Jumlah Event</th><th>Aksi</th></tr></thead>
+              <tbody id="akademikTable"><tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:28px">Belum ada data</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -269,16 +334,12 @@ table tr:hover td{background:var(--g1)}
         </div>
         <div class="card">
           <div class="card-title"><i class="fa fa-paint-brush"></i> Tandai Hari di Kalender</div>
-          <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px">Tandai tanggal spesial di kalender dengan warna tertentu (libur, peringatan, dll).</p>
-          <div class="form-row" style="margin-bottom:14px">
-            <div class="form-group">
-              <label>Tanggal</label>
-              <input type="date" class="form-control" id="coloredDate"/>
-            </div>
-            <div class="form-group">
-              <label>Pilih Warna</label>
-              <div class="color-dots" style="margin-top:8px" id="colorPickerDots">
-                <div class="color-dot red-dot" title="Merah" onclick="selectColor('red',this)"></div>
+          <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Tandai tanggal spesial (libur, peringatan, dll) di kalender dengan warna.</p>
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="form-group"><label>Tanggal</label><input type="date" class="form-control" id="coloredDate"/></div>
+            <div class="form-group"><label>Pilih Warna</label>
+              <div class="color-dots" style="margin-top:7px" id="colorPickerDots">
+                <div class="color-dot red-dot selected" title="Merah" onclick="selectColor('red',this)"></div>
                 <div class="color-dot green-dot" title="Hijau" onclick="selectColor('green',this)"></div>
                 <div class="color-dot yellow-dot" title="Kuning" onclick="selectColor('yellow',this)"></div>
                 <div class="color-dot blue-dot" title="Biru" onclick="selectColor('blue',this)"></div>
@@ -286,8 +347,7 @@ table tr:hover td{background:var(--g1)}
               </div>
             </div>
           </div>
-          <div class="form-group">
-            <label>Nama Keterangan (Opsional)</label>
+          <div class="form-group"><label>Nama / Keterangan (Opsional)</label>
             <input type="text" class="form-control" id="coloredLabel" placeholder="Contoh: Hari Libur Nasional"/>
           </div>
           <button class="btn btn-primary" onclick="saveColoredDay()"><i class="fa fa-save"></i> Simpan</button>
@@ -295,8 +355,7 @@ table tr:hover td{background:var(--g1)}
         <div class="card">
           <div class="card-title"><i class="fa fa-list"></i> Daftar Hari Bertanda</div>
           <div class="table-wrap">
-            <table>
-              <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Warna</th><th>Aksi</th></tr></thead>
+            <table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Warna</th><th>Aksi</th></tr></thead>
               <tbody id="coloredTable"><tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:20px">Belum ada data</td></tr></tbody>
             </table>
           </div>
@@ -309,40 +368,82 @@ table tr:hover td{background:var(--g1)}
           <div class="page-title"><i class="fa fa-download" style="color:var(--g5);margin-right:8px"></i>Dokumen Unduh</div>
           <button class="btn btn-primary" onclick="openUnduhModal()"><i class="fa fa-plus"></i> Tambah Dokumen</button>
         </div>
+        <div class="info-box" style="margin-bottom:14px">
+          <i class="fa fa-eye-slash" style="margin-right:6px"></i>
+          URL dokumen <strong>disembunyikan dari pengguna</strong> secara otomatis. Pengguna hanya melihat nama dokumen.
+        </div>
         <div class="card">
           <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Nama Dokumen</th><th>Deskripsi</th><th>Link</th><th>Aksi</th></tr></thead>
-              <tbody id="unduhTable"><tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:30px">Belum ada dokumen</td></tr></tbody>
+            <table><thead><tr><th>#</th><th>Nama Dokumen</th><th>Kategori</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
+              <tbody id="unduhTable"><tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:28px">Belum ada dokumen</td></tr></tbody>
             </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- KAPASITAS SERVER ← FITUR BARU -->
+      <div class="page" id="page-capacity">
+        <div class="section-header">
+          <div class="page-title"><i class="fa fa-server" style="color:var(--g5);margin-right:8px"></i>Kapasitas Server</div>
+        </div>
+
+        <div class="capacity-card">
+          <div class="cap-header">
+            <div class="cap-icon"><i class="fa fa-users"></i></div>
+            <div>
+              <div class="cap-title">Batas Pengguna Bersamaan</div>
+              <div class="cap-sub">Atur berapa pengguna yang bisa mengakses website sekaligus</div>
+            </div>
+          </div>
+          <div class="cap-input-row">
+            <input type="number" class="cap-number-input" id="capMaxInput" min="0" placeholder="0" oninput="onCapInput()"/>
+            <div>
+              <div class="cap-hint"><strong>0 = Tidak ada batas</strong> (semua pengguna bisa akses)</div>
+              <div style="margin-top:6px"><span class="cap-live-badge"><span class="cap-live-dot"></span>SINKRON LANGSUNG</span></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveCapacity()"><i class="fa fa-save"></i> Simpan</button>
+          </div>
+          <div class="cap-zero-hint" id="capZeroHint">
+            <i class="fa fa-info-circle" style="margin-right:5px"></i>
+            Saat ini: <strong>Tidak ada batas kapasitas</strong>. Semua pengguna dapat mengakses website.
+          </div>
+          <div class="cap-active-users">
+            <div class="cap-active-title"><i class="fa fa-signal" style="margin-right:4px;color:var(--orange)"></i>Pengguna Aktif Saat Ini: <span id="capActiveCount" style="color:var(--orange)">0</span></div>
+            <div class="cap-users-list" id="capUsersList">Belum ada pengguna aktif</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa fa-circle-info"></i> Cara Kerja Kapasitas Server</div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.8">
+            <p>• Masukkan angka berapa pengguna yang boleh membuka website secara bersamaan.</p>
+            <p>• Jika pengguna melebihi batas, mereka akan melihat notifikasi <strong>"Server Sedang Padat"</strong> dengan pilihan <em>Coba Lagi</em> atau <em>Kembali</em>.</p>
+            <p>• Perubahan <strong>langsung aktif tanpa reload</strong> di semua pengguna yang sedang membuka website.</p>
+            <p>• Isi <strong>0</strong> untuk menonaktifkan batas (akses tidak dibatasi).</p>
           </div>
         </div>
       </div>
 
       <!-- SETTINGS -->
       <div class="page" id="page-settings">
-        <div class="page-title" style="margin-bottom:20px"><i class="fa fa-cog" style="color:var(--g5);margin-right:8px"></i>Pengaturan Akun</div>
+        <div class="page-title" style="margin-bottom:18px"><i class="fa fa-cog" style="color:var(--g5);margin-right:8px"></i>Pengaturan Akun</div>
+        <div class="warn-box"><i class="fa fa-exclamation-triangle" style="margin-right:6px"></i>
+          Segera ubah username dan password default agar keamanan sistem terjaga!</div>
         <div class="card" style="max-width:480px">
-          <div class="card-title"><i class="fa fa-user-edit"></i> Ubah Username & Password</div>
-          <div class="form-group">
-            <label>Username Baru</label>
-            <input type="text" class="form-control" id="newUsername" placeholder="Masukkan username baru"/>
-          </div>
-          <div class="form-group">
-            <label>Password Baru</label>
-            <input type="password" class="form-control" id="newPassword" placeholder="Masukkan password baru"/>
-          </div>
-          <div class="form-group">
-            <label>Konfirmasi Password</label>
-            <input type="password" class="form-control" id="confirmPassword" placeholder="Ulangi password baru"/>
-          </div>
+          <div class="card-title"><i class="fa fa-user-edit"></i> Ubah Kredensial Operator</div>
+          <div class="form-group"><label>Username Baru</label>
+            <input type="text" class="form-control" id="newUsername" placeholder="Username baru"/></div>
+          <div class="form-group"><label>Password Baru</label>
+            <input type="password" class="form-control" id="newPassword" placeholder="Minimal 6 karakter"/></div>
+          <div class="form-group"><label>Konfirmasi Password</label>
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Ulangi password baru"/></div>
           <button class="btn btn-primary" onclick="saveSettings()"><i class="fa fa-save"></i> Simpan Perubahan</button>
         </div>
       </div>
 
-    </div>
-  </div>
-</div>
+    </div><!-- end main-content -->
+  </div><!-- end main-wrap -->
+</div><!-- end appScreen -->
 
 <!-- MODAL AKADEMIK -->
 <div class="modal-overlay" id="akademikModal">
@@ -352,21 +453,16 @@ table tr:hover td{background:var(--g1)}
       <button class="modal-close" onclick="closeAkademikModal()"><i class="fa fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label>Tahun Ajaran</label>
-        <input type="text" class="form-control" id="ak-year" placeholder="Contoh: 2024/2025"/>
-      </div>
-      <div class="form-group">
-        <label>URL Gambar Kalender (Opsional)</label>
-        <input type="url" class="form-control" id="ak-imageUrl" placeholder="https://...jpg"/>
-      </div>
-      <div class="form-group">
-        <label>Daftar Kegiatan / Tanggal Penting</label>
-        <div id="ak-events-list" style="margin-bottom:10px"></div>
+      <div class="form-group"><label>Tahun Ajaran</label>
+        <input type="text" class="form-control" id="ak-year" placeholder="Contoh: 2024/2025"/></div>
+      <div class="form-group"><label>URL Gambar Kalender (Opsional)</label>
+        <input type="url" class="form-control" id="ak-imageUrl" placeholder="https://...jpg"/></div>
+      <div class="form-group"><label>Daftar Kegiatan / Tanggal Penting</label>
+        <div id="ak-events-list" style="margin-bottom:9px"></div>
         <button class="btn btn-outline btn-sm" onclick="addAkEvent()"><i class="fa fa-plus"></i> Tambah Kegiatan</button>
       </div>
-      <hr style="border:none;border-top:1px solid var(--gray-200);margin:16px 0"/>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <hr style="border:none;border-top:1px solid var(--gray-200);margin:14px 0"/>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="saveAkademik()"><i class="fa fa-save"></i> Simpan</button>
         <button class="btn btn-outline" onclick="closeAkademikModal()">Batal</button>
       </div>
@@ -382,20 +478,26 @@ table tr:hover td{background:var(--g1)}
       <button class="modal-close" onclick="closeUnduhModal()"><i class="fa fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label>Nama Dokumen</label>
-        <input type="text" class="form-control" id="unduh-name" placeholder="Contoh: Formulir Mutasi Siswa.pdf"/>
-      </div>
-      <div class="form-group">
-        <label>Deskripsi Singkat (Opsional)</label>
-        <input type="text" class="form-control" id="unduh-desc" placeholder="Contoh: Dokumen persyaratan mutasi"/>
-      </div>
-      <div class="form-group">
-        <label>Link URL Dokumen</label>
+      <div class="form-group"><label>Nama Dokumen</label>
+        <input type="text" class="form-control" id="unduh-name" placeholder="Contoh: Formulir Mutasi Siswa.pdf"/></div>
+      <div class="form-group"><label>Kategori</label>
+        <select class="form-control" id="unduh-category">
+          <option value="Mutasi Siswa">Mutasi Siswa</option>
+          <option value="Kalender Akademik">Kalender Akademik</option>
+          <option value="Kelulusan">Kelulusan</option>
+          <option value="Formulir">Formulir</option>
+          <option value="Surat Edaran">Surat Edaran</option>
+          <option value="Rapor">Rapor</option>
+          <option value="Dokumen Umum">Dokumen Umum</option>
+        </select></div>
+      <div class="form-group"><label>Deskripsi Singkat (Opsional)</label>
+        <input type="text" class="form-control" id="unduh-desc" placeholder="Keterangan singkat dokumen"/></div>
+      <div class="form-group"><label>Link URL Dokumen</label>
         <input type="url" class="form-control" id="unduh-url" placeholder="https://drive.google.com/..."/>
+        <small style="font-size:11px;color:var(--gray-400);margin-top:4px;display:block"><i class="fa fa-eye-slash"></i> URL tidak akan ditampilkan ke pengguna</small>
       </div>
-      <hr style="border:none;border-top:1px solid var(--gray-200);margin:16px 0"/>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <hr style="border:none;border-top:1px solid var(--gray-200);margin:14px 0"/>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="saveUnduh()"><i class="fa fa-save"></i> Simpan</button>
         <button class="btn btn-outline" onclick="closeUnduhModal()">Batal</button>
       </div>
@@ -403,29 +505,25 @@ table tr:hover td{background:var(--g1)}
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast-stack"></div>
 
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getDatabase, ref, set, get, remove, onValue, child } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
 const firebaseConfig={apiKey:"AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",authDomain:"upnvjdatsystem.firebaseapp.com",databaseURL:"https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"upnvjdatsystem",storageBucket:"upnvjdatsystem.firebasestorage.app",messagingSenderId:"57095309946",appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3"};
 const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 window._rtdb=db;window._ref=ref;window._set=set;window._get=get;window._remove=remove;
 
-// ========== AUTH ==========
+// ─── AUTH ───
 const DEFAULT_USER='operator68';
 const DEFAULT_PASS='sman68jakarta';
-
 async function getCredentials(){
-  try{
-    const snap=await get(ref(db,'operator_credentials'));
-    if(snap.exists())return snap.val();
-  }catch(e){}
+  try{const snap=await get(ref(db,'operator_credentials'));if(snap.exists())return snap.val();}catch(e){}
   return {username:DEFAULT_USER,password:DEFAULT_PASS};
 }
-
 window.doLogin=async function(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
@@ -437,10 +535,9 @@ window.doLogin=async function(){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('appScreen').style.display='block';
     document.getElementById('topbarUser').textContent=u;
+    document.getElementById('sidebarUser').textContent=u;
     initApp();
-  } else {
-    err.textContent='Username atau password salah!';err.style.display='block';
-  }
+  }else{err.textContent='Username atau password salah!';err.style.display='block';}
 };
 window.doLogout=function(){
   document.getElementById('appScreen').style.display='none';
@@ -448,56 +545,63 @@ window.doLogout=function(){
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
 };
-
-// Login on Enter
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
 
-// ========== SETTINGS ==========
+// ─── SETTINGS ───
 window.saveSettings=async function(){
   const u=document.getElementById('newUsername').value.trim();
   const p=document.getElementById('newPassword').value;
   const c=document.getElementById('confirmPassword').value;
-  if(!u||!p){showToast('Username dan password tidak boleh kosong!');return;}
-  if(p!==c){showToast('Konfirmasi password tidak cocok!');return;}
+  if(!u||!p){showToast('❌ Username dan password tidak boleh kosong!');return;}
+  if(p.length<6){showToast('❌ Password minimal 6 karakter!');return;}
+  if(p!==c){showToast('❌ Konfirmasi password tidak cocok!');return;}
   await set(ref(db,'operator_credentials'),{username:u,password:p});
   document.getElementById('topbarUser').textContent=u;
-  document.getElementById('newUsername').value='';
-  document.getElementById('newPassword').value='';
-  document.getElementById('confirmPassword').value='';
-  showToast('✅ Credentials berhasil diperbarui!');
+  document.getElementById('sidebarUser').textContent=u;
+  document.getElementById('newUsername').value='';document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';
+  showToast('✅ Kredensial berhasil diperbarui!');
 };
 
-// ========== DASHBOARD STATS ==========
+// ─── INIT APP ───
 function initApp(){
-  // Stat jadwal
-  onValue(ref(db,'jadwal'),snap=>{
-    const d=snap.val();
-    document.getElementById('statJadwal').textContent=d?Object.keys(d).length:0;
-  });
-  // Stat akademik
-  onValue(ref(db,'akademik'),snap=>{
-    const d=snap.val();
-    document.getElementById('statAkademik').textContent=d?Object.keys(d).length:0;
-  });
-  // Stat unduh
-  onValue(ref(db,'unduh'),snap=>{
-    const d=snap.val();
-    document.getElementById('statUnduh').textContent=d?Object.keys(d).length:0;
-  });
+  loadStats();
   initJadwalEditor();
   loadAkademikTable();
   loadColoredTable();
   loadUnduhTable();
+  initCapacity();
 }
 
-// ========== JADWAL EDITOR ==========
+// ─── STATS ───
+function loadStats(){
+  onValue(ref(db,'jadwal'),snap=>{document.getElementById('statJadwal').textContent=snap.val()?Object.keys(snap.val()).length:0;});
+  onValue(ref(db,'akademik'),snap=>{document.getElementById('statAkademik').textContent=snap.val()?Object.keys(snap.val()).length:0;});
+  onValue(ref(db,'unduh'),snap=>{document.getElementById('statUnduh').textContent=snap.val()?Object.keys(snap.val()).length:0;});
+  onValue(ref(db,'server_capacity/active_sessions'),snap=>{
+    const c=snap.val()?Object.keys(snap.val()).length:0;
+    document.getElementById('statActiveUsers').textContent=c;
+    document.getElementById('capActiveCount').textContent=c;
+    const list=document.getElementById('capUsersList');
+    if(!snap.val()||!Object.keys(snap.val()).length){list.textContent='Belum ada pengguna aktif';return;}
+    list.innerHTML=Object.entries(snap.val()).map(([k,v])=>
+      `<div style="padding:2px 0;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between"><span style="font-family:monospace;color:var(--g7)">${k.substring(0,16)}…</span><span style="color:var(--gray-400)">${new Date(v.ts||Date.now()).toLocaleTimeString('id-ID')}</span></div>`
+    ).join('');
+  });
+  onValue(ref(db,'server_capacity/max_users'),snap=>{
+    const v=snap.val()||0;
+    document.getElementById('statCapacity').textContent=v===0?'∞':v;
+  });
+}
+
+// ─── JADWAL EDITOR ───
 let currentJadwalSem='genap';
-let jadwalHeaders={genap:[],ganjil:[]};
-let jadwalRows={genap:[],ganjil:[]};
-let jadwalType={genap:'table',ganjil:'table'};
+let jadwalHeaders={genap:[],ganjil:[],pts:[],pas:[]};
+let jadwalRows={genap:[],ganjil:[],pts:[],pas:[]};
+let jadwalType={genap:'table',ganjil:'table',pts:'table',pas:'table'};
+const semLabels={genap:'Semester Genap',ganjil:'Semester Ganjil',pts:'PTS',pas:'PAS'};
 
 function initJadwalEditor(){
-  ['genap','ganjil'].forEach(sem=>{
+  ['genap','ganjil','pts','pas'].forEach(sem=>{
     onValue(ref(db,`jadwal/${sem}`),snap=>{
       const data=snap.val();
       if(data){
@@ -509,43 +613,45 @@ function initJadwalEditor(){
     });
   });
 }
-
 window.switchJadwalTab=function(sem){
   currentJadwalSem=sem;
-  document.getElementById('jadwalEditorGenap').style.display=sem==='genap'?'':'none';
-  document.getElementById('jadwalEditorGanjil').style.display=sem==='ganjil'?'':'none';
-  document.getElementById('tabJadwalGenap').className='btn '+(sem==='genap'?'btn-primary':'btn-outline');
-  document.getElementById('tabJadwalGanjil').className='btn '+(sem==='ganjil'?'btn-primary':'btn-outline');
+  ['genap','ganjil','pts','pas'].forEach(s=>{
+    const cap=s.charAt(0).toUpperCase()+s.slice(1);
+    const el=document.getElementById('jadwalEditor'+cap);
+    if(el) el.style.display=s===sem?'':'none';
+    const btn=document.getElementById('tabJadwal'+cap);
+    if(btn) btn.className='btn btn-sm '+(s===sem?'btn-primary':'btn-outline');
+  });
 };
-
 function renderJadwalEditor(sem){
-  const el=document.getElementById(`jadwalEditor${sem.charAt(0).toUpperCase()+sem.slice(1)}`);
+  const cap=sem.charAt(0).toUpperCase()+sem.slice(1);
+  const el=document.getElementById('jadwalEditor'+cap);
+  if(!el) return;
   const type=jadwalType[sem];
-  let html=`<div class="card-title"><i class="fa fa-edit"></i> Edit Jadwal ${sem==='genap'?'Semester Genap':'Semester Ganjil'}</div>
-  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-    <button class="btn ${type==='table'?'btn-primary':'btn-outline'} btn-sm" onclick="setJadwalType('${sem}','table')"><i class="fa fa-table"></i> Mode Tabel</button>
-    <button class="btn ${type==='image'?'btn-secondary':'btn-outline'} btn-sm" onclick="setJadwalType('${sem}','image')"><i class="fa fa-image"></i> Mode Gambar</button>
+  let html=`<div class="card-title"><i class="fa fa-edit"></i> Jadwal ${semLabels[sem]}</div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-sm ${type==='table'?'btn-primary':'btn-outline'}" onclick="setJadwalType('${sem}','table')"><i class="fa fa-table"></i> Tabel</button>
+    <button class="btn btn-sm ${type==='image'?'btn-secondary':'btn-outline'}" onclick="setJadwalType('${sem}','image')"><i class="fa fa-image"></i> Gambar</button>
   </div>`;
-
   if(type==='image'){
     const url=jadwalRows[sem]?.[0]?.[0]||'';
     html+=`<div class="form-group"><label>URL Gambar Jadwal (PNG/JPEG)</label>
-    <input type="url" class="form-control" id="jadwal-img-${sem}" value="${url}" placeholder="https://...jpg"/>
-    </div>
+    <input type="url" class="form-control" id="jadwal-img-${sem}" value="${url}" placeholder="https://...jpg"/></div>
+    ${url?`<div style="margin-bottom:12px"><img src="${url}" style="max-width:100%;max-height:200px;border-radius:9px;border:1px solid var(--gray-200)" onerror="this.style.display='none'"/></div>`:''}
     <button class="btn btn-primary btn-sm" onclick="saveJadwalImage('${sem}')"><i class="fa fa-save"></i> Simpan Gambar</button>`;
-  } else {
-    // Table editor
-    html+=`<div style="margin-bottom:12px">
-    <label style="font-size:12px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">Header Kolom (pisah koma)</label>
+  }else{
+    html+=`<div style="margin-bottom:11px">
+    <label style="font-size:11px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Header Kolom (pisah dengan koma)</label>
     <input type="text" class="form-control" id="jadwal-headers-${sem}" value="${jadwalHeaders[sem].join(',')}" placeholder="Hari,Jam,Kelas X,Kelas XI,Kelas XII"/>
     </div>
-    <div style="margin-bottom:8px;font-size:12px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:.4px">Baris Data</div>
+    <div style="font-size:11px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Baris Data</div>
     <div class="jadwal-rows-editor" id="jadwal-rows-${sem}">`;
     (jadwalRows[sem]||[]).forEach((row,ri)=>{
-      html+=`<div class="jadwal-row-edit" id="jadwal-row-${sem}-${ri}">`;
-      row.forEach((cell,ci)=>html+=`<input value="${cell}" oninput="updateJadwalCell('${sem}',${ri},${ci},this.value)"/>`);
+      html+=`<div class="jadwal-row-edit">`;
+      row.forEach((cell,ci)=>html+=`<input value="${cell.replace(/"/g,'&quot;')}" oninput="updateJadwalCell('${sem}',${ri},${ci},this.value)"/>`);
       html+=`<button class="btn btn-danger btn-sm" onclick="deleteJadwalRow('${sem}',${ri})"><i class="fa fa-trash"></i></button></div>`;
     });
+    if(!jadwalRows[sem]||!jadwalRows[sem].length) html+=`<p style="text-align:center;color:var(--gray-400);padding:20px;font-size:13px">Belum ada baris data. Klik "Tambah Baris".</p>`;
     html+=`</div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <button class="btn btn-outline btn-sm" onclick="addJadwalRow('${sem}')"><i class="fa fa-plus"></i> Tambah Baris</button>
@@ -554,61 +660,53 @@ function renderJadwalEditor(sem){
   }
   el.innerHTML=html;
 }
-
 window.setJadwalType=function(sem,type){jadwalType[sem]=type;renderJadwalEditor(sem);};
-window.updateJadwalCell=function(sem,ri,ci,val){if(jadwalRows[sem][ri])jadwalRows[sem][ri][ci]=val;};
+window.updateJadwalCell=function(sem,ri,ci,val){if(jadwalRows[sem]&&jadwalRows[sem][ri])jadwalRows[sem][ri][ci]=val;};
 window.addJadwalRow=function(sem){
-  const headers=document.getElementById(`jadwal-headers-${sem}`).value.split(',');
-  jadwalRows[sem].push(headers.map(()=>''));
+  const hInput=document.getElementById(`jadwal-headers-${sem}`);
+  const cols=hInput?hInput.value.split(',').length:3;
+  if(!jadwalRows[sem])jadwalRows[sem]=[];
+  jadwalRows[sem].push(Array(cols).fill(''));
   renderJadwalEditor(sem);
 };
 window.deleteJadwalRow=function(sem,ri){jadwalRows[sem].splice(ri,1);renderJadwalEditor(sem);};
 window.saveJadwalTable=async function(sem){
-  const headers=document.getElementById(`jadwal-headers-${sem}`).value.split(',').map(h=>h.trim());
-  await set(ref(db,`jadwal/${sem}`),{type:'table',headers,rows:jadwalRows[sem]});
+  const h=document.getElementById(`jadwal-headers-${sem}`).value.split(',').map(x=>x.trim());
+  await set(ref(db,`jadwal/${sem}`),{type:'table',headers:h,rows:jadwalRows[sem]});
   showToast('✅ Jadwal berhasil disimpan!');
 };
 window.saveJadwalImage=async function(sem){
   const url=document.getElementById(`jadwal-img-${sem}`).value.trim();
-  if(!url){showToast('URL gambar tidak boleh kosong!');return;}
+  if(!url){showToast('❌ URL gambar tidak boleh kosong!');return;}
   await set(ref(db,`jadwal/${sem}`),{type:'image',url});
-  showToast('✅ Gambar jadwal berhasil disimpan!');
+  showToast('✅ Gambar jadwal tersimpan!');
 };
 
-// ========== KALENDER AKADEMIK ==========
-let currentAkId=null;
-let akEvents=[];
-
+// ─── KALENDER AKADEMIK ───
+let currentAkId=null;let akEvents=[];
 window.openAkademikModal=function(id=null){
   currentAkId=id;akEvents=[];
   document.getElementById('akademikModalTitle').textContent=id?'Edit Kalender Akademik':'Tambah Kalender Akademik';
-  document.getElementById('ak-year').value='';
-  document.getElementById('ak-imageUrl').value='';
+  document.getElementById('ak-year').value='';document.getElementById('ak-imageUrl').value='';
   document.getElementById('ak-events-list').innerHTML='';
   if(id){
     get(ref(db,`akademik/${id}`)).then(snap=>{
       const d=snap.val();if(!d)return;
-      document.getElementById('ak-year').value=id;
+      document.getElementById('ak-year').value=id.replace(/-/,'/');
       document.getElementById('ak-imageUrl').value=d.imageUrl||'';
-      akEvents=d.events||[];
-      renderAkEvents();
+      akEvents=d.events||[];renderAkEvents();
     });
   }
   document.getElementById('akademikModal').classList.add('open');
 };
 window.closeAkademikModal=function(){document.getElementById('akademikModal').classList.remove('open');};
-
-window.addAkEvent=function(){
-  akEvents.push({date:'',name:'',color:'red'});
-  renderAkEvents();
-};
+window.addAkEvent=function(){akEvents.push({date:'',name:'',color:'red'});renderAkEvents();};
 function renderAkEvents(){
-  const el=document.getElementById('ak-events-list');
-  el.innerHTML='';
+  const el=document.getElementById('ak-events-list');el.innerHTML='';
   akEvents.forEach((ev,i)=>{
     const row=document.createElement('div');row.className='event-edit-row';
-    row.innerHTML=`<input class="ev-date" type="text" value="${ev.date}" placeholder="Tanggal (contoh: 17 Agustus 2025)" oninput="akEvents[${i}].date=this.value"/>
-    <input class="ev-name" value="${ev.name}" placeholder="Nama Kegiatan" oninput="akEvents[${i}].name=this.value"/>
+    row.innerHTML=`<input class="ev-date" type="text" value="${ev.date||''}" placeholder="Tanggal (cth: 17 Agustus 2025)" oninput="akEvents[${i}].date=this.value"/>
+    <input class="ev-name" value="${ev.name||''}" placeholder="Nama Kegiatan" oninput="akEvents[${i}].name=this.value"/>
     <select onchange="akEvents[${i}].color=this.value">
       <option value="red" ${ev.color==='red'?'selected':''}>🔴 Merah</option>
       <option value="green" ${ev.color==='green'?'selected':''}>🟢 Hijau</option>
@@ -621,34 +719,26 @@ function renderAkEvents(){
   });
 }
 window.renderAkEvents=renderAkEvents;
-
 window.saveAkademik=async function(){
   const yr=document.getElementById('ak-year').value.trim().replace(/\//g,'-');
   const imageUrl=document.getElementById('ak-imageUrl').value.trim();
-  if(!yr){showToast('Tahun ajaran tidak boleh kosong!');return;}
-  const payload={imageUrl,events:akEvents};
-  await set(ref(db,`akademik/${yr}`),payload);
-  // Also keep year list for dropdown
+  if(!yr){showToast('❌ Tahun ajaran tidak boleh kosong!');return;}
+  await set(ref(db,`akademik/${yr}`),{imageUrl:imageUrl||null,events:akEvents});
   await set(ref(db,`akademik_years/${yr}`),true);
-  showToast('✅ Kalender akademik berhasil disimpan!');
-  closeAkademikModal();
-  loadAkademikTable();
+  showToast('✅ Kalender akademik disimpan!');closeAkademikModal();
 };
-
 function loadAkademikTable(){
   onValue(ref(db,'akademik'),snap=>{
     const tbody=document.getElementById('akademikTable');
     const data=snap.val();
-    if(!data||!Object.keys(data).length){
-      tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:30px">Belum ada data</td></tr>';return;
-    }
+    if(!data||!Object.keys(data).length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:28px">Belum ada data</td></tr>';return;}
     tbody.innerHTML='';
-    Object.entries(data).forEach(([yr,d])=>{
+    Object.entries(data).sort(([a],[b])=>b.localeCompare(a)).forEach(([yr,d])=>{
       const tr=document.createElement('tr');
       tr.innerHTML=`<td><strong>${yr.replace(/-/,'/')}</strong></td>
       <td>${d.imageUrl?`<a href="${d.imageUrl}" target="_blank" style="color:var(--b5);font-size:12px"><i class="fa fa-image"></i> Lihat</a>`:'–'}</td>
       <td><span class="badge badge-green">${(d.events||[]).length} kegiatan</span></td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">
+      <td style="display:flex;gap:6px">
         <button class="btn btn-yellow btn-sm" onclick='window.openAkademikModal("${yr}")'><i class="fa fa-edit"></i></button>
         <button class="btn btn-danger btn-sm" onclick='deleteAkademik("${yr}")'><i class="fa fa-trash"></i></button>
       </td>`;
@@ -657,13 +747,12 @@ function loadAkademikTable(){
   });
 }
 window.deleteAkademik=async function(yr){
-  if(!confirm('Hapus kalender akademik ini?'))return;
-  await remove(ref(db,`akademik/${yr}`));
-  await remove(ref(db,`akademik_years/${yr}`));
-  showToast('Kalender akademik dihapus.');
+  if(!confirm('Hapus kalender ini?'))return;
+  await remove(ref(db,`akademik/${yr}`));await remove(ref(db,`akademik_years/${yr}`));
+  showToast('Kalender dihapus.');
 };
 
-// ========== WARNA HARI ==========
+// ─── WARNA HARI ───
 let selectedColor='red';
 window.selectColor=function(c,el){
   selectedColor=c;
@@ -673,33 +762,28 @@ window.selectColor=function(c,el){
 window.saveColoredDay=async function(){
   const dateVal=document.getElementById('coloredDate').value;
   const label=document.getElementById('coloredLabel').value.trim();
-  if(!dateVal){showToast('Pilih tanggal terlebih dahulu!');return;}
+  if(!dateVal){showToast('❌ Pilih tanggal terlebih dahulu!');return;}
   const [yr,mo,dy]=dateVal.split('-');
   if(selectedColor==='none'){
     await remove(ref(db,`akademik_colored_days/${yr}/${parseInt(mo)}/${parseInt(dy)}`));
     await remove(ref(db,`colored_days_list/${dateVal}`));
-  } else {
+  }else{
     await set(ref(db,`akademik_colored_days/${yr}/${parseInt(mo)}/${parseInt(dy)}`),selectedColor);
     await set(ref(db,`colored_days_list/${dateVal}`),{color:selectedColor,label:label||dateVal});
   }
-  showToast('✅ Warna hari berhasil disimpan!');
-  document.getElementById('coloredDate').value='';
-  document.getElementById('coloredLabel').value='';
-  loadColoredTable();
+  showToast('✅ Warna hari disimpan!');
+  document.getElementById('coloredDate').value='';document.getElementById('coloredLabel').value='';
 };
-
 function loadColoredTable(){
   onValue(ref(db,'colored_days_list'),snap=>{
     const tbody=document.getElementById('coloredTable');
     const data=snap.val();
-    if(!data||!Object.keys(data).length){
-      tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:20px">Belum ada data</td></tr>';return;
-    }
+    if(!data||!Object.keys(data).length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:20px">Belum ada data</td></tr>';return;}
     tbody.innerHTML='';
-    const colorNames={red:'🔴 Merah',green:'🟢 Hijau',yellow:'🟡 Kuning',blue:'🔵 Biru'};
+    const cNames={red:'🔴 Merah',green:'🟢 Hijau',yellow:'🟡 Kuning',blue:'🔵 Biru'};
     Object.entries(data).sort().forEach(([date,d])=>{
       const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${date}</td><td>${d.label||'–'}</td><td>${colorNames[d.color]||d.color}</td>
+      tr.innerHTML=`<td>${date}</td><td>${d.label||'–'}</td><td>${cNames[d.color]||d.color}</td>
       <td><button class="btn btn-danger btn-sm" onclick='deleteColoredDay("${date}")'><i class="fa fa-trash"></i></button></td>`;
       tbody.appendChild(tr);
     });
@@ -708,26 +792,22 @@ function loadColoredTable(){
 window.deleteColoredDay=async function(date){
   const [yr,mo,dy]=date.split('-');
   await remove(ref(db,`akademik_colored_days/${yr}/${parseInt(mo)}/${parseInt(dy)}`));
-  await remove(ref(db,`colored_days_list/${date}`));
-  showToast('Data dihapus.');
+  await remove(ref(db,`colored_days_list/${date}`));showToast('Data dihapus.');
 };
 
-// ========== UNDUH ==========
+// ─── UNDUH ───
 let editUnduhId=null;
 window.openUnduhModal=function(id=null){
   editUnduhId=id;
   document.getElementById('unduhModalTitle').textContent=id?'Edit Dokumen':'Tambah Dokumen';
-  document.getElementById('unduh-name').value='';
-  document.getElementById('unduh-desc').value='';
-  document.getElementById('unduh-url').value='';
-  if(id){
-    get(ref(db,`unduh/${id}`)).then(snap=>{
-      const d=snap.val();if(!d)return;
-      document.getElementById('unduh-name').value=d.name||'';
-      document.getElementById('unduh-desc').value=d.desc||'';
-      document.getElementById('unduh-url').value=d.url||'';
-    });
-  }
+  document.getElementById('unduh-name').value='';document.getElementById('unduh-desc').value='';
+  document.getElementById('unduh-url').value='';document.getElementById('unduh-category').value='Dokumen Umum';
+  if(id){get(ref(db,`unduh/${id}`)).then(snap=>{const d=snap.val();if(!d)return;
+    document.getElementById('unduh-name').value=d.name||'';
+    document.getElementById('unduh-desc').value=d.desc||'';
+    document.getElementById('unduh-url').value=d.url||'';
+    document.getElementById('unduh-category').value=d.category||'Dokumen Umum';
+  });}
   document.getElementById('unduhModal').classList.add('open');
 };
 window.closeUnduhModal=function(){document.getElementById('unduhModal').classList.remove('open');};
@@ -735,28 +815,24 @@ window.saveUnduh=async function(){
   const name=document.getElementById('unduh-name').value.trim();
   const desc=document.getElementById('unduh-desc').value.trim();
   const url=document.getElementById('unduh-url').value.trim();
-  if(!name||!url){showToast('Nama dan URL dokumen wajib diisi!');return;}
+  const category=document.getElementById('unduh-category').value;
+  if(!name||!url){showToast('❌ Nama dan URL dokumen wajib diisi!');return;}
   const id=editUnduhId||('doc_'+Date.now());
-  await set(ref(db,`unduh/${id}`),{name,desc,url});
-  showToast('✅ Dokumen berhasil disimpan!');
-  closeUnduhModal();
+  await set(ref(db,`unduh/${id}`),{name,desc,url,category});
+  showToast('✅ Dokumen berhasil disimpan!');closeUnduhModal();
 };
-
 function loadUnduhTable(){
   onValue(ref(db,'unduh'),snap=>{
     const tbody=document.getElementById('unduhTable');
     const data=snap.val();
-    if(!data||!Object.keys(data).length){
-      tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:30px">Belum ada dokumen</td></tr>';return;
-    }
-    tbody.innerHTML='';
-    let i=1;
+    if(!data||!Object.keys(data).length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:28px">Belum ada dokumen</td></tr>';return;}
+    tbody.innerHTML='';let i=1;
     Object.entries(data).forEach(([id,d])=>{
       const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${i++}</td><td><strong>${d.name}</strong></td>
+      tr.innerHTML=`<td>${i++}</td><td><strong>${d.name||'–'}</strong></td>
+      <td><span class="badge badge-blue">${d.category||'Umum'}</span></td>
       <td style="color:var(--gray-500);font-size:12px">${d.desc||'–'}</td>
-      <td><a href="${d.url}" target="_blank" rel="noopener" style="color:var(--b5);font-size:12px"><i class="fa fa-external-link-alt"></i> Lihat</a></td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">
+      <td style="display:flex;gap:6px">
         <button class="btn btn-yellow btn-sm" onclick='window.openUnduhModal("${id}")'><i class="fa fa-edit"></i></button>
         <button class="btn btn-danger btn-sm" onclick='deleteUnduh("${id}")'><i class="fa fa-trash"></i></button>
       </td>`;
@@ -766,18 +842,55 @@ function loadUnduhTable(){
 }
 window.deleteUnduh=async function(id){
   if(!confirm('Hapus dokumen ini?'))return;
-  await remove(ref(db,`unduh/${id}`));
-  showToast('Dokumen dihapus.');
+  await remove(ref(db,`unduh/${id}`));showToast('Dokumen dihapus.');
+};
+
+// ─── SERVER CAPACITY ───
+let capInputTimeout=null;
+function initCapacity(){
+  onValue(ref(db,'server_capacity/max_users'),snap=>{
+    const v=snap.val()||0;
+    document.getElementById('capMaxInput').value=v===0?'':v;
+    updateCapHint(v);
+    document.getElementById('statCapacity').textContent=v===0?'∞':v;
+  });
+}
+function onCapInput(){
+  clearTimeout(capInputTimeout);
+  capInputTimeout=setTimeout(()=>{
+    const v=parseInt(document.getElementById('capMaxInput').value)||0;
+    updateCapHint(v);
+  },200);
+}
+function updateCapHint(v){
+  const hint=document.getElementById('capZeroHint');
+  if(v<=0){
+    hint.innerHTML=`<i class="fa fa-info-circle" style="margin-right:5px"></i>Saat ini: <strong>Tidak ada batas kapasitas</strong>. Semua pengguna dapat mengakses website.`;
+    hint.style.background='#f0fff4';hint.style.borderColor='#86efac';hint.style.color='#15803d';
+  }else{
+    hint.innerHTML=`<i class="fa fa-exclamation-circle" style="margin-right:5px"></i>Batas aktif: <strong>maksimal ${v} pengguna</strong> bisa akses bersamaan. Pengguna ke-${v+1}+ akan melihat notifikasi "Server Padat".`;
+    hint.style.background='#fffbeb';hint.style.borderColor='#fde68a';hint.style.color='#92400e';
+  }
+}
+window.onCapInput=onCapInput;
+window.saveCapacity=async function(){
+  const v=parseInt(document.getElementById('capMaxInput').value)||0;
+  await set(ref(db,'server_capacity/max_users'),v);
+  showToast(`✅ Kapasitas ${v===0?'dinonaktifkan (tidak terbatas)':'diset ke '+v+' pengguna'}!`);
+  updateCapHint(v);
 };
 
 </script>
+
 <script>
+// ─── UI HELPERS ───
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('page-'+id)&&document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
-  const titles={dashboard:'Dashboard',jadwal:'Jadwal Pelajaran',akademik:'Kalender Akademik',colored:'Warna Hari Spesial',unduh:'Dokumen Unduh',settings:'Pengaturan Akun'};
+  const titles={dashboard:'Dashboard',jadwal:'Jadwal Pelajaran',akademik:'Kalender Akademik',
+    colored:'Warna Hari Spesial',unduh:'Dokumen Unduh',capacity:'Kapasitas Server',settings:'Pengaturan Akun'};
   document.getElementById('topbarTitle').textContent=titles[id]||id;
   closeSidebar();
 }
@@ -789,13 +902,17 @@ function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.style.display='block';
-  clearTimeout(window._toastTimer);
-  window._toastTimer=setTimeout(()=>t.style.display='none',3000);
+function showToast(msg,type=''){
+  const stack=document.getElementById('toast-stack');
+  const t=document.createElement('div');
+  t.className='toast-item'+(type?' '+type:'');
+  t.textContent=msg;stack.appendChild(t);
+  setTimeout(()=>{t.classList.add('fadeout');setTimeout(()=>t.remove(),320);},3200);
 }
 window.showToast=showToast;
+// Modal backdrop close
+document.getElementById('akademikModal').addEventListener('click',function(e){if(e.target===this)window.closeAkademikModal();});
+document.getElementById('unduhModal').addEventListener('click',function(e){if(e.target===this)window.closeUnduhModal();});
 </script>
 </body>
 </html>
