@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jadwal & Unduh Dokumen – SMAN 68 Jakarta</title>
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{
+  --green-900:#0a4a2e;--green-800:#0d5c38;--green-700:#0f7045;--green-600:#12885a;
+  --green-500:#16a068;--green-400:#22c07a;--green-300:#4dd99a;--green-200:#a8f0cc;--green-100:#e6faf2;
+  --blue-900:#0b2a4a;--blue-800:#0e3a6b;--blue-700:#1050a0;--blue-600:#1a65c8;
+  --blue-500:#2278e8;--blue-400:#4a9af5;--blue-200:#b3d9ff;--blue-100:#e8f4ff;
+  --teal:#0d9488;--teal-light:#99f6e4;
+  --white:#fff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;
+  --gray-300:#cbd5e1;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.16);--radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#f0f9f4;color:var(--gray-900);min-height:100vh}
+
+/* NAV */
+nav{background:linear-gradient(135deg,var(--green-900) 0%,var(--blue-900) 100%);
+  box-shadow:0 2px 20px rgba(0,0,0,.3);position:sticky;top:0;z-index:100}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:14px;height:66px}
+.nav-logo{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--green-400);flex-shrink:0}
+.nav-title{flex:1}
+.nav-title h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(13px,2.2vw,17px);font-weight:800;color:#fff;line-height:1.2}
+.nav-title p{font-size:11px;color:var(--green-300);font-weight:500}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{background:transparent;border:none;color:rgba(255,255,255,.7);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap;font-family:'Inter',sans-serif}
+.nav-tab:hover,.nav-tab.active{background:rgba(255,255,255,.15);color:#fff}
+.nav-tab.active{background:var(--green-700);color:#fff}
+.hamburger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:6px}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,var(--green-800) 0%,var(--blue-800) 60%,var(--green-700) 100%);
+  padding:40px 20px 50px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a068' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-logo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green-400);margin-bottom:16px;box-shadow:0 0 30px rgba(22,160,104,.5)}
+.hero h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(20px,4vw,32px);font-weight:800;margin-bottom:6px}
+.hero p{font-size:14px;color:var(--green-200);max-width:500px;margin:0 auto}
+
+/* SECTION */
+.section{max-width:1200px;margin:0 auto;padding:32px 20px}
+.section-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(16px,3vw,22px);font-weight:800;
+  color:var(--green-900);display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.section-title i{color:var(--green-500)}
+
+/* CARD */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);overflow:hidden}
+
+/* TABS */
+.tab-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab-btn{padding:9px 20px;border-radius:20px;border:2px solid var(--green-500);background:#fff;
+  color:var(--green-700);font-weight:700;font-size:13px;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+.tab-btn.active{background:var(--green-500);color:#fff;box-shadow:0 4px 12px rgba(22,160,104,.3)}
+.tab-btn:hover:not(.active){background:var(--green-100)}
+
+/* JADWAL TABLE */
+.jadwal-table-wrap{overflow-x:auto;border-radius:var(--radius-sm)}
+.jadwal-table{width:100%;border-collapse:collapse;font-size:13px}
+.jadwal-table th{background:linear-gradient(135deg,var(--green-700),var(--blue-700));color:#fff;padding:12px 14px;text-align:left;font-weight:700;white-space:nowrap}
+.jadwal-table td{padding:11px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
+.jadwal-table tr:last-child td{border-bottom:none}
+.jadwal-table tr:hover td{background:var(--green-100)}
+.jadwal-image-wrap{text-align:center;padding:20px}
+.jadwal-image-wrap img{max-width:100%;border-radius:var(--radius-sm);box-shadow:var(--shadow-md);cursor:zoom-in}
+.empty-state{text-align:center;padding:50px 20px;color:var(--gray-500)}
+.empty-state i{font-size:40px;color:var(--gray-300);margin-bottom:12px;display:block}
+
+/* KALENDER AKADEMIK */
+.akademik-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.year-select{padding:8px 14px;border-radius:8px;border:2px solid var(--green-400);font-size:14px;font-weight:600;color:var(--green-800);outline:none;background:#fff;cursor:pointer}
+.akademik-image-wrap{text-align:center;margin-bottom:16px}
+.akademik-image-wrap img{max-width:100%;border-radius:var(--radius-sm);box-shadow:var(--shadow-md)}
+.akademik-events{display:grid;gap:8px}
+.event-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;border-left:4px solid}
+.event-item.red{background:#fff0f0;border-color:#ef4444;color:#991b1b}
+.event-item.green{background:#f0fff4;border-color:#22c55e;color:#166534}
+.event-item.yellow{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+.event-item.blue{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+.event-item.default{background:var(--gray-50);border-color:var(--gray-300);color:var(--gray-700)}
+.event-date{font-weight:700;font-size:13px;min-width:100px}
+.event-name{font-size:13px;font-weight:600}
+
+/* BIG CALENDAR */
+.calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px}
+.cal-nav-btn{background:var(--green-500);color:#fff;border:none;border-radius:8px;width:36px;height:36px;
+  font-size:16px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+.cal-nav-btn:hover{background:var(--green-600)}
+.cal-month-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:var(--green-900)}
+.cal-year-input{border:2px solid var(--green-400);border-radius:8px;padding:5px 10px;font-size:14px;font-weight:700;color:var(--green-800);width:85px;outline:none;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day-header{text-align:center;font-size:11px;font-weight:700;color:var(--gray-500);padding:6px 0;text-transform:uppercase}
+.cal-cell{min-height:56px;border-radius:8px;background:#fff;border:1px solid var(--gray-100);padding:5px;cursor:pointer;transition:.15s;position:relative;display:flex;flex-direction:column}
+.cal-cell:hover{border-color:var(--green-400);background:var(--green-100)}
+.cal-cell.empty{background:transparent;border-color:transparent;cursor:default}
+.cal-cell .day-num{font-size:12px;font-weight:700;color:var(--gray-700);line-height:1}
+.cal-cell.today .day-num{background:var(--green-500);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-cell.has-agenda::after{content:'';position:absolute;bottom:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--blue-500)}
+.cal-cell.red-day{background:#fff0f0;border-color:#fca5a5}
+.cal-cell.green-day{background:#f0fff4;border-color:#86efac}
+.cal-cell.yellow-day{background:#fffbeb;border-color:#fde68a}
+.cal-cell.blue-day{background:#eff6ff;border-color:#93c5fd}
+.agenda-dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
+.agenda-dot{width:6px;height:6px;border-radius:50%;background:var(--blue-400);flex-shrink:0}
+
+/* AGENDA MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius);width:100%;max-width:460px;box-shadow:var(--shadow-lg);overflow:hidden;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{background:linear-gradient(135deg,var(--green-700),var(--blue-700));color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800}
+.modal-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:2px;line-height:1}
+.modal-body{padding:20px}
+.modal-body .agenda-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;max-height:220px;overflow-y:auto}
+.agenda-entry{background:var(--blue-100);border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.agenda-entry-info{flex:1}
+.agenda-entry-name{font-weight:700;font-size:14px;color:var(--blue-900)}
+.agenda-entry-time{font-size:12px;color:var(--blue-600);margin-top:2px}
+.agenda-entry-bell{background:none;border:none;cursor:pointer;font-size:16px;padding:2px;color:var(--gray-400);transition:.2s}
+.agenda-entry-bell.active{color:#f59e0b}
+.agenda-entry-delete{background:none;border:none;cursor:pointer;font-size:14px;color:#ef4444;padding:2px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input{width:100%;padding:9px 12px;border:2px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:.2s}
+.form-group input:focus{border-color:var(--green-400)}
+.time-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-weight:700;font-size:13px;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--green-500);color:#fff}
+.btn-primary:hover{background:var(--green-600)}
+.btn-outline{background:#fff;color:var(--green-700);border:2px solid var(--green-500)}
+.btn-outline:hover{background:var(--green-100)}
+
+/* UNDUH */
+.unduh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.unduh-card{background:#fff;border-radius:var(--radius);padding:18px;border:1px solid var(--gray-200);
+  box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px;transition:.2s;text-decoration:none;color:inherit}
+.unduh-card:hover{box-shadow:var(--shadow-md);border-color:var(--green-400);transform:translateY(-2px)}
+.unduh-icon{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--green-500),var(--blue-500));
+  display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0}
+.unduh-info h4{font-size:14px;font-weight:700;color:var(--gray-900);margin-bottom:3px}
+.unduh-info p{font-size:12px;color:var(--gray-500)}
+
+/* FOOTER */
+footer{background:linear-gradient(135deg,var(--green-900),var(--blue-900));color:rgba(255,255,255,.7);
+  text-align:center;padding:24px 20px;margin-top:40px;font-size:13px}
+footer strong{color:#fff}
+
+/* NOTIFICATION TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green-700);color:#fff;padding:14px 18px;
+  border-radius:10px;box-shadow:var(--shadow-lg);font-size:14px;font-weight:600;z-index:1000;
+  display:none;animation:fadeIn .3s ease;max-width:300px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* MOBILE NAV */
+.mobile-nav{display:none;background:var(--green-900);padding:8px 12px;gap:4px;flex-wrap:wrap}
+.mobile-nav .nav-tab{font-size:12px;padding:7px 12px}
+
+@media(max-width:700px){
+  .hamburger{display:block}
+  .nav-tabs{display:none}
+  .mobile-nav.open{display:flex}
+  .unduh-grid{grid-template-columns:1fr}
+  .cal-grid{gap:2px}
+  .cal-cell{min-height:44px;padding:4px}
+  .cal-cell .day-num{font-size:11px}
+  .time-row{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  .cal-day-header{font-size:9px;padding:4px 0}
+  .cal-cell{min-height:36px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <img class="nav-logo" src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68"/>
+    <div class="nav-title">
+      <h1>SMAN 68 Jakarta</h1>
+      <p>Jadwal, Kalender & Dokumen Resmi</p>
+    </div>
+    <div class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" onclick="showSection('jadwal',this)"><i class="fa fa-calendar-alt"></i> Jadwal</button>
+      <button class="nav-tab" onclick="showSection('akademik',this)"><i class="fa fa-book-open"></i> Kalender Akademik</button>
+      <button class="nav-tab" onclick="showSection('kalender',this)"><i class="fa fa-calendar"></i> Kalender</button>
+      <button class="nav-tab" onclick="showSection('unduh',this)"><i class="fa fa-download"></i> Unduh</button>
+    </div>
+    <button class="hamburger" onclick="toggleMobileNav()"><i class="fa fa-bars"></i></button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="nav-tab active" onclick="showSection('jadwal',this);closeMobileNav()"><i class="fa fa-calendar-alt"></i> Jadwal</button>
+    <button class="nav-tab" onclick="showSection('akademik',this);closeMobileNav()"><i class="fa fa-book-open"></i> Kalender Akademik</button>
+    <button class="nav-tab" onclick="showSection('kalender',this);closeMobileNav()"><i class="fa fa-calendar"></i> Kalender</button>
+    <button class="nav-tab" onclick="showSection('unduh',this);closeMobileNav()"><i class="fa fa-download"></i> Unduh</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="hero-logo" src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="SMAN 68"/>
+  <h2>SMAN 68 Jakarta</h2>
+  <p>Portal Jadwal Pelajaran, Kalender Akademik, dan Unduh Dokumen Resmi Sekolah</p>
+</div>
+
+<!-- ===== JADWAL ===== -->
+<div class="section" id="sec-jadwal">
+  <div class="section-title"><i class="fa fa-calendar-alt"></i> Jadwal Pelajaran</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" id="jadwalGenap" onclick="switchJadwal('genap')">📘 Semester Genap</button>
+    <button class="tab-btn" id="jadwalGanjil" onclick="switchJadwal('ganjil')">📗 Semester Ganjil</button>
+  </div>
+  <div class="card" style="padding:20px">
+    <!-- Semester Genap -->
+    <div id="jadwal-genap-container">
+      <div id="jadwal-genap-image" class="jadwal-image-wrap" style="display:none"></div>
+      <div id="jadwal-genap-table" class="jadwal-table-wrap"></div>
+      <div id="jadwal-genap-empty" class="empty-state"><i class="fa fa-inbox"></i><p>Jadwal Semester Genap belum tersedia.</p></div>
+    </div>
+    <!-- Semester Ganjil -->
+    <div id="jadwal-ganjil-container" style="display:none">
+      <div id="jadwal-ganjil-image" class="jadwal-image-wrap" style="display:none"></div>
+      <div id="jadwal-ganjil-table" class="jadwal-table-wrap"></div>
+      <div id="jadwal-ganjil-empty" class="empty-state"><i class="fa fa-inbox"></i><p>Jadwal Semester Ganjil belum tersedia.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KALENDER AKADEMIK ===== -->
+<div class="section" id="sec-akademik" style="display:none">
+  <div class="section-title"><i class="fa fa-book-open"></i> Kalender Akademik</div>
+  <div class="card" style="padding:20px">
+    <div class="akademik-header">
+      <span style="font-weight:700;color:var(--green-800);font-size:15px">Tahun Ajaran</span>
+      <select class="year-select" id="akademikYearSelect" onchange="loadAkademik()">
+        <option value="">-- Pilih Tahun --</option>
+      </select>
+    </div>
+    <div id="akademik-image-wrap" class="akademik-image-wrap" style="display:none"></div>
+    <div id="akademik-events" class="akademik-events"></div>
+    <div id="akademik-empty" class="empty-state"><i class="fa fa-book-open"></i><p>Pilih tahun ajaran untuk melihat kalender akademik.</p></div>
+  </div>
+</div>
+
+<!-- ===== KALENDER BESAR ===== -->
+<div class="section" id="sec-kalender" style="display:none">
+  <div class="section-title"><i class="fa fa-calendar"></i> Kalender & Agenda</div>
+  <div class="card" style="padding:20px">
+    <div class="calendar-nav">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center">
+        <span class="cal-month-label" id="calMonthLabel"></span>
+        <input type="number" class="cal-year-input" id="calYearInput" min="1900" max="2100" onchange="goToYear(this.value)"/>
+      </div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)"><i class="fa fa-chevron-right"></i></button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div style="margin-top:14px;display:flex;gap:14px;flex-wrap:wrap">
+      <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:var(--blue-400);display:inline-block"></span>Ada Agenda</span>
+      <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block;border:2px solid var(--green-700)"></span>Hari Ini</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== UNDUH ===== -->
+<div class="section" id="sec-unduh" style="display:none">
+  <div class="section-title"><i class="fa fa-download"></i> Unduh Dokumen</div>
+  <div id="unduhGrid" class="unduh-grid">
+    <div class="empty-state" style="grid-column:1/-1"><i class="fa fa-folder-open"></i><p>Belum ada dokumen tersedia.</p></div>
+  </div>
+</div>
+
+<footer>
+  <strong>SMAN 68 Jakarta</strong> &nbsp;|&nbsp; Jl. Prambanan No.2, Menteng, Jakarta Pusat &nbsp;|&nbsp;
+  &copy; <span id="footerYear"></span> Hak cipta dilindungi
+</footer>
+
+<!-- AGENDA MODAL -->
+<div class="modal-overlay" id="agendaModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalDateLabel">Agenda Tanggal</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="agenda-list" id="agendaList"></div>
+      <hr style="border:none;border-top:1px solid var(--gray-200);margin-bottom:14px"/>
+      <div class="form-group">
+        <label>Nama Agenda</label>
+        <input type="text" id="agendaName" placeholder="Contoh: Rapat OSIS, Ujian Fisika..."/>
+      </div>
+      <div class="time-row">
+        <div class="form-group">
+          <label>Jam Mulai</label>
+          <input type="time" id="agendaStart"/>
+        </div>
+        <div class="form-group">
+          <label>Jam Selesai</label>
+          <input type="time" id="agendaEnd"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="saveAgenda()"><i class="fa fa-plus"></i> Simpan Agenda</button>
+        <button class="btn btn-outline" onclick="closeModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+import { getFirestore, doc, getDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",authDomain:"upnvjdatsystem.firebaseapp.com",databaseURL:"https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"upnvjdatsystem",storageBucket:"upnvjdatsystem.firebasestorage.app",messagingSenderId:"57095309946",appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3"};
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const fdb=getFirestore(app);
+window._fdb=fdb;
+window._rtdb=db;
+
+// ========== JADWAL ==========
+function loadJadwal(sem){
+  const imgEl=document.getElementById(`jadwal-${sem}-image`);
+  const tblEl=document.getElementById(`jadwal-${sem}-table`);
+  const emptyEl=document.getElementById(`jadwal-${sem}-empty`);
+  imgEl.style.display='none';tblEl.innerHTML='';emptyEl.style.display='block';
+  onValue(ref(db,`jadwal/${sem}`),snap=>{
+    const data=snap.val();
+    if(!data){emptyEl.style.display='block';return;}
+    emptyEl.style.display='none';
+    if(data.type==='image'&&data.url){
+      imgEl.innerHTML=`<img src="${data.url}" alt="Jadwal ${sem}" onclick="openImg(this.src)"/>`;
+      imgEl.style.display='block';
+    } else if(data.type==='table'&&data.headers&&data.rows){
+      let html=`<table class="jadwal-table"><thead><tr>`;
+      data.headers.forEach(h=>html+=`<th>${h}</th>`);
+      html+=`</tr></thead><tbody>`;
+      data.rows.forEach(row=>{html+=`<tr>`;row.forEach(c=>html+=`<td>${c}</td>`);html+=`</tr>`;});
+      html+=`</tbody></table>`;
+      tblEl.innerHTML=html;
+    }
+  });
+}
+loadJadwal('genap');loadJadwal('ganjil');
+window._loadJadwal=loadJadwal;
+
+// ========== KALENDER AKADEMIK ==========
+onValue(ref(db,'akademik_years'),snap=>{
+  const sel=document.getElementById('akademikYearSelect');
+  sel.innerHTML='<option value="">-- Pilih Tahun --</option>';
+  const data=snap.val();
+  if(data){Object.keys(data).sort().reverse().forEach(y=>{
+    sel.innerHTML+=`<option value="${y}">${y}</option>`;
+  });}
+});
+window.loadAkademik=function(){
+  const yr=document.getElementById('akademikYearSelect').value;
+  const imgW=document.getElementById('akademik-image-wrap');
+  const evtsEl=document.getElementById('akademik-events');
+  const empty=document.getElementById('akademik-empty');
+  imgW.style.display='none';evtsEl.innerHTML='';empty.style.display='block';
+  if(!yr)return;
+  onValue(ref(db,`akademik/${yr}`),snap=>{
+    const data=snap.val();
+    if(!data){empty.style.display='block';return;}
+    empty.style.display='none';
+    if(data.imageUrl){
+      imgW.innerHTML=`<img src="${data.imageUrl}" alt="Kalender Akademik ${yr}" style="max-width:100%;border-radius:10px;box-shadow:var(--shadow-md)"/>`;
+      imgW.style.display='block';
+    }
+    if(data.events&&Array.isArray(data.events)){
+      data.events.forEach(ev=>{
+        const div=document.createElement('div');
+        div.className=`event-item ${ev.color||'default'}`;
+        div.innerHTML=`<span class="event-date">${ev.date}</span><span class="event-name">${ev.name}</span>`;
+        evtsEl.appendChild(div);
+      });
+    }
+  },{onlyOnce:true});
+};
+
+// ========== UNDUH ==========
+onValue(ref(db,'unduh'),snap=>{
+  const grid=document.getElementById('unduhGrid');
+  const data=snap.val();
+  grid.innerHTML='';
+  if(!data||!Object.keys(data).length){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><i class="fa fa-folder-open"></i><p>Belum ada dokumen tersedia.</p></div>';
+    return;
+  }
+  const icons={'pdf':'fa-file-pdf','doc':'fa-file-word','xls':'fa-file-excel','zip':'fa-file-archive','default':'fa-file-alt'};
+  Object.values(data).forEach(item=>{
+    if(!item.url||!item.name)return;
+    const ext=item.name.split('.').pop().toLowerCase();
+    const icon=icons[ext]||icons.default;
+    const a=document.createElement('a');
+    a.className='unduh-card';a.href=item.url;a.target='_blank';a.rel='noopener';
+    a.innerHTML=`<div class="unduh-icon"><i class="fa ${icon}"></i></div>
+      <div class="unduh-info"><h4>${item.name}</h4><p>${item.desc||'Klik untuk mengunduh'}</p></div>`;
+    grid.appendChild(a);
+  });
+});
+
+// ========== KALENDER BESAR ==========
+const today=new Date();
+let calYear=today.getFullYear();
+let calMonth=today.getMonth();
+let agendaData={};
+let selectedDate=null;
+let notifTimers={};
+
+function loadAgendaFromStorage(){
+  try{const s=localStorage.getItem('sman68_agenda');if(s)agendaData=JSON.parse(s);}catch(e){}
+}
+function saveAgendaToStorage(){localStorage.setItem('sman68_agenda',JSON.stringify(agendaData));}
+loadAgendaFromStorage();
+
+function getColoredDays(){
+  // Load from firebase per month
+  const key=`akademik_colored_days/${calYear}/${calMonth+1}`;
+  return new Promise(resolve=>{
+    onValue(ref(db,key),snap=>resolve(snap.val()||{}),{onlyOnce:true});
+  });
+}
+
+function renderCalendar(){
+  const grid=document.getElementById('calGrid');
+  const label=document.getElementById('calMonthLabel');
+  const yearInput=document.getElementById('calYearInput');
+  const months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  label.textContent=months[calMonth]+' ';
+  yearInput.value=calYear;
+  const days=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  grid.innerHTML='';
+  days.forEach(d=>{const h=document.createElement('div');h.className='cal-day-header';h.textContent=d;grid.appendChild(h);});
+  const first=new Date(calYear,calMonth,1).getDay();
+  for(let i=0;i<first;i++){const e=document.createElement('div');e.className='cal-cell empty';grid.appendChild(e);}
+  const total=new Date(calYear,calMonth+1,0).getDate();
+
+  getColoredDays().then(colorMap=>{
+    for(let d=1;d<=total;d++){
+      const cell=document.createElement('div');
+      cell.className='cal-cell';
+      const dateKey=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if(colorMap&&colorMap[d]) cell.classList.add(colorMap[d]+'-day');
+      if(calYear===today.getFullYear()&&calMonth===today.getMonth()&&d===today.getDate()) cell.classList.add('today');
+      const agendas=agendaData[dateKey]||[];
+      const numEl=document.createElement('div');numEl.className='day-num';numEl.textContent=d;cell.appendChild(numEl);
+      if(agendas.length){
+        const dots=document.createElement('div');dots.className='agenda-dots';
+        agendas.slice(0,4).forEach(()=>{const dot=document.createElement('div');dot.className='agenda-dot';dots.appendChild(dot);});
+        cell.appendChild(dots);
+      }
+      cell.addEventListener('click',()=>openAgendaModal(dateKey));
+      grid.appendChild(cell);
+    }
+  });
+}
+
+window.changeMonth=function(dir){
+  calMonth+=dir;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  renderCalendar();
+};
+window.goToYear=function(yr){calYear=parseInt(yr)||today.getFullYear();renderCalendar();};
+
+// AGENDA MODAL
+const months_id=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function openAgendaModal(dateKey){
+  selectedDate=dateKey;
+  const parts=dateKey.split('-');
+  document.getElementById('modalDateLabel').textContent=`${parseInt(parts[2])} ${months_id[parseInt(parts[1])-1]} ${parts[0]}`;
+  renderAgendaList();
+  document.getElementById('agendaModal').classList.add('open');
+}
+function renderAgendaList(){
+  const list=document.getElementById('agendaList');
+  const agendas=agendaData[selectedDate]||[];
+  if(!agendas.length){list.innerHTML='<p style="color:var(--gray-400);font-size:13px">Belum ada agenda di hari ini.</p>';return;}
+  list.innerHTML='';
+  agendas.forEach((ag,i)=>{
+    const div=document.createElement('div');div.className='agenda-entry';
+    div.innerHTML=`<div class="agenda-entry-info">
+      <div class="agenda-entry-name">${ag.name}</div>
+      <div class="agenda-entry-time"><i class="fa fa-clock" style="margin-right:4px"></i>${ag.start} – ${ag.end}</div>
+    </div>
+    <button class="agenda-entry-bell ${ag.bell?'active':''}" title="Aktifkan notifikasi 30 menit sebelum" onclick="toggleBell('${selectedDate}',${i})">
+      <i class="fa fa-bell${ag.bell?'':'-slash'}"></i>
+    </button>
+    <button class="agenda-entry-delete" onclick="deleteAgenda('${selectedDate}',${i})"><i class="fa fa-trash"></i></button>`;
+    list.appendChild(div);
+  });
+}
+window.openAgendaModal=openAgendaModal;
+window.closeModal=function(){document.getElementById('agendaModal').classList.remove('open');selectedDate=null;};
+window.saveAgenda=function(){
+  const name=document.getElementById('agendaName').value.trim();
+  const start=document.getElementById('agendaStart').value;
+  const end=document.getElementById('agendaEnd').value;
+  if(!name){showToast('Nama agenda tidak boleh kosong!');return;}
+  if(!agendaData[selectedDate])agendaData[selectedDate]=[];
+  agendaData[selectedDate].push({name,start,end,bell:false});
+  saveAgendaToStorage();
+  document.getElementById('agendaName').value='';
+  document.getElementById('agendaStart').value='';
+  document.getElementById('agendaEnd').value='';
+  renderAgendaList();renderCalendar();
+  showToast('Agenda berhasil disimpan!');
+};
+window.deleteAgenda=function(dateKey,idx){
+  agendaData[dateKey].splice(idx,1);
+  if(!agendaData[dateKey].length)delete agendaData[dateKey];
+  saveAgendaToStorage();renderAgendaList();renderCalendar();
+};
+window.toggleBell=function(dateKey,idx){
+  const ag=agendaData[dateKey][idx];
+  ag.bell=!ag.bell;
+  saveAgendaToStorage();
+  if(ag.bell){
+    scheduleNotif(dateKey,ag);
+    showToast(`🔔 Notifikasi aktif untuk "${ag.name}"`);
+  } else {
+    cancelNotif(dateKey,idx);
+    showToast(`🔕 Notifikasi dinonaktifkan`);
+  }
+  renderAgendaList();
+};
+function scheduleNotif(dateKey,ag){
+  if(!ag.start||!ag.bell)return;
+  const [yr,mo,dy]=dateKey.split('-').map(Number);
+  const [hr,mn]=ag.start.split(':').map(Number);
+  const agendaTime=new Date(yr,mo-1,dy,hr,mn);
+  const notifTime=new Date(agendaTime.getTime()-30*60*1000);
+  const now=new Date();
+  const diff=notifTime-now;
+  const timerKey=`${dateKey}-${ag.name}`;
+  if(diff>0){
+    if(notifTimers[timerKey])clearTimeout(notifTimers[timerKey]);
+    notifTimers[timerKey]=setTimeout(()=>{
+      if(Notification.permission==='granted'){
+        new Notification('⏰ Pengingat Agenda SMAN 68',{body:`"${ag.name}" dimulai 30 menit lagi (${ag.start})`,icon:'https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png'});
+      } else {
+        showToast(`⏰ 30 mnt lagi: ${ag.name} (${ag.start})`);
+      }
+    },diff);
+  }
+  if(Notification.permission==='default') Notification.requestPermission();
+}
+function cancelNotif(dateKey,idx){
+  const ag=agendaData[dateKey]?.[idx];
+  if(!ag)return;
+  const timerKey=`${dateKey}-${ag.name}`;
+  if(notifTimers[timerKey]){clearTimeout(notifTimers[timerKey]);delete notifTimers[timerKey];}
+}
+// Re-schedule saved notifications on load
+Object.entries(agendaData).forEach(([dateKey,agendas])=>{
+  agendas.forEach(ag=>{if(ag.bell)scheduleNotif(dateKey,ag);});
+});
+
+renderCalendar();
+document.getElementById('footerYear').textContent=new Date().getFullYear();
+
+</script>
+
+<script>
+function showSection(id,btn){
+  ['jadwal','akademik','kalender','unduh'].forEach(s=>{
+    document.getElementById('sec-'+s).style.display=s===id?'':'none';
+  });
+  document.querySelectorAll('.nav-tab,.mobile-nav .nav-tab').forEach(b=>b.classList.remove('active'));
+  if(btn){
+    // also sync mobile nav
+    const allTabs=document.querySelectorAll('.nav-tab');
+    allTabs.forEach(t=>{if(t.textContent.trim()===btn.textContent.trim())t.classList.add('active');});
+  }
+}
+function switchJadwal(sem){
+  document.getElementById('jadwal-genap-container').style.display=sem==='genap'?'':'none';
+  document.getElementById('jadwal-ganjil-container').style.display=sem==='ganjil'?'':'none';
+  document.getElementById('jadwalGenap').classList.toggle('active',sem==='genap');
+  document.getElementById('jadwalGanjil').classList.toggle('active',sem==='ganjil');
+}
+function openImg(src){window.open(src,'_blank');}
+function toggleMobileNav(){document.getElementById('mobileNav').classList.toggle('open');}
+function closeMobileNav(){document.getElementById('mobileNav').classList.remove('open');}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.style.display='none',3000);
+}
+</script>
+</body>
+</html>
