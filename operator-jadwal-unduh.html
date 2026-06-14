@@ -408,8 +408,15 @@ table tr:hover td{background:var(--g1)}
             Saat ini: <strong>Tidak ada batas kapasitas</strong>. Semua pengguna dapat mengakses website.
           </div>
           <div class="cap-active-users">
-            <div class="cap-active-title"><i class="fa fa-signal" style="margin-right:4px;color:var(--orange)"></i>Pengguna Aktif Saat Ini: <span id="capActiveCount" style="color:var(--orange)">0</span></div>
-            <div class="cap-users-list" id="capUsersList">Belum ada pengguna aktif</div>
+            <div class="cap-active-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+              <span><i class="fa fa-signal" style="margin-right:4px;color:var(--orange)"></i>Pengguna Aktif Saat Ini: <span id="capActiveCount" style="color:var(--orange);font-size:15px;font-weight:800">0</span></span>
+              <button onclick="kickAllSessions()" style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px;border:none;background:#fee2e2;color:#b91c1c;cursor:pointer">
+                <i class="fa fa-ban"></i> Kick Semua
+              </button>
+            </div>
+            <div class="cap-users-list" id="capUsersList" style="margin-top:8px;max-height:200px;overflow-y:auto">
+              <span style="color:var(--gray-400);font-size:12px">Tidak ada pengguna aktif saat ini.</span>
+            </div>
           </div>
         </div>
 
@@ -510,7 +517,7 @@ table tr:hover td{background:var(--g1)}
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+import { getDatabase, ref, set, get, remove, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
 const firebaseConfig={apiKey:"AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",authDomain:"upnvjdatsystem.firebaseapp.com",databaseURL:"https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"upnvjdatsystem",storageBucket:"upnvjdatsystem.firebasestorage.app",messagingSenderId:"57095309946",appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3"};
 const app=initializeApp(firebaseConfig);
@@ -577,21 +584,71 @@ function loadStats(){
   onValue(ref(db,'jadwal'),snap=>{document.getElementById('statJadwal').textContent=snap.val()?Object.keys(snap.val()).length:0;});
   onValue(ref(db,'akademik'),snap=>{document.getElementById('statAkademik').textContent=snap.val()?Object.keys(snap.val()).length:0;});
   onValue(ref(db,'unduh'),snap=>{document.getElementById('statUnduh').textContent=snap.val()?Object.keys(snap.val()).length:0;});
+
+  // ─ REAL-TIME ACTIVE SESSIONS ─
   onValue(ref(db,'server_capacity/active_sessions'),snap=>{
-    const c=snap.val()?Object.keys(snap.val()).length:0;
-    document.getElementById('statActiveUsers').textContent=c;
-    document.getElementById('capActiveCount').textContent=c;
+    const data=snap.val()||{};
+    const entries=Object.entries(data);
+    const count=entries.length;
+
+    // Update stat cards
+    document.getElementById('statActiveUsers').textContent=count;
+    document.getElementById('capActiveCount').textContent=count;
+
+    // Update pengguna list di halaman capacity
     const list=document.getElementById('capUsersList');
-    if(!snap.val()||!Object.keys(snap.val()).length){list.textContent='Belum ada pengguna aktif';return;}
-    list.innerHTML=Object.entries(snap.val()).map(([k,v])=>
-      `<div style="padding:2px 0;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between"><span style="font-family:monospace;color:var(--g7)">${k.substring(0,16)}…</span><span style="color:var(--gray-400)">${new Date(v.ts||Date.now()).toLocaleTimeString('id-ID')}</span></div>`
-    ).join('');
+    if(!count){
+      list.innerHTML='<span style="color:var(--gray-400);font-size:12px">Tidak ada pengguna aktif saat ini.</span>';
+      return;
+    }
+    const now=Date.now();
+    list.innerHTML=entries.map(([k,v],i)=>{
+      const dur=Math.round((now-(v.ts||now))/1000/60); // menit
+      const durTxt=dur<1?'baru saja':dur<60?`${dur} mnt lalu`:`${Math.floor(dur/60)} jam lalu`;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;
+        border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--g4);flex-shrink:0;animation:pulse 2s infinite"></div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--g8)">Pengguna #${i+1}</div>
+            <div style="font-size:10px;color:var(--gray-400);font-family:monospace">${k.substring(0,20)}…</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div style="text-align:right">
+            <div style="font-size:11px;font-weight:600;color:var(--gray-600)">${new Date(v.ts||Date.now()).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</div>
+            <div style="font-size:10px;color:var(--gray-400)">${durTxt}</div>
+          </div>
+          <button onclick="kickSession('${k}')" title="Hapus sesi ini"
+            style="width:28px;height:28px;border-radius:7px;border:none;background:#fee2e2;color:#b91c1c;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--t)">
+            <i class="fa fa-xmark"></i>
+          </button>
+        </div>
+      </div>`;
+    }).join('');
   });
+
   onValue(ref(db,'server_capacity/max_users'),snap=>{
     const v=snap.val()||0;
     document.getElementById('statCapacity').textContent=v===0?'∞':v;
+    document.getElementById('capMaxInput').value=v===0?'':v;
+    updateCapHint(v);
   });
 }
+
+// ─── KICK SESSION (force hapus sesi pengguna tertentu) ───
+window.kickSession=async function(key){
+  if(!confirm('Paksa keluar pengguna ini dari website?')) return;
+  await remove(ref(db,`server_capacity/active_sessions/${key}`));
+  showToast('✅ Sesi pengguna dihapus. Slot terbuka.');
+};
+
+// ─── KICK ALL SESSIONS ───
+window.kickAllSessions=async function(){
+  if(!confirm('Hapus SEMUA sesi aktif pengguna? Mereka semua akan melihat notifikasi server padat.')) return;
+  await remove(ref(db,'server_capacity/active_sessions'));
+  showToast('✅ Semua sesi dihapus!');
+};
 
 // ─── JADWAL EDITOR ───
 let currentJadwalSem='genap';
