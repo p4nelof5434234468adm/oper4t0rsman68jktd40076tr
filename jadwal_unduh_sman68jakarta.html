@@ -443,7 +443,7 @@ footer strong{color:#fff}
 <!-- ═══ FIREBASE ═══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, get, increment } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+import { getDatabase, ref, onValue, set, get, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
@@ -457,62 +457,91 @@ const firebaseConfig={
 const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 
-// ─── SESSION ID ───
-const SESSION_KEY='sman68_session_'+Math.random().toString(36).substr(2,9);
-let sessionRegistered=false;
-let serverCapacity=0;
-let serverBlocked=false;
+// ─── SESSION TRACKING DENGAN onDisconnect (auto-hapus saat tab ditutup) ───
+const SESSION_KEY = 'sman68_' + Math.random().toString(36).substr(2,12);
+const sessionRef = ref(db, `server_capacity/active_sessions/${SESSION_KEY}`);
+let sessionRegistered = false;
+let serverCapacity = 0;
+let serverBlocked = false;
 
-// ─── SERVER CAPACITY CHECK ───
+// ─── DAFTAR SESI + onDisconnect → otomatis hapus saat offline ───
+async function registerSession(){
+  const sessionData = { ts: Date.now(), ua: navigator.userAgent.substr(0,40) };
+  // Set data sesi
+  await set(sessionRef, sessionData);
+  // Kunci onDisconnect: Firebase hapus otomatis saat koneksi putus (tab tutup, refresh, offline)
+  await onDisconnect(sessionRef).remove();
+  sessionRegistered = true;
+}
+
+// ─── CEK KAPASITAS ───
 async function checkServerCapacity(){
-  const capSnap=await get(ref(db,'server_capacity/max_users'));
-  const max=capSnap.val()||0;
-  serverCapacity=max;
-  if(max<=0){sessionRegistered=true;return true;} // unlimited
-  const sessionSnap=await get(ref(db,'server_capacity/active_sessions'));
-  const sessions=sessionSnap.val()||{};
-  const count=Object.keys(sessions).length;
-  if(count<max){
-    await set(ref(db,`server_capacity/active_sessions/${SESSION_KEY}`),{ts:Date.now()});
-    sessionRegistered=true;
-    window.addEventListener('beforeunload',()=>{
-      navigator.sendBeacon&&set(ref(db,`server_capacity/active_sessions/${SESSION_KEY}`),null);
-    });
+  const capSnap = await get(ref(db,'server_capacity/max_users'));
+  const max = capSnap.val() || 0;
+  serverCapacity = max;
+
+  // Kapasitas 0 = tidak terbatas
+  if(max <= 0){
+    await registerSession();
+    return true;
+  }
+
+  const sessionSnap = await get(ref(db,'server_capacity/active_sessions'));
+  const sessions = sessionSnap.val() || {};
+  // Bersihkan sesi yg sudah ada tapi stale (>10 menit) sebagai safety net
+  const now = Date.now();
+  const activeSessions = Object.entries(sessions).filter(([k,v])=>(now - (v.ts||0)) < 10*60*1000);
+  const count = activeSessions.length;
+
+  if(count < max){
+    await registerSession();
     return true;
   } else {
-    serverBlocked=true;
+    serverBlocked = true;
     document.getElementById('serverOverlay').classList.add('show');
     return false;
   }
 }
 
-// ─── RETRY ACCESS ───
-window.retryAccess=async function(){
+// ─── RETRY ───
+window.retryAccess = async function(){
   document.getElementById('serverOverlay').classList.remove('show');
-  const ok=await checkServerCapacity();
+  serverBlocked = false;
+  const ok = await checkServerCapacity();
   if(!ok){
-    setTimeout(()=>document.getElementById('serverOverlay').classList.add('show'),800);
+    serverBlocked = true;
+    setTimeout(()=>document.getElementById('serverOverlay').classList.add('show'), 600);
   }
 };
-window.cancelAccess=function(){
-  if(sessionRegistered) set(ref(db,`server_capacity/active_sessions/${SESSION_KEY}`),null);
-  window.location.href='./sman68.html';
+window.cancelAccess = function(){
+  // Hapus sesi manual + batalkan onDisconnect lalu redirect
+  if(sessionRegistered){
+    onDisconnect(sessionRef).cancel();
+    remove(sessionRef);
+  }
+  window.location.href = './sman68.html';
 };
 
-// ─── WATCH CAPACITY CHANGES IN REAL-TIME ───
-onValue(ref(db,'server_capacity/max_users'),snap=>{
-  const max=snap.val()||0;
-  serverCapacity=max;
+// ─── REAL-TIME: pantau slot terbuka → auto-notif ke pengguna yang blocked ───
+onValue(ref(db,'server_capacity/active_sessions'), snap=>{
+  const sessions = snap.val() || {};
+  const count = Object.keys(sessions).length;
+
+  // Jika user sedang diblok dan ada slot kosong → overlay munculkan hint "Coba Lagi"
+  if(serverBlocked && serverCapacity > 0 && count < serverCapacity){
+    // Tampilkan hint slot tersedia
+    const popup = document.querySelector('.server-popup p');
+    if(popup) popup.innerHTML = '✅ Slot tersedia! Klik <strong>Coba Lagi</strong> untuk masuk sekarang.';
+  }
 });
-onValue(ref(db,'server_capacity/active_sessions'),snap=>{
-  if(!sessionRegistered&&!serverBlocked) return;
-  if(!sessionRegistered&&serverBlocked){
-    const sessions=snap.val()||{};
-    const count=Object.keys(sessions).length;
-    if(serverCapacity>0&&count<serverCapacity){
-      // slot opened - auto-retry
-      retryAccess();
-    }
+
+// ─── REAL-TIME: pantau perubahan max_users oleh operator ───
+onValue(ref(db,'server_capacity/max_users'), snap=>{
+  const max = snap.val() || 0;
+  serverCapacity = max;
+  // Jika kapasitas dinaikkan & user sedang blocked, coba auto-retry
+  if(serverBlocked && sessionRegistered===false){
+    checkServerCapacity();
   }
 });
 
