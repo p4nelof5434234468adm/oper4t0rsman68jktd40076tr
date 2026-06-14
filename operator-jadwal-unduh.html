@@ -414,7 +414,7 @@ table tr:hover td{background:var(--g1)}
                 <i class="fa fa-ban"></i> Kick Semua
               </button>
             </div>
-            <div class="cap-users-list" id="capUsersList" style="margin-top:8px;max-height:200px;overflow-y:auto">
+            <div class="cap-users-list" id="capUsersList" style="margin-top:10px;max-height:360px;overflow-y:auto;padding-right:2px">
               <span style="color:var(--gray-400);font-size:12px">Tidak ada pengguna aktif saat ini.</span>
             </div>
           </div>
@@ -603,26 +603,65 @@ function loadStats(){
     }
     const now=Date.now();
     list.innerHTML=entries.map(([k,v],i)=>{
-      const dur=Math.round((now-(v.ts||now))/1000/60); // menit
-      const durTxt=dur<1?'baru saja':dur<60?`${dur} mnt lalu`:`${Math.floor(dur/60)} jam lalu`;
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;
-        border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--g4);flex-shrink:0;animation:pulse 2s infinite"></div>
-          <div>
-            <div style="font-size:12px;font-weight:700;color:var(--g8)">Pengguna #${i+1}</div>
-            <div style="font-size:10px;color:var(--gray-400);font-family:monospace">${k.substring(0,20)}…</div>
+      const dur=Math.round((now-(v.ts||now))/1000/60);
+      const durTxt=dur<1?'Baru saja':dur<60?`${dur} menit lalu`:`${Math.floor(dur/60)} jam ${dur%60} mnt lalu`;
+      const icon=v.deviceIcon||'🖥️';
+      const device=v.deviceType||'Desktop 🖥️';
+      const browser=v.browser||'Browser';
+      const os=v.os||'Unknown OS';
+      const screen=v.screen||'–';
+      const waktu=new Date(v.ts||Date.now()).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+      // Warna badge berdasar device
+      const badgeColor=device.includes('Smartphone')?'#dbeafe:#1d4ed8':device.includes('Tablet')?'#fef9c3:#92400e':'#dcfce7:#166534';
+      const [bgBadge,txtBadge]=badgeColor.split(':');
+
+      return `<div style="background:#fff;border:1.5px solid var(--gray-200);border-radius:11px;padding:12px 14px;margin-bottom:9px;transition:var(--t)" onmouseover="this.style.borderColor='var(--g4)'" onmouseout="this.style.borderColor='var(--gray-200)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+
+          <!-- Kiri: ikon + info -->
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0">
+            <!-- Ikon device besar -->
+            <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--g1),var(--b1));
+              display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1.5px solid var(--gray-200)">
+              ${icon}
+            </div>
+            <div style="min-width:0">
+              <!-- Baris 1: No + badge device -->
+              <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px">
+                <span style="font-size:13px;font-weight:800;color:var(--g9)">Pengguna #${i+1}</span>
+                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bgBadge};color:${txtBadge}">${device}</span>
+              </div>
+              <!-- Baris 2: OS + Browser -->
+              <div style="font-size:12px;color:var(--gray-600);display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+                <i class="fa fa-display" style="color:var(--g5);font-size:10px"></i>
+                <span>${os}</span>
+                <span style="color:var(--gray-300)">•</span>
+                <i class="fa fa-globe" style="color:var(--b5);font-size:10px"></i>
+                <span>${browser}</span>
+                <span style="color:var(--gray-300)">•</span>
+                <i class="fa fa-expand" style="color:var(--gray-400);font-size:10px"></i>
+                <span style="color:var(--gray-500)">${screen}</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <div style="text-align:right">
-            <div style="font-size:11px;font-weight:600;color:var(--gray-600)">${new Date(v.ts||Date.now()).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</div>
-            <div style="font-size:10px;color:var(--gray-400)">${durTxt}</div>
+
+          <!-- Kanan: waktu + kick -->
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <div style="text-align:right">
+              <div style="font-size:11px;font-weight:700;color:var(--g7)">${waktu}</div>
+              <div style="font-size:10px;color:var(--gray-400)">${durTxt}</div>
+            </div>
+            <!-- indikator online -->
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--g4);animation:pulse 2s infinite;flex-shrink:0"></div>
+            <button onclick="kickSession('${k}')" title="Hapus sesi pengguna ini"
+              style="width:30px;height:30px;border-radius:8px;border:none;background:#fee2e2;color:#b91c1c;
+              cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--t)"
+              onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'">
+              <i class="fa fa-xmark"></i>
+            </button>
           </div>
-          <button onclick="kickSession('${k}')" title="Hapus sesi ini"
-            style="width:28px;height:28px;border-radius:7px;border:none;background:#fee2e2;color:#b91c1c;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--t)">
-            <i class="fa fa-xmark"></i>
-          </button>
+
         </div>
       </div>`;
     }).join('');
