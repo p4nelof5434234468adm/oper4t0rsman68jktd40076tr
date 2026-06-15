@@ -195,6 +195,14 @@ table tr:hover td{background:var(--g1)}
 .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199;display:none;backdrop-filter:blur(1px)}
 .sidebar-overlay.open{display:block}
 
+/* COUNTDOWN / MAINTENANCE */
+.cd-preview-box{background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1.5px solid var(--g3);border-radius:12px;padding:16px;text-align:center}
+.cd-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(22px,5vw,32px);font-weight:800;color:var(--g8);line-height:1}
+.cd-label{font-size:10px;color:var(--gray-500);font-weight:700;text-transform:uppercase;margin-top:3px}
+.cd-sep{font-size:28px;color:var(--gray-300);font-weight:300;align-self:flex-end;padding-bottom:14px}
+.mt-status-on{border-color:var(--orange)!important;background:linear-gradient(135deg,#fff7ed,#fff)!important}
+.cd-status-on{border-color:var(--g4)!important;background:linear-gradient(135deg,#f0fdf4,#fff)!important}
+
 /* RESPONSIVE */
 @media(max-width:800px){
   .sidebar{transform:translateX(-100%)}
@@ -250,6 +258,8 @@ table tr:hover td{background:var(--g1)}
       <button class="nav-item" onclick="showPage('unduh',this)"><i class="fa fa-download"></i> Dokumen Unduh</button>
       <span class="nav-section-lbl">Sistem</span>
       <button class="nav-item" onclick="showPage('capacity',this)"><i class="fa fa-server"></i> Kapasitas Server</button>
+      <button class="nav-item" onclick="showPage('countdown',this)"><i class="fa fa-clock"></i> Countdown</button>
+      <button class="nav-item" onclick="showPage('maintenance',this)"><i class="fa fa-triangle-exclamation"></i> Maintenance</button>
       <button class="nav-item" onclick="showPage('settings',this)"><i class="fa fa-cog"></i> Pengaturan Akun</button>
     </nav>
     <div class="sidebar-bottom">
@@ -431,6 +441,138 @@ table tr:hover td{background:var(--g1)}
         </div>
       </div>
 
+      <!-- COUNTDOWN -->
+      <div class="page" id="page-countdown">
+        <div class="page-title" style="margin-bottom:18px"><i class="fa fa-clock" style="color:var(--g5);margin-right:8px"></i>Pengaturan Countdown</div>
+
+        <!-- STATUS CARD -->
+        <div id="cdStatusCard" class="card" style="margin-bottom:16px;border-left:4px solid var(--gray-300)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div id="cdStatusIcon" style="width:44px;height:44px;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⏸️</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:var(--gray-900)" id="cdStatusText">Countdown tidak aktif</div>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="cdStatusSub">Atur tanggal dan waktu pembukaan di bawah</div>
+            </div>
+            <div style="margin-left:auto;flex-shrink:0">
+              <span id="cdActiveBadge" style="display:none;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:#dcfce7;color:#15803d;border:1px solid #86efac">
+                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#22c55e;margin-right:4px;animation:pulse 1.5s infinite;vertical-align:middle"></span>AKTIF
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa fa-calendar-clock"></i> Waktu Pembukaan Website</div>
+          <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px">Atur tanggal & jam kapan website dibuka. Saat countdown habis, website otomatis terbuka untuk semua pengguna tanpa refresh.</p>
+
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="form-group">
+              <label>Tanggal Pembukaan</label>
+              <input type="date" class="form-control" id="cdDate"/>
+            </div>
+            <div class="form-group">
+              <label>Jam Pembukaan</label>
+              <input type="time" class="form-control" id="cdTime"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Pesan Countdown (Opsional)</label>
+            <input type="text" class="form-control" id="cdMessage" placeholder="Contoh: Website akan segera dibuka. Mohon ditunggu!"/>
+          </div>
+
+          <!-- Preview countdown live -->
+          <div id="cdPreviewWrap" style="display:none;background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1.5px solid var(--g3);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;color:var(--g7);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">⏱ Preview Countdown</div>
+            <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+              <div style="text-align:center"><div id="cdPrevHari" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:var(--g8);line-height:1">00</div><div style="font-size:10px;color:var(--gray-500);font-weight:700;text-transform:uppercase;margin-top:2px">Hari</div></div>
+              <div style="font-size:28px;color:var(--gray-300);font-weight:300;align-self:center;margin-top:-8px">:</div>
+              <div style="text-align:center"><div id="cdPrevJam" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:var(--g8);line-height:1">00</div><div style="font-size:10px;color:var(--gray-500);font-weight:700;text-transform:uppercase;margin-top:2px">Jam</div></div>
+              <div style="font-size:28px;color:var(--gray-300);font-weight:300;align-self:center;margin-top:-8px">:</div>
+              <div style="text-align:center"><div id="cdPrevMnt" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:var(--g8);line-height:1">00</div><div style="font-size:10px;color:var(--gray-500);font-weight:700;text-transform:uppercase;margin-top:2px">Menit</div></div>
+              <div style="font-size:28px;color:var(--gray-300);font-weight:300;align-self:center;margin-top:-8px">:</div>
+              <div style="text-align:center"><div id="cdPrevDtk" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:var(--b6);line-height:1">00</div><div style="font-size:10px;color:var(--gray-500);font-weight:700;text-transform:uppercase;margin-top:2px">Detik</div></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveCountdown()"><i class="fa fa-save"></i> Aktifkan Countdown</button>
+            <button class="btn" style="background:#fee2e2;color:#b91c1c" onclick="stopCountdown()"><i class="fa fa-stop"></i> Nonaktifkan</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa fa-circle-info"></i> Cara Kerja Countdown</div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.8">
+            <p>• Saat countdown aktif, pengguna yang buka website akan melihat <strong>halaman countdown</strong> dengan logo SMAN 68 dan timer mundur.</p>
+            <p>• Saat timer mencapai 0, halaman website <strong>otomatis terbuka sendiri tanpa perlu refresh</strong>.</p>
+            <p>• Countdown dan Maintenance bisa dipakai bersamaan — Maintenance diutamakan jika keduanya aktif.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAINTENANCE -->
+      <div class="page" id="page-maintenance">
+        <div class="page-title" style="margin-bottom:18px"><i class="fa fa-triangle-exclamation" style="color:var(--orange);margin-right:8px"></i>Mode Maintenance</div>
+
+        <!-- STATUS CARD -->
+        <div id="mtStatusCard" class="card" style="margin-bottom:16px;border-left:4px solid var(--gray-300)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div id="mtStatusIcon" style="width:44px;height:44px;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔧</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:var(--gray-900)" id="mtStatusText">Maintenance tidak aktif</div>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="mtStatusSub">Website berjalan normal</div>
+            </div>
+            <div style="margin-left:auto;flex-shrink:0">
+              <span id="mtActiveBadge" style="display:none;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa">
+                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--orange);margin-right:4px;animation:pulse 1.5s infinite;vertical-align:middle"></span>MAINTENANCE ON
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa fa-wrench"></i> Pengaturan Maintenance</div>
+          <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px">Saat maintenance aktif, pengguna akan melihat halaman maintenance dengan logo SMAN 68 dan alasan yang kamu isi.</p>
+
+          <div class="form-group">
+            <label>Judul Maintenance</label>
+            <input type="text" class="form-control" id="mtTitle" placeholder="Contoh: Website Sedang Dalam Perbaikan"/>
+          </div>
+          <div class="form-group">
+            <label>Alasan / Keterangan Maintenance</label>
+            <textarea class="form-control" id="mtReason" rows="3" placeholder="Contoh: Kami sedang melakukan pembaruan sistem dan penambahan fitur baru. Website akan kembali normal dalam beberapa saat."></textarea>
+          </div>
+          <div class="form-row" style="margin-bottom:13px">
+            <div class="form-group">
+              <label>Estimasi Selesai (Opsional)</label>
+              <input type="datetime-local" class="form-control" id="mtEstimasi"/>
+            </div>
+            <div class="form-group">
+              <label>Kontak Darurat (Opsional)</label>
+              <input type="text" class="form-control" id="mtKontak" placeholder="Contoh: admin@sman68.sch.id"/>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn" style="background:linear-gradient(135deg,#ea580c,#dc2626);color:#fff" onclick="saveMaintenance(true)">
+              <i class="fa fa-triangle-exclamation"></i> Aktifkan Maintenance
+            </button>
+            <button class="btn btn-primary" onclick="saveMaintenance(false)">
+              <i class="fa fa-check"></i> Nonaktifkan Maintenance
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa fa-circle-info"></i> Cara Kerja Maintenance</div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.8">
+            <p>• Saat maintenance aktif, semua pengguna yang membuka website akan <strong>langsung melihat halaman maintenance</strong> tanpa perlu reload.</p>
+            <p>• Maintenance <strong>lebih prioritas</strong> dari countdown — jika keduanya aktif, halaman maintenance yang ditampilkan.</p>
+            <p>• Nonaktifkan maintenance untuk mengembalikan website ke kondisi normal.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- SETTINGS -->
       <div class="page" id="page-settings">
         <div class="page-title" style="margin-bottom:18px"><i class="fa fa-cog" style="color:var(--g5);margin-right:8px"></i>Pengaturan Akun</div>
@@ -577,6 +719,8 @@ function initApp(){
   loadColoredTable();
   loadUnduhTable();
   initCapacity();
+  initCountdown();
+  initMaintenance();
 }
 
 // ─── STATS ───
@@ -976,6 +1120,139 @@ window.saveCapacity=async function(){
   updateCapHint(v);
 };
 
+// ─── COUNTDOWN ───
+let cdPreviewTimer=null;
+
+function initCountdown(){
+  onValue(ref(db,'site_mode/countdown'),snap=>{
+    const d=snap.val();
+    const badge=document.getElementById('cdActiveBadge');
+    const statusCard=document.getElementById('cdStatusCard');
+    const statusText=document.getElementById('cdStatusText');
+    const statusSub=document.getElementById('cdStatusSub');
+    const statusIcon=document.getElementById('cdStatusIcon');
+    if(d&&d.active&&d.targetTs){
+      const remain=d.targetTs-Date.now();
+      badge.style.display='inline-flex';
+      statusCard.className='card cd-status-on';
+      statusIcon.textContent='⏱️';
+      if(remain>0){
+        statusText.textContent='Countdown AKTIF';
+        const tgl=new Date(d.targetTs).toLocaleString('id-ID',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        statusSub.textContent=`Membuka pada: ${tgl}`;
+      } else {
+        statusText.textContent='Countdown selesai — Website terbuka';
+        statusSub.textContent='Countdown sudah habis, website sudah bisa diakses';
+        statusIcon.textContent='✅';
+      }
+      // Isi form
+      const dt=new Date(d.targetTs);
+      document.getElementById('cdDate').value=dt.toISOString().split('T')[0];
+      document.getElementById('cdTime').value=dt.toTimeString().slice(0,5);
+      document.getElementById('cdMessage').value=d.message||'';
+      startCdPreview(d.targetTs);
+    } else {
+      badge.style.display='none';
+      statusCard.className='card';
+      statusCard.style.borderLeftColor='var(--gray-300)';
+      statusIcon.textContent='⏸️';
+      statusText.textContent='Countdown tidak aktif';
+      statusSub.textContent='Atur tanggal dan waktu pembukaan di bawah';
+    }
+  });
+}
+
+function startCdPreview(targetTs){
+  clearInterval(cdPreviewTimer);
+  document.getElementById('cdPreviewWrap').style.display='block';
+  cdPreviewTimer=setInterval(()=>{
+    const diff=targetTs-Date.now();
+    if(diff<=0){
+      clearInterval(cdPreviewTimer);
+      document.getElementById('cdPrevHari').textContent='00';
+      document.getElementById('cdPrevJam').textContent='00';
+      document.getElementById('cdPrevMnt').textContent='00';
+      document.getElementById('cdPrevDtk').textContent='00';
+      return;
+    }
+    const hari=Math.floor(diff/86400000);
+    const jam=Math.floor((diff%86400000)/3600000);
+    const mnt=Math.floor((diff%3600000)/60000);
+    const dtk=Math.floor((diff%60000)/1000);
+    document.getElementById('cdPrevHari').textContent=String(hari).padStart(2,'0');
+    document.getElementById('cdPrevJam').textContent=String(jam).padStart(2,'0');
+    document.getElementById('cdPrevMnt').textContent=String(mnt).padStart(2,'0');
+    document.getElementById('cdPrevDtk').textContent=String(dtk).padStart(2,'0');
+  },1000);
+}
+
+window.saveCountdown=async function(){
+  const dateVal=document.getElementById('cdDate').value;
+  const timeVal=document.getElementById('cdTime').value;
+  const msg=document.getElementById('cdMessage').value.trim();
+  if(!dateVal||!timeVal){showToast('❌ Pilih tanggal dan jam terlebih dahulu!');return;}
+  const targetTs=new Date(`${dateVal}T${timeVal}:00`).getTime();
+  if(targetTs<=Date.now()){showToast('❌ Waktu harus di masa depan!');return;}
+  await set(ref(db,'site_mode/countdown'),{active:true,targetTs,message:msg||'Website akan segera dibuka. Mohon tunggu sebentar.'});
+  showToast('✅ Countdown aktif! Website pengguna menampilkan timer.');
+};
+
+window.stopCountdown=async function(){
+  await set(ref(db,'site_mode/countdown'),{active:false,targetTs:null,message:''});
+  clearInterval(cdPreviewTimer);
+  document.getElementById('cdPreviewWrap').style.display='none';
+  showToast('✅ Countdown dinonaktifkan.');
+};
+
+// ─── MAINTENANCE ───
+function initMaintenance(){
+  onValue(ref(db,'site_mode/maintenance'),snap=>{
+    const d=snap.val();
+    const badge=document.getElementById('mtActiveBadge');
+    const statusCard=document.getElementById('mtStatusCard');
+    const statusText=document.getElementById('mtStatusText');
+    const statusSub=document.getElementById('mtStatusSub');
+    const statusIcon=document.getElementById('mtStatusIcon');
+    if(d&&d.active){
+      badge.style.display='inline-flex';
+      statusCard.className='card mt-status-on';
+      statusIcon.textContent='🔴';
+      statusText.textContent='Mode Maintenance AKTIF';
+      statusSub.textContent='Semua pengguna melihat halaman maintenance';
+      document.getElementById('mtTitle').value=d.title||'';
+      document.getElementById('mtReason').value=d.reason||'';
+      document.getElementById('mtKontak').value=d.kontak||'';
+      if(d.estimasi) document.getElementById('mtEstimasi').value=new Date(d.estimasi).toISOString().slice(0,16);
+    } else {
+      badge.style.display='none';
+      statusCard.className='card';
+      statusCard.style.borderLeftColor='var(--gray-300)';
+      statusIcon.textContent='🔧';
+      statusText.textContent='Maintenance tidak aktif';
+      statusSub.textContent='Website berjalan normal';
+    }
+  });
+}
+
+window.saveMaintenance=async function(aktif){
+  if(aktif){
+    const title=document.getElementById('mtTitle').value.trim()||'Website Sedang Dalam Perbaikan';
+    const reason=document.getElementById('mtReason').value.trim()||'Kami sedang melakukan pembaruan sistem.';
+    const estimasi=document.getElementById('mtEstimasi').value;
+    const kontak=document.getElementById('mtKontak').value.trim();
+    await set(ref(db,'site_mode/maintenance'),{
+      active:true,title,reason,
+      estimasi:estimasi?new Date(estimasi).getTime():null,
+      kontak:kontak||null,
+      since:Date.now()
+    });
+    showToast('⚠️ Maintenance diaktifkan! Semua pengguna melihat halaman maintenance.');
+  } else {
+    await set(ref(db,'site_mode/maintenance'),{active:false});
+    showToast('✅ Maintenance dinonaktifkan. Website kembali normal.');
+  }
+};
+
 </script>
 
 <script>
@@ -985,8 +1262,11 @@ function showPage(id,el){
   document.getElementById('page-'+id)&&document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
-  const titles={dashboard:'Dashboard',jadwal:'Jadwal Pelajaran',akademik:'Kalender Akademik',
-    colored:'Warna Hari Spesial',unduh:'Dokumen Unduh',capacity:'Kapasitas Server',settings:'Pengaturan Akun'};
+  const titles={
+    dashboard:'Dashboard',jadwal:'Jadwal Pelajaran',akademik:'Kalender Akademik',
+    colored:'Warna Hari Spesial',unduh:'Dokumen Unduh',capacity:'Kapasitas Server',
+    countdown:'Pengaturan Countdown',maintenance:'Mode Maintenance',settings:'Pengaturan Akun'
+  };
   document.getElementById('topbarTitle').textContent=titles[id]||id;
   closeSidebar();
 }
