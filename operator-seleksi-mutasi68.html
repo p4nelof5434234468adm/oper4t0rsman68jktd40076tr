@@ -464,6 +464,11 @@
         <span class="nav-badge" id="totalBadge">0</span>
       </div>
 
+      <div class="nav-section-label">Daftar Ulang</div>
+      <div class="nav-item" onclick="switchTab('daftarUlang',this)">
+        <i class="fas fa-file-pen"></i> Daftar Ulang <span class="nav-badge" id="duNavBadge" style="background:var(--green)">0</span>
+      </div>
+
       <div class="nav-section-label">Sistem</div>
       <div class="nav-item" onclick="switchTab('pengaturan',this)">
         <i class="fas fa-gear"></i> Pengaturan
@@ -933,6 +938,124 @@
         </div>
       </div>
     </div>
+
+    <!-- ===== TAB DAFTAR ULANG ===== -->
+    <div id="tab-daftarUlang" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-file-pen"></i> Manajemen Daftar Ulang</h2>
+        <p>Kelola jadwal, status, dan monitoring peserta daftar ulang murid mutasi.</p>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-ic blue"><i class="fas fa-users"></i></div>
+          <div><div class="stat-num" id="duStatTotal">0</div><div class="stat-lbl">Total Daftar Ulang</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic green"><i class="fas fa-circle-check"></i></div>
+          <div><div class="stat-num" id="duStatValid">0</div><div class="stat-lbl">Valid</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic orange"><i class="fas fa-clock"></i></div>
+          <div><div class="stat-num" id="duStatProses">0</div><div class="stat-lbl">Proses</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic red"><i class="fas fa-circle-xmark"></i></div>
+          <div><div class="stat-num" id="duStatTidakValid">0</div><div class="stat-lbl">Tidak Valid</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic purple"><i class="fas fa-hourglass-half"></i></div>
+          <div><div class="stat-num" id="duStatBelum">0</div><div class="stat-lbl">Belum Daftar Ulang</div></div>
+        </div>
+      </div>
+
+      <!-- Pengaturan Jadwal -->
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-clock"></i> Pengaturan Jadwal Login Daftar Ulang</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-info"><i class="fas fa-circle-info"></i><span>Atur jadwal kapan peserta dapat login ke halaman daftar ulang. Kosongkan untuk nonaktifkan pembatasan jadwal.</span></div>
+          <div class="frow">
+            <div class="fg">
+              <label><i class="fas fa-calendar-plus"></i> Tanggal &amp; Jam Mulai Login</label>
+              <input type="datetime-local" id="duScheduleOpen">
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-calendar-times"></i> Tanggal &amp; Jam Tutup Login</label>
+              <input type="datetime-local" id="duScheduleClose">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="duSaveSchedule" onclick="saveDUSchedule()"><i class="fas fa-save"></i> Simpan Jadwal</button>
+        </div>
+      </div>
+
+      <!-- Tutup Website -->
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-door-closed"></i> Status Website Daftar Ulang</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-warn"><i class="fas fa-triangle-exclamation"></i><span>Aktifkan untuk menutup akses ke halaman daftar ulang. Peserta akan melihat halaman penutupan.</span></div>
+          <div class="flex items-center gap-12" style="padding:10px 0;">
+            <span style="font-weight:600;font-size:0.9rem;">Status Website:</span>
+            <span id="duWebsiteStatus" style="font-weight:700;padding:4px 14px;border-radius:99px;background:var(--success-bg);color:var(--success-text);border:1px solid var(--success-border);">Buka</span>
+            <button class="btn btn-red btn-sm" id="duToggleWebsite" onclick="toggleDUWebsite()"><i class="fas fa-power-off"></i> Tutup Website</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daftar Peserta Daftar Ulang -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-list-ul"></i> Daftar Peserta Daftar Ulang</h3>
+          <button class="btn btn-primary btn-sm" onclick="loadDUPeserta()"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="panel-body no-pad">
+          <div class="tbl-wrap">
+            <table class="data-tbl" id="duTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>No. Daftar</th>
+                  <th>Nama</th>
+                  <th>Asal Sekolah</th>
+                  <th>Kelas Saat Ini</th>
+                  <th>Mutasi ke</th>
+                  <th>Status DU</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="duBody">
+                <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Peserta Belum Daftar Ulang -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-users-slash"></i> Peserta Lolos yang Belum Daftar Ulang</h3>
+        </div>
+        <div class="panel-body no-pad">
+          <div class="tbl-wrap">
+            <table class="data-tbl" id="duBelumTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>No. Daftar</th>
+                  <th>Nama</th>
+                  <th>Asal Sekolah</th>
+                  <th>Status Seleksi</th>
+                </tr>
+              </thead>
+              <tbody id="duBelumBody">
+                <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-daftarUlang -->
 
   </div><!-- /content -->
 </div><!-- /appShell -->
@@ -1830,6 +1953,321 @@ function init(){
   loadDashboard();
 }
 if(isLoggedIn())init();
+</script>
+<!-- ===== MODAL EDIT STATUS DAFTAR ULANG ===== -->
+<div class="modal-bg" id="duEditModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-flag"></i> Atur Status Daftar Ulang</h3>
+      <button class="btn-close-modal" onclick="closeDUModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="duEditDocId">
+      <div class="frow">
+        <div class="fg"><label>Nama</label><input type="text" id="duEditNama" readonly style="background:var(--slate100)"></div>
+        <div class="fg"><label>No. Pendaftaran</label><input type="text" id="duEditNoDaftar" readonly style="background:var(--slate100)"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Kelas Saat Ini</label><input type="text" id="duEditKelas" readonly style="background:var(--slate100)"></div>
+        <div class="fg"><label>Mutasi ke Kelas</label><input type="text" id="duEditMutasi" readonly style="background:var(--slate100)"></div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--slate200);margin:14px 0;">
+      <div class="frow full">
+        <div class="fg">
+          <label><i class="fas fa-flag"></i> Status Daftar Ulang <span style="color:var(--red)">*</span></label>
+          <select id="duEditStatus">
+            <option value="proses">⏳ Proses</option>
+            <option value="valid">✅ Valid</option>
+            <option value="tidak-valid">❌ Tidak Valid</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow full">
+        <div class="fg">
+          <label><i class="fas fa-comment"></i> Catatan Verifikasi (Opsional)</label>
+          <textarea id="duEditCatatan" placeholder="Tambahkan catatan verifikasi..." rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeDUModal()">Batal</button>
+      <button class="btn btn-primary" onclick="updateDUStatus()"><i class="fas fa-save"></i> Simpan Status</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// FITUR DAFTAR ULANG — PANEL OPERATOR
+// ============================================================
+
+// ---- LOAD DATA ----
+async function loadDUPeserta() {
+  const tbody = document.getElementById('duBody');
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>';
+  try {
+    const snap = await db.collection('daftarUlang').orderBy('createdAt', 'desc').get();
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--slate400)">Belum ada peserta daftar ulang.</td></tr>';
+    } else {
+      tbody.innerHTML = data.map((p, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td class="mono">${esc(p.noDaftar)}</td>
+          <td>${esc(p.nama)}</td>
+          <td style="font-size:.78rem;">${esc(p.asalSekolah) || '—'}</td>
+          <td>${esc(p.kelasSaatIni) || '—'}</td>
+          <td>${esc(p.mutasiKe) || '—'}</td>
+          <td>${statusBadgeDU2(p.status)}</td>
+          <td>
+            <button class="btn btn-primary btn-xs" onclick="openDUEditModal('${p.id}')"><i class="fas fa-pen"></i> Atur Status</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    updateDUStats(data);
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--red)">Gagal memuat data: ${e.message}</td></tr>`;
+  }
+
+  // Load peserta lolos yang belum daftar ulang
+  loadBelumDaftarUlang();
+}
+
+function statusBadgeDU2(status) {
+  const map = {
+    'proses': '<span class="badge badge-pending"><i class="fas fa-clock"></i> Proses</span>',
+    'valid': '<span class="badge badge-lolos"><i class="fas fa-check"></i> Valid</span>',
+    'tidak-valid': '<span class="badge badge-tidak"><i class="fas fa-times"></i> Tidak Valid</span>'
+  };
+  return map[status] || map['proses'];
+}
+
+function updateDUStats(data) {
+  const total = data.length;
+  const valid = data.filter(p => p.status === 'valid').length;
+  const proses = data.filter(p => p.status === 'proses').length;
+  const tidakValid = data.filter(p => p.status === 'tidak-valid').length;
+
+  document.getElementById('duStatTotal').textContent = total;
+  document.getElementById('duStatValid').textContent = valid;
+  document.getElementById('duStatProses').textContent = proses;
+  document.getElementById('duStatTidakValid').textContent = tidakValid;
+
+  // Hitung yang belum daftar ulang (lolos seleksi tapi belum ada di daftarUlang)
+  db.collection('pendaftaranMutasi').where('status', '==', 'lolos').get()
+    .then(snap => {
+      const lolosDocs = snap.docs.map(d => d.data().noDaftar);
+      const sudah = data.map(p => p.noDaftar);
+      const belum = lolosDocs.filter(nd => !sudah.includes(nd));
+      document.getElementById('duStatBelum').textContent = belum.length;
+    })
+    .catch(() => { document.getElementById('duStatBelum').textContent = '—'; });
+}
+
+async function loadBelumDaftarUlang() {
+  const tbody = document.getElementById('duBelumBody');
+  try {
+    const [lolosSnap, duSnap] = await Promise.all([
+      db.collection('pendaftaranMutasi').where('status', '==', 'lolos').get(),
+      db.collection('daftarUlang').get()
+    ]);
+    const lolos = lolosSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const sudah = duSnap.docs.map(d => d.data().noDaftar);
+    const belum = lolos.filter(p => !sudah.includes(p.noDaftar));
+
+    if (!belum.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--slate400)">Semua peserta lolos sudah daftar ulang.</td></tr>';
+    } else {
+      tbody.innerHTML = belum.map((p, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td class="mono">${esc(p.noDaftar)}</td>
+          <td>${esc(p.namaLengkap || p.nama)}</td>
+          <td>${esc(p.asalSekolah || p.sekolahAsal) || '—'}</td>
+          <td><span class="badge badge-lolos"><i class="fas fa-check"></i> Lolos</span></td>
+        </tr>
+      `).join('');
+    }
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--red)">Gagal memuat: ${e.message}</td></tr>`;
+  }
+}
+
+// ---- EDIT STATUS ----
+let duEditDocId = null;
+
+function openDUEditModal(docId) {
+  db.collection('daftarUlang').doc(docId).get()
+    .then(snap => {
+      if (!snap.exists) { toast('Data tidak ditemukan.', 'error'); return; }
+      const data = snap.data();
+      duEditDocId = docId;
+      document.getElementById('duEditDocId').value = docId;
+      document.getElementById('duEditNama').value = data.nama || '—';
+      document.getElementById('duEditNoDaftar').value = data.noDaftar || '—';
+      document.getElementById('duEditKelas').value = data.kelasSaatIni || '—';
+      document.getElementById('duEditMutasi').value = data.mutasiKe || '—';
+      document.getElementById('duEditStatus').value = data.status || 'proses';
+      document.getElementById('duEditCatatan').value = data.catatan || '';
+      document.getElementById('duEditModal').classList.add('open');
+    })
+    .catch(e => toast('Gagal memuat data: ' + e.message, 'error'));
+}
+
+function closeDUModal() {
+  document.getElementById('duEditModal').classList.remove('open');
+  duEditDocId = null;
+}
+
+async function updateDUStatus() {
+  const docId = document.getElementById('duEditDocId').value;
+  const status = document.getElementById('duEditStatus').value;
+  const catatan = document.getElementById('duEditCatatan').value.trim();
+
+  if (!docId) { toast('Data tidak valid.', 'error'); return; }
+
+  try {
+    await db.collection('daftarUlang').doc(docId).update({
+      status: status,
+      catatan: catatan || '',
+      updatedAt: new Date().toISOString()
+    });
+    toast('Status daftar ulang berhasil diperbarui!', 'success');
+    closeDUModal();
+    loadDUPeserta();
+  } catch (e) {
+    toast('Gagal update: ' + e.message, 'error');
+  }
+}
+
+// ---- JADWAL ----
+async function loadDUSchedule() {
+  try {
+    const snap = await db.collection('operatorSettings').doc('daftarUlangSchedule').get();
+    if (snap.exists) {
+      const data = snap.data();
+      if (data.openTime) {
+        const dt = new Date(data.openTime);
+        const offset = dt.getTimezoneOffset();
+        const adj = new Date(dt.getTime() - offset * 60000);
+        document.getElementById('duScheduleOpen').value = adj.toISOString().slice(0, 16);
+      }
+      if (data.closeTime) {
+        const dt = new Date(data.closeTime);
+        const offset = dt.getTimezoneOffset();
+        const adj = new Date(dt.getTime() - offset * 60000);
+        document.getElementById('duScheduleClose').value = adj.toISOString().slice(0, 16);
+      }
+    }
+  } catch (e) { console.error('Load schedule error:', e); }
+}
+
+async function saveDUSchedule() {
+  const openVal = document.getElementById('duScheduleOpen').value;
+  const closeVal = document.getElementById('duScheduleClose').value;
+  const btn = document.getElementById('duSaveSchedule');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+  try {
+    const data = {};
+    if (openVal) data.openTime = new Date(openVal).toISOString();
+    if (closeVal) data.closeTime = new Date(closeVal).toISOString();
+    data.updatedAt = new Date().toISOString();
+
+    await db.collection('operatorSettings').doc('daftarUlangSchedule').set(data, { merge: true });
+    toast('Jadwal daftar ulang berhasil disimpan!', 'success');
+  } catch (e) {
+    toast('Gagal menyimpan: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Simpan Jadwal';
+}
+
+// ---- WEBSITE STATUS ----
+async function loadDUWebsiteStatus() {
+  try {
+    const snap = await db.collection('operatorSettings').doc('daftarUlangConfig').get();
+    if (snap.exists) {
+      const isOpen = snap.data().websiteOpen !== false;
+      updateDUWebsiteUI(isOpen);
+    }
+  } catch (e) { console.error('Load website status error:', e); }
+}
+
+function updateDUWebsiteUI(isOpen) {
+  const el = document.getElementById('duWebsiteStatus');
+  const btn = document.getElementById('duToggleWebsite');
+  if (isOpen) {
+    el.textContent = 'Buka';
+    el.style.background = 'var(--success-bg)';
+    el.style.color = 'var(--success-text)';
+    el.style.borderColor = 'var(--success-border)';
+    btn.innerHTML = '<i class="fas fa-power-off"></i> Tutup Website';
+    btn.className = 'btn btn-red btn-sm';
+  } else {
+    el.textContent = 'Tutup';
+    el.style.background = 'var(--danger-bg)';
+    el.style.color = 'var(--danger-text)';
+    el.style.borderColor = 'var(--danger-border)';
+    btn.innerHTML = '<i class="fas fa-power-off"></i> Buka Website';
+    btn.className = 'btn btn-green btn-sm';
+  }
+}
+
+async function toggleDUWebsite() {
+  try {
+    const snap = await db.collection('operatorSettings').doc('daftarUlangConfig').get();
+    const current = snap.exists ? (snap.data().websiteOpen !== false) : true;
+    const newStatus = !current;
+    await db.collection('operatorSettings').doc('daftarUlangConfig').set({
+      websiteOpen: newStatus,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+    updateDUWebsiteUI(newStatus);
+    toast(`Website daftar ulang ${newStatus ? 'dibuka' : 'ditutup'}.`, 'success');
+  } catch (e) {
+    toast('Gagal mengubah status: ' + e.message, 'error');
+  }
+}
+
+// ---- INIT DAFTAR ULANG PANEL ----
+function initDaftarUlangPanel() {
+  loadDUPeserta();
+  loadDUSchedule();
+  loadDUWebsiteStatus();
+
+  // Subscribe realtime status website
+  db.collection('operatorSettings').doc('daftarUlangConfig')
+    .onSnapshot(snap => {
+      if (snap.exists) {
+        updateDUWebsiteUI(snap.data().websiteOpen !== false);
+      }
+    }, err => console.error('Website status listener error:', err));
+}
+
+// Patch switchTab untuk trigger init panel daftar ulang
+(function() {
+  const _origSwitchTab = window.switchTab;
+  window.switchTab = function(name, el) {
+    _origSwitchTab(name, el);
+    if (name === 'daftarUlang') {
+      setTimeout(initDaftarUlangPanel, 200);
+    }
+  };
+})();
+
+// Badge realtime count
+(function() {
+  if (typeof db !== 'undefined') {
+    db.collection('daftarUlang').onSnapshot(snap => {
+      const badge = document.getElementById('duNavBadge');
+      if (badge) badge.textContent = snap.size;
+    });
+  }
+})();
 </script>
 </body>
 </html>
