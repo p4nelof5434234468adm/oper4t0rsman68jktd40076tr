@@ -203,6 +203,43 @@ table tr:hover td{background:var(--g1)}
 .mt-status-on{border-color:var(--orange)!important;background:linear-gradient(135deg,#fff7ed,#fff)!important}
 .cd-status-on{border-color:var(--g4)!important;background:linear-gradient(135deg,#f0fdf4,#fff)!important}
 
+/* ═══════ FITUR LAINNYA (MANAJEMEN) ═══════ */
+.fl-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.fl-search-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+.fl-search-wrap i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gray-400);font-size:13px}
+.fl-search-wrap input{width:100%;padding:10px 13px 10px 36px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;outline:none;transition:var(--t);font-family:'Inter',sans-serif}
+.fl-search-wrap input:focus{border-color:var(--g4);box-shadow:0 0 0 3px rgba(34,192,122,.1)}
+.fl-count-badge{display:inline-flex;align-items:center;gap:6px;background:var(--g1);color:var(--g8);font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:1px solid var(--g2);white-space:nowrap}
+.fl-list{display:flex;flex-direction:column;gap:10px}
+.fl-item{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:13px 14px;display:flex;align-items:center;gap:13px;transition:var(--t)}
+.fl-item:hover{border-color:var(--g4);box-shadow:var(--shadow-sm)}
+.fl-item.fl-inactive{opacity:.55;background:var(--gray-50)}
+.fl-item-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--g6),var(--b6))}
+.fl-item-body{flex:1;min-width:0}
+.fl-item-body h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:800;color:var(--gray-900);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl-item-body p{font-size:12px;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl-item-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.fl-order-btns{display:flex;flex-direction:column;gap:2px}
+.fl-order-btns button{width:22px;height:18px;border:1px solid var(--gray-200);background:#fff;color:var(--gray-500);border-radius:5px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t)}
+.fl-order-btns button:hover{background:var(--g1);color:var(--g7);border-color:var(--g4)}
+.fl-order-btns button:disabled{opacity:.3;cursor:not-allowed}
+.fl-toggle{position:relative;width:40px;height:22px;border-radius:20px;background:var(--gray-300);cursor:pointer;border:none;transition:var(--t);flex-shrink:0}
+.fl-toggle.on{background:linear-gradient(135deg,var(--g5),var(--b5))}
+.fl-toggle .fl-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:var(--t);box-shadow:var(--shadow-sm)}
+.fl-toggle.on .fl-knob{transform:translateX(18px)}
+.fl-empty-state{text-align:center;padding:40px 20px;color:var(--gray-400)}
+.fl-empty-state i{font-size:34px;margin-bottom:10px;display:block;color:var(--gray-300)}
+.fl-color-dots{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fl-color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:var(--t);position:relative}
+.fl-color-dot:hover,.fl-color-dot.selected{transform:scale(1.15);border-color:var(--gray-700)}
+.fl-color-dot.selected::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+/* preview card mirip tampilan pengguna */
+.fl-preview-card{background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(255,255,255,.7));backdrop-filter:blur(10px);border:1.5px solid var(--gray-200);border-radius:18px;padding:22px;text-align:center;max-width:230px;box-shadow:var(--shadow-md);transition:var(--t)}
+.fl-preview-icon{width:60px;height:60px;border-radius:16px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;background:linear-gradient(135deg,var(--g6),var(--b6))}
+.fl-preview-card h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:800;color:var(--gray-900);margin-bottom:6px}
+.fl-preview-card p{font-size:12px;color:var(--gray-500);margin-bottom:14px;line-height:1.5}
+.fl-preview-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--g6),var(--b6));color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:12.5px;font-weight:700;font-family:'Inter',sans-serif}
+
 /* RESPONSIVE */
 @media(max-width:800px){
   .sidebar{transform:translateX(-100%)}
@@ -215,6 +252,10 @@ table tr:hover td{background:var(--g1)}
 @media(max-width:420px){
   .stats-grid{grid-template-columns:1fr}
   .main-content{padding:14px}
+}
+@media(max-width:560px){
+  .fl-item{flex-wrap:wrap}
+  .fl-item-body{min-width:140px}
 }
 </style>
 </head>
@@ -256,6 +297,8 @@ table tr:hover td{background:var(--g1)}
       <button class="nav-item" onclick="showPage('colored',this)"><i class="fa fa-palette"></i> Warna Hari</button>
       <span class="nav-section-lbl">Dokumen</span>
       <button class="nav-item" onclick="showPage('unduh',this)"><i class="fa fa-download"></i> Dokumen Unduh</button>
+      <span class="nav-section-lbl">Layanan</span>
+      <button class="nav-item" onclick="showPage('fiturlain',this)"><i class="fa fa-th-large"></i> Layanan Lainnya</button>
       <span class="nav-section-lbl">Sistem</span>
       <button class="nav-item" onclick="showPage('capacity',this)"><i class="fa fa-server"></i> Kapasitas Server</button>
       <button class="nav-item" onclick="showPage('countdown',this)"><i class="fa fa-clock"></i> Countdown</button>
@@ -292,6 +335,7 @@ table tr:hover td{background:var(--g1)}
           <div class="stat-card green"><div class="stat-label">Jadwal Aktif</div><div class="stat-val" id="statJadwal">–</div></div>
           <div class="stat-card blue"><div class="stat-label">Kalender Akademik</div><div class="stat-val" id="statAkademik">–</div></div>
           <div class="stat-card yellow"><div class="stat-label">Dokumen Unduh</div><div class="stat-val" id="statUnduh">–</div></div>
+          <div class="stat-card green"><div class="stat-label">Fitur Lainnya</div><div class="stat-val" id="statFitur">–</div></div>
           <div class="stat-card orange"><div class="stat-label">Pengguna Aktif</div><div class="stat-val" id="statActiveUsers">–</div></div>
           <div class="stat-card red"><div class="stat-label">Maks. Kapasitas</div><div class="stat-val" id="statCapacity">–</div></div>
         </div>
@@ -387,6 +431,42 @@ table tr:hover td{background:var(--g1)}
             <table><thead><tr><th>#</th><th>Nama Dokumen</th><th>Kategori</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
               <tbody id="unduhTable"><tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:28px">Belum ada dokumen</td></tr></tbody>
             </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- AKSES FITUR LAINNYA ← FITUR BARU -->
+      <div class="page" id="page-fiturlain">
+        <div class="section-header">
+          <div class="page-title"><i class="fa fa-th-large" style="color:var(--g5);margin-right:8px"></i>Layanan Lainnya</div>
+          <button class="btn btn-primary" onclick="openFiturModal()"><i class="fa fa-plus"></i> Tambah Fitur</button>
+        </div>
+        <div class="info-box" style="margin-bottom:14px">
+          <i class="fa fa-eye-slash" style="margin-right:6px"></i>
+          Link tujuan <strong>disembunyikan dari pengguna</strong> secara otomatis. Pengguna hanya melihat nama, deskripsi, dan tombol "Buka Fitur".
+        </div>
+
+        <div class="card">
+          <div class="fl-toolbar">
+            <div class="fl-search-wrap">
+              <i class="fa fa-search"></i>
+              <input type="text" id="flSearchInput" placeholder="Cari nama fitur..." oninput="renderFiturList()"/>
+            </div>
+            <span class="fl-count-badge"><i class="fa fa-layer-group"></i> Total: <span id="flTotalCount">0</span> fitur</span>
+            <button class="btn btn-secondary btn-sm" onclick="openFiturPreviewAll()"><i class="fa fa-eye"></i> Preview Semua</button>
+          </div>
+          <div class="fl-list" id="flListWrap">
+            <div class="fl-empty-state"><i class="fa fa-th-large"></i><p>Belum ada fitur ditambahkan.</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa fa-circle-info"></i> Cara Kerja Layanan Lainnya</div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.8">
+            <p>• Fitur yang ditambahkan akan muncul sebagai <strong>grid card</strong> di halaman pengguna, pada tab/menu <strong>"Layanan Lainnya"</strong> yang terpisah dari menu Dokumen Unduh.</p>
+            <p>• Gunakan tombol naik/turun untuk mengatur urutan tampilan card.</p>
+            <p>• Gunakan toggle untuk mengaktifkan/menonaktifkan fitur tanpa harus menghapusnya.</p>
+            <p>• Perubahan <strong>langsung tersinkron tanpa reload</strong> ke semua pengguna yang sedang membuka website.</p>
           </div>
         </div>
       </div>
@@ -656,6 +736,78 @@ table tr:hover td{background:var(--g1)}
 
 <div id="toast-stack"></div>
 
+<!-- MODAL FITUR LAINNYA -->
+<div class="modal-overlay" id="fiturModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="fiturModalTitle">Tambah Fitur</h3>
+      <button class="modal-close" onclick="closeFiturModal()"><i class="fa fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Nama Fitur</label>
+        <input type="text" class="form-control" id="fitur-name" placeholder="Contoh: Kalkulator SPMB SMAN 68 Jakarta" oninput="updateFiturLivePreview()"/></div>
+      <div class="form-group"><label>Deskripsi Singkat</label>
+        <input type="text" class="form-control" id="fitur-desc" placeholder="Contoh: Hitung peluang diterima di SMAN 68 Jakarta" oninput="updateFiturLivePreview()"/></div>
+      <div class="form-group"><label>Link Tujuan</label>
+        <input type="url" class="form-control" id="fitur-url" placeholder="https://sman68jakarta.xyz/kalkulator"/>
+        <small style="font-size:11px;color:var(--gray-400);margin-top:4px;display:block"><i class="fa fa-eye-slash"></i> Link tidak akan ditampilkan ke pengguna</small>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Ikon Font Awesome</label>
+          <input type="text" class="form-control" id="fitur-icon" placeholder="fa-calculator" value="fa-link" oninput="updateFiturLivePreview()"/>
+          <small style="font-size:11px;color:var(--gray-400);margin-top:4px;display:block">Contoh: fa-calculator, fa-graduation-cap, fa-book</small>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select class="form-control" id="fitur-status">
+            <option value="1">Aktif</option>
+            <option value="0">Tidak Aktif</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Warna Card (Opsional)</label>
+        <div class="fl-color-dots" id="fiturColorDots">
+          <div class="fl-color-dot selected" data-grad="g6,b6" style="background:linear-gradient(135deg,#12885a,#1a65c8)" onclick="selectFiturColor('g6,b6',this)" title="Hijau-Biru (Default)"></div>
+          <div class="fl-color-dot" data-grad="g5,g3" style="background:linear-gradient(135deg,#16a068,#4dd99a)" onclick="selectFiturColor('g5,g3',this)" title="Hijau"></div>
+          <div class="fl-color-dot" data-grad="b6,b4" style="background:linear-gradient(135deg,#1a65c8,#4a9af5)" onclick="selectFiturColor('b6,b4',this)" title="Biru"></div>
+          <div class="fl-color-dot" data-grad="orange,yellow" style="background:linear-gradient(135deg,#f97316,#f59e0b)" onclick="selectFiturColor('orange,yellow',this)" title="Oranye"></div>
+          <div class="fl-color-dot" data-grad="red,orange" style="background:linear-gradient(135deg,#ef4444,#f97316)" onclick="selectFiturColor('red,orange',this)" title="Merah"></div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--gray-200);margin:14px 0"/>
+      <div style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px"><i class="fa fa-eye" style="margin-right:5px"></i>Preview Tampilan Pengguna</div>
+      <div style="display:flex;justify-content:center;padding:10px;background:var(--gray-50);border-radius:12px">
+        <div class="fl-preview-card" id="fiturLivePreview">
+          <div class="fl-preview-icon" id="fiturLivePreviewIcon"><i class="fa fa-link"></i></div>
+          <h4 id="fiturLivePreviewName">Nama Fitur</h4>
+          <p id="fiturLivePreviewDesc">Deskripsi singkat akan tampil di sini</p>
+          <span class="fl-preview-btn"><i class="fa fa-arrow-right"></i> Buka Fitur</span>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--gray-200);margin:14px 0"/>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="saveFitur()"><i class="fa fa-save"></i> Simpan</button>
+        <button class="btn btn-outline" onclick="closeFiturModal()">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PREVIEW SEMUA FITUR -->
+<div class="modal-overlay" id="fiturPreviewModal">
+  <div class="modal" style="max-width:760px">
+    <div class="modal-header">
+      <h3><i class="fa fa-eye" style="margin-right:6px"></i>Preview Tampilan Pengguna</h3>
+      <button class="modal-close" onclick="closeFiturPreviewAll()"><i class="fa fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box" style="margin-bottom:16px"><i class="fa fa-info-circle" style="margin-right:6px"></i>Ini adalah tampilan grid card yang akan dilihat pengguna di tab/section "Layanan Lainnya" (terpisah dari Unduh, hanya fitur yang aktif yang ditampilkan).</div>
+      <div id="fiturPreviewAllWrap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;justify-content:center"></div>
+    </div>
+  </div>
+</div>
+
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
@@ -718,6 +870,7 @@ function initApp(){
   loadAkademikTable();
   loadColoredTable();
   loadUnduhTable();
+  initFiturLain();
   initCapacity();
   initCountdown();
   initMaintenance();
@@ -728,6 +881,7 @@ function loadStats(){
   onValue(ref(db,'jadwal'),snap=>{document.getElementById('statJadwal').textContent=snap.val()?Object.keys(snap.val()).length:0;});
   onValue(ref(db,'akademik'),snap=>{document.getElementById('statAkademik').textContent=snap.val()?Object.keys(snap.val()).length:0;});
   onValue(ref(db,'unduh'),snap=>{document.getElementById('statUnduh').textContent=snap.val()?Object.keys(snap.val()).length:0;});
+  onValue(ref(db,'fitur_lainnya'),snap=>{document.getElementById('statFitur').textContent=snap.val()?Object.keys(snap.val()).length:0;});
 
   // ─ REAL-TIME ACTIVE SESSIONS ─
   onValue(ref(db,'server_capacity/active_sessions'),snap=>{
@@ -1085,6 +1239,177 @@ window.deleteUnduh=async function(id){
   await remove(ref(db,`unduh/${id}`));showToast('Dokumen dihapus.');
 };
 
+// ─── AKSES FITUR LAINNYA ───
+let editFiturId=null;
+let fiturData={};
+let fiturSelectedGrad='g6,b6';
+const FITUR_GRAD_MAP={
+  'g6,b6':'linear-gradient(135deg,var(--g6),var(--b6))',
+  'g5,g3':'linear-gradient(135deg,var(--g5),var(--g3))',
+  'b6,b4':'linear-gradient(135deg,var(--b6),var(--b4))',
+  'orange,yellow':'linear-gradient(135deg,var(--orange),var(--yellow))',
+  'red,orange':'linear-gradient(135deg,var(--red),var(--orange))'
+};
+
+function initFiturLain(){
+  onValue(ref(db,'fitur_lainnya'),snap=>{
+    fiturData=snap.val()||{};
+    renderFiturList();
+  });
+}
+
+function getFiturSortedEntries(){
+  return Object.entries(fiturData).sort((a,b)=>(a[1].order??0)-(b[1].order??0));
+}
+
+window.renderFiturList=function(){
+  const wrap=document.getElementById('flListWrap');
+  const totalEl=document.getElementById('flTotalCount');
+  if(!wrap)return;
+  const q=(document.getElementById('flSearchInput')?.value||'').trim().toLowerCase();
+  let entries=getFiturSortedEntries();
+  totalEl.textContent=entries.length;
+  if(q) entries=entries.filter(([,d])=>(d.name||'').toLowerCase().includes(q));
+  if(!entries.length){
+    wrap.innerHTML=`<div class="fl-empty-state"><i class="fa fa-th-large"></i><p>${q?'Tidak ada fitur yang cocok dengan pencarian.':'Belum ada fitur ditambahkan.'}</p></div>`;
+    return;
+  }
+  const allEntries=getFiturSortedEntries();
+  wrap.innerHTML=entries.map(([id,d])=>{
+    const idx=allEntries.findIndex(e=>e[0]===id);
+    const isFirst=idx===0, isLast=idx===allEntries.length-1;
+    const grad=FITUR_GRAD_MAP[d.colorGrad]||FITUR_GRAD_MAP['g6,b6'];
+    const active=d.active!==false;
+    return `<div class="fl-item${active?'':' fl-inactive'}">
+      <div class="fl-order-btns">
+        <button onclick="moveFitur('${id}',-1)" ${isFirst?'disabled':''} title="Naik"><i class="fa fa-chevron-up"></i></button>
+        <button onclick="moveFitur('${id}',1)" ${isLast?'disabled':''} title="Turun"><i class="fa fa-chevron-down"></i></button>
+      </div>
+      <div class="fl-item-icon" style="background:${grad}"><i class="fa ${d.icon||'fa-link'}"></i></div>
+      <div class="fl-item-body">
+        <h4>${d.name||'(Tanpa nama)'}</h4>
+        <p>${d.desc||'–'}</p>
+      </div>
+      <div class="fl-item-actions">
+        <button class="fl-toggle${active?' on':''}" onclick="toggleFiturActive('${id}')" title="Aktif/Nonaktif"><span class="fl-knob"></span></button>
+        <button class="btn btn-yellow btn-sm" onclick='openFiturModal("${id}")'><i class="fa fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick='deleteFitur("${id}")'><i class="fa fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.moveFitur=async function(id,dir){
+  const entries=getFiturSortedEntries();
+  const idx=entries.findIndex(e=>e[0]===id);
+  const swapIdx=idx+dir;
+  if(swapIdx<0||swapIdx>=entries.length)return;
+  const [idA,dA]=entries[idx];
+  const [idB,dB]=entries[swapIdx];
+  const orderA=dA.order??idx;
+  const orderB=dB.order??swapIdx;
+  await Promise.all([
+    set(ref(db,`fitur_lainnya/${idA}/order`),orderB),
+    set(ref(db,`fitur_lainnya/${idB}/order`),orderA)
+  ]);
+};
+
+window.toggleFiturActive=async function(id){
+  const d=fiturData[id];
+  if(!d)return;
+  await set(ref(db,`fitur_lainnya/${id}/active`),!(d.active!==false));
+};
+
+window.selectFiturColor=function(grad,el){
+  fiturSelectedGrad=grad;
+  document.querySelectorAll('#fiturColorDots .fl-color-dot').forEach(d=>d.classList.remove('selected'));
+  el.classList.add('selected');
+  updateFiturLivePreview();
+};
+
+window.updateFiturLivePreview=function(){
+  const name=document.getElementById('fitur-name').value.trim()||'Nama Fitur';
+  const desc=document.getElementById('fitur-desc').value.trim()||'Deskripsi singkat akan tampil di sini';
+  const icon=document.getElementById('fitur-icon').value.trim()||'fa-link';
+  document.getElementById('fiturLivePreviewName').textContent=name;
+  document.getElementById('fiturLivePreviewDesc').textContent=desc;
+  document.getElementById('fiturLivePreviewIcon').innerHTML=`<i class="fa ${icon}"></i>`;
+  document.getElementById('fiturLivePreviewIcon').style.background=FITUR_GRAD_MAP[fiturSelectedGrad]||FITUR_GRAD_MAP['g6,b6'];
+};
+
+window.openFiturModal=function(id=null){
+  editFiturId=id;
+  fiturSelectedGrad='g6,b6';
+  document.getElementById('fiturModalTitle').textContent=id?'Edit Fitur':'Tambah Fitur';
+  document.getElementById('fitur-name').value='';
+  document.getElementById('fitur-desc').value='';
+  document.getElementById('fitur-url').value='';
+  document.getElementById('fitur-icon').value='fa-link';
+  document.getElementById('fitur-status').value='1';
+  document.querySelectorAll('#fiturColorDots .fl-color-dot').forEach(d=>d.classList.remove('selected'));
+  document.querySelector('#fiturColorDots .fl-color-dot[data-grad="g6,b6"]').classList.add('selected');
+  if(id){
+    const d=fiturData[id];
+    if(d){
+      document.getElementById('fitur-name').value=d.name||'';
+      document.getElementById('fitur-desc').value=d.desc||'';
+      document.getElementById('fitur-url').value=d.url||'';
+      document.getElementById('fitur-icon').value=d.icon||'fa-link';
+      document.getElementById('fitur-status').value=(d.active!==false)?'1':'0';
+      fiturSelectedGrad=d.colorGrad||'g6,b6';
+      document.querySelectorAll('#fiturColorDots .fl-color-dot').forEach(dot=>{
+        dot.classList.toggle('selected',dot.dataset.grad===fiturSelectedGrad);
+      });
+    }
+  }
+  updateFiturLivePreview();
+  document.getElementById('fiturModal').classList.add('open');
+};
+window.closeFiturModal=function(){document.getElementById('fiturModal').classList.remove('open');};
+
+window.saveFitur=async function(){
+  const name=document.getElementById('fitur-name').value.trim();
+  const desc=document.getElementById('fitur-desc').value.trim();
+  const url=document.getElementById('fitur-url').value.trim();
+  const icon=document.getElementById('fitur-icon').value.trim()||'fa-link';
+  const active=document.getElementById('fitur-status').value==='1';
+  if(!name||!url){showToast('❌ Nama fitur dan link tujuan wajib diisi!');return;}
+  try{ new URL(url); }catch(e){ showToast('❌ Format link tidak valid! Gunakan format https://...');return; }
+  const id=editFiturId||('fitur_'+Date.now());
+  let order=fiturData[id]?.order;
+  if(order===undefined){
+    const entries=getFiturSortedEntries();
+    order=entries.length?Math.max(...entries.map(([,d])=>d.order??0))+1:0;
+  }
+  await set(ref(db,`fitur_lainnya/${id}`),{name,desc,url,icon,active,colorGrad:fiturSelectedGrad,order});
+  showToast('✅ Fitur berhasil disimpan!');closeFiturModal();
+};
+
+window.deleteFitur=async function(id){
+  if(!confirm('Hapus fitur ini?'))return;
+  await remove(ref(db,`fitur_lainnya/${id}`));showToast('Fitur dihapus.');
+};
+
+window.openFiturPreviewAll=function(){
+  const wrap=document.getElementById('fiturPreviewAllWrap');
+  const entries=getFiturSortedEntries().filter(([,d])=>d.active!==false);
+  if(!entries.length){
+    wrap.innerHTML=`<div class="fl-empty-state" style="grid-column:1/-1"><i class="fa fa-th-large"></i><p>Belum ada fitur aktif untuk ditampilkan.</p></div>`;
+  }else{
+    wrap.innerHTML=entries.map(([,d])=>{
+      const grad=FITUR_GRAD_MAP[d.colorGrad]||FITUR_GRAD_MAP['g6,b6'];
+      return `<div class="fl-preview-card">
+        <div class="fl-preview-icon" style="background:${grad}"><i class="fa ${d.icon||'fa-link'}"></i></div>
+        <h4>${d.name||''}</h4>
+        <p>${d.desc||''}</p>
+        <span class="fl-preview-btn"><i class="fa fa-arrow-right"></i> Buka Fitur</span>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('fiturPreviewModal').classList.add('open');
+};
+window.closeFiturPreviewAll=function(){document.getElementById('fiturPreviewModal').classList.remove('open');};
+
 // ─── SERVER CAPACITY ───
 let capInputTimeout=null;
 function initCapacity(){
@@ -1264,7 +1589,7 @@ function showPage(id,el){
   if(el)el.classList.add('active');
   const titles={
     dashboard:'Dashboard',jadwal:'Jadwal Pelajaran',akademik:'Kalender Akademik',
-    colored:'Warna Hari Spesial',unduh:'Dokumen Unduh',capacity:'Kapasitas Server',
+    colored:'Warna Hari Spesial',unduh:'Dokumen Unduh',fiturlain:'Layanan Lainnya',capacity:'Kapasitas Server',
     countdown:'Pengaturan Countdown',maintenance:'Mode Maintenance',settings:'Pengaturan Akun'
   };
   document.getElementById('topbarTitle').textContent=titles[id]||id;
@@ -1289,6 +1614,8 @@ window.showToast=showToast;
 // Modal backdrop close
 document.getElementById('akademikModal').addEventListener('click',function(e){if(e.target===this)window.closeAkademikModal();});
 document.getElementById('unduhModal').addEventListener('click',function(e){if(e.target===this)window.closeUnduhModal();});
+document.getElementById('fiturModal').addEventListener('click',function(e){if(e.target===this)window.closeFiturModal();});
+document.getElementById('fiturPreviewModal').addEventListener('click',function(e){if(e.target===this)window.closeFiturPreviewAll();});
 </script>
 </body>
 </html>
