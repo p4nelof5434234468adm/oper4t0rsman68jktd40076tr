@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operator — Layanan Aduan SMAN 68 Jakarta</title>
+<meta name="description" content="Panel Operator Layanan Aduan Resmi SMAN 68 Jakarta.">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+<link rel="shortcut icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+<link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<style>
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+:root {
+  --c-emerald-50: #ECFDF5; --c-emerald-100: #D1FAE5;
+  --c-emerald-500: #10B981; --c-emerald-600: #059669; --c-emerald-700: #047857;
+  --c-forest-900: #0B3D2E;
+  --c-blue-50: #EFF6FF; --c-blue-100: #DBEAFE;
+  --c-blue-500: #3B82F6; --c-blue-600: #2563EB; --c-blue-700: #1D4ED8;
+  --c-navy-900: #0C2D48;
+  --c-amber-50: #FFFBEB; --c-amber-100: #FEF3C7;
+  --c-amber-500: #F59E0B; --c-amber-600: #D97706;
+  --c-red-50: #FEF2F2; --c-red-100: #FEE2E2;
+  --c-red-500: #EF4444; --c-red-600: #DC2626;
+  --c-purple-50: #F5F3FF; --c-purple-500: #8B5CF6; --c-purple-600: #7C3AED;
+  --c-ink-900: #0F172A; --c-ink-700: #334155; --c-ink-500: #64748B;
+  --c-ink-400: #94A3B8; --c-ink-300: #CBD5E1; --c-ink-200: #E2E8F0;
+  --c-ink-100: #F1F5F9; --c-ink-50: #F8FAFC; --c-white: #FFFFFF;
+  --grad-primary: linear-gradient(135deg, var(--c-emerald-500) 0%, var(--c-blue-600) 100%);
+  --grad-primary-soft: linear-gradient(135deg, var(--c-emerald-50) 0%, var(--c-blue-50) 100%);
+  --grad-sidebar: linear-gradient(180deg, #0B3D2E 0%, #0C2D48 100%);
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius-sm: 10px; --radius-md: 16px; --radius-lg: 24px; --radius-pill: 999px;
+  --shadow-sm: 0 2px 8px rgba(15,23,42,.06); --shadow-md: 0 8px 24px rgba(15,23,42,.08);
+  --shadow-lg: 0 20px 48px rgba(15,23,42,.12);
+  --transition-fast: .18s cubic-bezier(.4,0,.2,1); --transition-base: .32s cubic-bezier(.4,0,.2,1);
+  --sidebar-w: 260px;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);color:var(--c-ink-900);background:var(--c-ink-50);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;}
+img,svg{display:block;max-width:100%;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+input,select,textarea{font-family:inherit;font-size:1rem;}
+a{color:inherit;text-decoration:none;}
+ul,ol{list-style:none;}
+:focus-visible{outline:2.5px solid var(--c-blue-500);outline-offset:2px;border-radius:4px;}
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;width:360px;max-width:calc(100vw - 40px);}
+.toast{display:flex;align-items:flex-start;gap:12px;background:var(--c-white);border-radius:var(--radius-md);padding:14px 16px;box-shadow:var(--shadow-lg);border-left:4px solid var(--c-ink-300);animation:toast-in .32s forwards;position:relative;overflow:hidden;}
+.toast.toast-success{border-left-color:var(--c-emerald-500);}
+.toast.toast-error{border-left-color:var(--c-red-500);}
+.toast.toast-warning{border-left-color:var(--c-amber-500);}
+.toast.toast-info{border-left-color:var(--c-blue-500);}
+.toast.removing{animation:toast-out .18s forwards;}
+.toast-icon{font-size:1.2rem;line-height:1;flex-shrink:0;margin-top:1px;}
+.toast-body{flex:1;min-width:0;}
+.toast-title{font-weight:700;font-size:.88rem;display:block;margin-bottom:2px;}
+.toast-msg{font-size:.8rem;color:var(--c-ink-500);}
+.toast-close{flex-shrink:0;color:var(--c-ink-400);padding:2px;border-radius:6px;}
+.toast-close:hover{background:var(--c-ink-100);}
+.toast-progress{position:absolute;bottom:0;left:0;height:3px;background:currentColor;opacity:.25;animation:toast-progress 4s linear forwards;}
+.toast-success .toast-progress{color:var(--c-emerald-500);}
+.toast-error .toast-progress{color:var(--c-red-500);}
+.toast-info .toast-progress{color:var(--c-blue-500);}
+@keyframes toast-in{from{opacity:0;transform:translateX(40px) scale(.95)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes toast-out{to{opacity:0;transform:translateX(40px) scale(.95)}}
+@keyframes toast-progress{from{width:100%}to{width:0%}}
+
+/* ============================================
+   LOGIN SCREEN
+   ============================================ */
+#loginScreen{
+  position:fixed;inset:0;z-index:8000;
+  background:var(--grad-sidebar);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-card{
+  background:rgba(255,255,255,.96);
+  border-radius:var(--radius-lg);
+  padding:44px 40px 40px;
+  width:100%;max-width:420px;
+  box-shadow:var(--shadow-lg);
+  text-align:center;
+}
+.login-logo{width:72px;height:72px;object-fit:contain;margin:0 auto 18px;border-radius:14px;border:2px solid var(--c-ink-100);}
+.login-card h1{font-family:var(--font-display);font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+.login-card p{font-size:.85rem;color:var(--c-ink-500);margin-bottom:28px;}
+.login-field{text-align:left;margin-bottom:18px;}
+.login-field label{display:block;font-size:.84rem;font-weight:700;color:var(--c-ink-700);margin-bottom:7px;}
+.login-input{
+  width:100%;padding:13px 15px;
+  border:1.5px solid var(--c-ink-200);
+  border-radius:var(--radius-sm);
+  font-size:.95rem;
+  transition:var(--transition-fast);
+  background:var(--c-white);
+}
+.login-input:focus{border-color:var(--c-emerald-500);box-shadow:0 0 0 4px rgba(16,185,129,.1);outline:none;}
+.login-input.invalid{border-color:var(--c-red-500);}
+.login-pw-wrap{position:relative;}
+.login-pw-wrap .login-input{padding-right:48px;}
+.login-pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--c-ink-400);padding:6px;}
+.login-pw-toggle:hover{color:var(--c-ink-700);}
+.login-err{font-size:.78rem;color:var(--c-red-600);font-weight:600;min-height:20px;margin-top:6px;text-align:left;display:block;}
+.login-err.show::before{content:'⚠ ';}
+.login-btn{
+  width:100%;padding:14px;
+  background:var(--grad-primary);
+  color:var(--c-white);
+  border-radius:var(--radius-pill);
+  font-weight:700;font-size:.95rem;font-family:var(--font-body);
+  margin-top:8px;
+  transition:var(--transition-base);
+  box-shadow:0 8px 24px rgba(16,185,129,.25);
+}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(16,185,129,.32);}
+.login-btn:active{transform:translateY(0);}
+.login-btn:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+.login-default-hint{
+  margin-top:20px;padding:14px;
+  background:var(--c-blue-50);border-radius:var(--radius-md);
+  border:1px solid var(--c-blue-100);
+  font-size:.78rem;color:var(--c-blue-700);text-align:left;
+}
+.login-default-hint strong{display:block;font-size:.8rem;margin-bottom:6px;color:var(--c-navy-900);}
+
+/* ============================================
+   APP SHELL — SIDEBAR + MAIN
+   ============================================ */
+#appShell{display:none;min-height:100vh;}
+#appShell.visible{display:flex;}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--grad-sidebar);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;
+  z-index:200;
+  overflow-y:auto;
+  transition:transform var(--transition-base);
+}
+.sidebar-header{
+  padding:20px 18px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:12px;
+}
+.sidebar-logo{width:40px;height:40px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,.12);padding:4px;flex-shrink:0;}
+.sidebar-brand{display:flex;flex-direction:column;line-height:1.2;}
+.sidebar-brand-title{font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;}
+.sidebar-brand-sub{font-size:.7rem;color:rgba(255,255,255,.55);}
+.sidebar-nav{padding:12px 10px;flex:1;}
+.nav-section-label{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;padding:8px 10px 6px;margin-top:8px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  font-size:.85rem;font-weight:600;color:rgba(255,255,255,.65);
+  cursor:pointer;transition:var(--transition-fast);
+  margin-bottom:2px;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;}
+.nav-item svg{opacity:.7;flex-shrink:0;}
+.nav-item.active svg{opacity:1;}
+.nav-badge{
+  margin-left:auto;
+  background:var(--c-emerald-500);color:#fff;
+  font-size:.64rem;font-weight:700;
+  padding:2px 7px;border-radius:var(--radius-pill);
+  min-width:20px;text-align:center;
+}
+.sidebar-user{
+  padding:14px 16px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-user-avatar{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:var(--grad-primary);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.85rem;color:#fff;
+  font-family:var(--font-display);
+}
+.sidebar-user-info{flex:1;min-width:0;}
+.sidebar-user-name{font-size:.8rem;font-weight:700;color:#fff;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-user-role{font-size:.68rem;color:rgba(255,255,255,.5);}
+.sidebar-logout{color:rgba(255,255,255,.5);padding:6px;border-radius:8px;flex-shrink:0;}
+.sidebar-logout:hover{background:rgba(255,0,0,.15);color:#f87171;}
+
+/* MOBILE SIDEBAR TOGGLE */
+.mobile-sidebar-toggle{
+  display:none;position:fixed;top:14px;left:14px;z-index:300;
+  background:var(--c-ink-900);color:#fff;padding:10px;border-radius:var(--radius-sm);
+  box-shadow:var(--shadow-md);
+}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:190;background:rgba(0,0,0,.5);}
+.sidebar-overlay.show{display:block;}
+
+/* MAIN CONTENT */
+.main-content{
+  margin-left:var(--sidebar-w);
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;
+  min-height:100vh;
+}
+.topbar{
+  background:rgba(248,250,252,.9);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--c-ink-200);
+  padding:16px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-title{font-family:var(--font-display);font-weight:800;font-size:1.15rem;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.topbar-refresh{
+  display:flex;align-items:center;gap:7px;font-size:.82rem;font-weight:700;
+  color:var(--c-ink-700);padding:9px 16px;border-radius:var(--radius-pill);
+  background:var(--c-white);border:1.5px solid var(--c-ink-200);
+  transition:var(--transition-fast);
+}
+.topbar-refresh:hover{border-color:var(--c-emerald-500);color:var(--c-emerald-700);}
+.topbar-realtime{display:flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;color:var(--c-emerald-600);}
+.realtime-dot{width:8px;height:8px;border-radius:50%;background:var(--c-emerald-500);animation:pulse-dot 2s ease-in-out infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* PAGE VIEWS */
+.page-view{display:none;padding:28px;}
+.page-view.active{display:block;}
+
+/* ============================================
+   STAT CARDS
+   ============================================ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{
+  background:var(--c-white);border-radius:var(--radius-md);
+  padding:20px 22px;border:1px solid var(--c-ink-100);
+  box-shadow:var(--shadow-sm);
+  display:flex;align-items:flex-start;gap:14px;
+}
+.stat-icon-wrap{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+}
+.stat-icon-wrap.green{background:var(--c-emerald-50);}
+.stat-icon-wrap.blue{background:var(--c-blue-50);}
+.stat-icon-wrap.amber{background:var(--c-amber-50);}
+.stat-icon-wrap.purple{background:var(--c-purple-50);}
+.stat-info{flex:1;min-width:0;}
+.stat-label{font-size:.75rem;font-weight:600;color:var(--c-ink-400);text-transform:uppercase;letter-spacing:.04em;}
+.stat-value{font-family:var(--font-display);font-size:1.8rem;font-weight:800;line-height:1.1;margin-top:3px;}
+.stat-sub{font-size:.75rem;color:var(--c-ink-400);margin-top:4px;}
+
+/* ============================================
+   FILTER BAR
+   ============================================ */
+.filter-bar{
+  background:var(--c-white);border-radius:var(--radius-md);
+  border:1px solid var(--c-ink-100);
+  padding:14px 18px;margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.filter-search{
+  flex:1;min-width:200px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--c-ink-50);border:1.5px solid var(--c-ink-200);
+  border-radius:var(--radius-sm);padding:9px 14px;
+  transition:var(--transition-fast);
+}
+.filter-search:focus-within{border-color:var(--c-emerald-500);background:var(--c-white);}
+.filter-search input{border:none;background:transparent;width:100%;font-size:.87rem;color:var(--c-ink-900);}
+.filter-search input:focus{outline:none;}
+.filter-search svg{color:var(--c-ink-400);flex-shrink:0;}
+.filter-select{
+  padding:9px 14px;border:1.5px solid var(--c-ink-200);border-radius:var(--radius-sm);
+  font-size:.85rem;font-weight:600;color:var(--c-ink-700);
+  background:var(--c-ink-50);cursor:pointer;
+  transition:var(--transition-fast);
+}
+.filter-select:focus{border-color:var(--c-emerald-500);outline:none;}
+.filter-count{font-size:.8rem;font-weight:700;color:var(--c-ink-400);margin-left:auto;white-space:nowrap;}
+
+/* ============================================
+   ADUAN TABLE / CARDS
+   ============================================ */
+.aduan-list{display:flex;flex-direction:column;gap:12px;}
+.aduan-card{
+  background:var(--c-white);border-radius:var(--radius-md);
+  border:1px solid var(--c-ink-100);
+  padding:20px 22px;
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;
+  transition:var(--transition-fast);
+  position:relative;
+}
+.aduan-card:hover{border-color:var(--c-emerald-300,#6EE7B7);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.aduan-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.aduan-ticket{font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--c-ink-900);}
+.aduan-date{font-size:.75rem;color:var(--c-ink-400);margin-top:2px;}
+.status-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.73rem;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);
+  white-space:nowrap;flex-shrink:0;
+}
+.status-badge.pending{background:var(--c-amber-50);color:var(--c-amber-600);}
+.status-badge.diproses{background:var(--c-blue-50);color:var(--c-blue-700);}
+.status-badge.selesai{background:var(--c-emerald-50);color:var(--c-emerald-700);}
+.aduan-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.aduan-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.73rem;font-weight:600;padding:4px 10px;
+  border-radius:var(--radius-pill);background:var(--c-ink-100);color:var(--c-ink-700);
+}
+.aduan-preview{font-size:.84rem;color:var(--c-ink-700);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.aduan-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--c-ink-100);}
+.aduan-reporter{font-size:.78rem;color:var(--c-ink-500);font-weight:600;}
+.aduan-has-file{display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--c-blue-600);background:var(--c-blue-50);padding:4px 10px;border-radius:var(--radius-pill);}
+.aduan-new-dot{position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%;background:var(--c-emerald-500);box-shadow:0 0 0 3px rgba(16,185,129,.2);}
+
+/* ============================================
+   MODAL DETAIL ADUAN
+   ============================================ */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(15,23,42,.5);backdrop-filter:blur(4px);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:20px;overflow-y:auto;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:var(--c-white);border-radius:var(--radius-lg);
+  width:100%;max-width:720px;
+  box-shadow:var(--shadow-lg);
+  margin:auto;
+  animation:modal-in .32s forwards;
+}
+@keyframes modal-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 26px;border-bottom:1px solid var(--c-ink-100);
+}
+.modal-title{font-family:var(--font-display);font-size:1.05rem;font-weight:800;}
+.modal-close{color:var(--c-ink-400);padding:8px;border-radius:10px;}
+.modal-close:hover{background:var(--c-ink-100);color:var(--c-ink-900);}
+.modal-body{padding:24px 26px;}
+.modal-section{margin-bottom:22px;}
+.modal-section-title{
+  font-size:.72rem;font-weight:700;color:var(--c-ink-400);
+  text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--c-ink-100);
+}
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.detail-item{display:flex;flex-direction:column;gap:3px;}
+.detail-label{font-size:.73rem;font-weight:600;color:var(--c-ink-400);}
+.detail-value{font-size:.88rem;font-weight:600;color:var(--c-ink-900);}
+.isi-aduan-text{
+  background:var(--c-ink-50);border-radius:var(--radius-md);
+  padding:16px;font-size:.9rem;line-height:1.7;color:var(--c-ink-700);
+  border:1px solid var(--c-ink-100);
+}
+/* File preview */
+.file-preview-wrap{
+  background:var(--c-ink-50);border-radius:var(--radius-md);
+  border:1px solid var(--c-ink-100);
+  overflow:hidden;
+}
+.file-preview-header{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  background:var(--c-white);border-bottom:1px solid var(--c-ink-100);
+}
+.file-preview-header span{font-size:.82rem;font-weight:700;color:var(--c-ink-700);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-download-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:.78rem;font-weight:700;color:var(--c-blue-600);
+  background:var(--c-blue-50);padding:7px 14px;border-radius:var(--radius-pill);
+  flex-shrink:0;
+}
+.file-download-btn:hover{background:var(--c-blue-100);}
+.file-preview-img{max-height:360px;width:100%;object-fit:contain;padding:12px;}
+.file-preview-embed{width:100%;height:360px;border:none;}
+.file-preview-other{
+  padding:32px;text-align:center;color:var(--c-ink-400);font-size:.85rem;
+}
+/* Reply area */
+.reply-area{
+  background:var(--c-emerald-50);border-radius:var(--radius-md);
+  border:1.5px solid var(--c-emerald-100);padding:16px;
+}
+.reply-area label{display:block;font-size:.82rem;font-weight:700;color:var(--c-emerald-700);margin-bottom:8px;}
+.reply-textarea{
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--c-emerald-200,#A7F3D0);
+  border-radius:var(--radius-sm);background:var(--c-white);
+  min-height:90px;resize:vertical;
+  transition:var(--transition-fast);font-size:.88rem;
+}
+.reply-textarea:focus{border-color:var(--c-emerald-500);box-shadow:0 0 0 4px rgba(16,185,129,.1);outline:none;}
+.reply-existing{
+  font-size:.88rem;color:var(--c-ink-700);font-style:italic;
+  background:var(--c-white);border-radius:var(--radius-sm);padding:10px 14px;
+  border-left:4px solid var(--c-emerald-500);margin-bottom:10px;
+}
+.modal-footer{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 26px;border-top:1px solid var(--c-ink-100);
+  flex-wrap:wrap;
+}
+.btn-status{
+  display:flex;align-items:center;gap:7px;
+  font-size:.83rem;font-weight:700;padding:9px 16px;border-radius:var(--radius-pill);
+  transition:var(--transition-fast);
+}
+.btn-status.pending{background:var(--c-amber-50);color:var(--c-amber-600);border:1.5px solid var(--c-amber-200,#FDE68A);}
+.btn-status.pending:hover{background:var(--c-amber-100);}
+.btn-status.diproses{background:var(--c-blue-50);color:var(--c-blue-700);border:1.5px solid var(--c-blue-100);}
+.btn-status.diproses:hover{background:var(--c-blue-100);}
+.btn-status.selesai{background:var(--c-emerald-50);color:var(--c-emerald-700);border:1.5px solid var(--c-emerald-100);}
+.btn-status.selesai:hover{background:var(--c-emerald-100);}
+.btn-save-reply{
+  margin-left:auto;
+  display:flex;align-items:center;gap:7px;
+  font-size:.85rem;font-weight:700;padding:10px 20px;border-radius:var(--radius-pill);
+  background:var(--grad-primary);color:#fff;
+  box-shadow:0 4px 14px rgba(16,185,129,.25);
+  transition:var(--transition-fast);
+}
+.btn-save-reply:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(16,185,129,.3);}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  color:var(--c-ink-400);
+}
+.empty-state-icon{font-size:3rem;margin-bottom:12px;}
+.empty-state p{font-size:.9rem;}
+
+/* ============================================
+   SKELETON
+   ============================================ */
+.skeleton{
+  background:linear-gradient(90deg,var(--c-ink-100) 25%,var(--c-ink-200) 50%,var(--c-ink-100) 75%);
+  background-size:200% 100%;
+  animation:skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius:var(--radius-sm);
+}
+@keyframes skeleton-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-card{height:120px;border-radius:var(--radius-md);margin-bottom:12px;}
+
+/* ============================================
+   SETTINGS PAGE
+   ============================================ */
+.settings-section{
+  background:var(--c-white);border-radius:var(--radius-md);
+  border:1px solid var(--c-ink-100);padding:28px;
+  margin-bottom:20px;box-shadow:var(--shadow-sm);
+  max-width:600px;
+}
+.settings-section h2{font-family:var(--font-display);font-size:1.05rem;font-weight:800;margin-bottom:6px;}
+.settings-section p{font-size:.84rem;color:var(--c-ink-500);margin-bottom:22px;}
+.settings-field{margin-bottom:18px;}
+.settings-field label{display:block;font-size:.84rem;font-weight:700;color:var(--c-ink-700);margin-bottom:7px;}
+.settings-input{
+  width:100%;padding:12px 15px;
+  border:1.5px solid var(--c-ink-200);border-radius:var(--radius-sm);
+  font-size:.92rem;background:var(--c-white);
+  transition:var(--transition-fast);
+}
+.settings-input:focus{border-color:var(--c-emerald-500);box-shadow:0 0 0 4px rgba(16,185,129,.1);outline:none;}
+.settings-input.invalid{border-color:var(--c-red-500);}
+.settings-pw-wrap{position:relative;}
+.settings-pw-wrap .settings-input{padding-right:48px;}
+.settings-pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--c-ink-400);padding:6px;}
+.settings-pw-toggle:hover{color:var(--c-ink-700);}
+.settings-hint{font-size:.76rem;color:var(--c-ink-400);margin-top:5px;}
+.field-err{font-size:.76rem;color:var(--c-red-600);font-weight:600;min-height:18px;margin-top:4px;display:block;}
+.field-err.show::before{content:'⚠ ';}
+.btn-settings-save{
+  display:flex;align-items:center;gap:8px;
+  font-size:.88rem;font-weight:700;padding:12px 24px;border-radius:var(--radius-pill);
+  background:var(--grad-primary);color:#fff;
+  transition:var(--transition-fast);
+  box-shadow:0 4px 14px rgba(16,185,129,.2);
+}
+.btn-settings-save:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(16,185,129,.28);}
+.btn-settings-save:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+.danger-zone{
+  background:var(--c-red-50);border-color:var(--c-red-100);
+}
+.danger-zone h2{color:var(--c-red-700);}
+
+/* ============================================
+   LOADING OVERLAY (app-level)
+   ============================================ */
+.app-loading{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(15,23,42,.5);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+}
+.app-loading.show{display:flex;}
+.loading-box{
+  background:var(--c-white);border-radius:var(--radius-lg);
+  padding:32px 44px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  box-shadow:var(--shadow-lg);
+}
+.loading-spinner{
+  width:40px;height:40px;border-radius:50%;
+  border:4px solid var(--c-ink-100);
+  border-top-color:var(--c-emerald-500);
+  border-right-color:var(--c-blue-500);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-box p{font-weight:600;font-size:.9rem;color:var(--c-ink-700);}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main-content{margin-left:0;}
+  .mobile-sidebar-toggle{display:flex;}
+  .topbar{padding:14px 20px 14px 54px;}
+  .page-view{padding:20px;}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .detail-grid{grid-template-columns:1fr;}
+  .modal-footer{flex-direction:column;}
+  .btn-save-reply{margin-left:0;width:100%;justify-content:center;}
+  .btn-status{flex:1;justify-content:center;}
+}
+@media(max-width:420px){.stats-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- TOAST CONTAINER -->
+<!-- ============================================ -->
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<!-- ============================================ -->
+<!-- APP LOADING -->
+<!-- ============================================ -->
+<div class="app-loading" id="appLoading">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <p id="appLoadingText">Memuat...</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- LOGIN SCREEN -->
+<!-- ============================================ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"
+         alt="Logo SMAN 68 Jakarta" class="login-logo">
+    <h1>Panel Operator</h1>
+    <p>Layanan Aduan — SMAN 68 Jakarta</p>
+
+    <div class="login-field">
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" class="login-input" placeholder="Masukkan username" autocomplete="username">
+      <span class="login-err" id="loginErrUsername"></span>
+    </div>
+
+    <div class="login-field">
+      <label for="loginPassword">Password</label>
+      <div class="login-pw-wrap">
+        <input type="password" id="loginPassword" class="login-input" placeholder="Masukkan password" autocomplete="current-password">
+        <button type="button" class="login-pw-toggle" id="loginPwToggle" aria-label="Tampilkan password">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+        </button>
+      </div>
+      <span class="login-err" id="loginErrPassword"></span>
+    </div>
+
+    <span class="login-err" id="loginErrGlobal" style="display:block;text-align:center;margin-bottom:4px;"></span>
+
+    <button type="button" class="login-btn" id="loginBtn">Masuk sebagai Operator</button>
+
+    <div class="login-default-hint">
+      <strong>🔐 Kredensial Default (Pertama Kali)</strong>
+      Username: <code>operator68</code> &nbsp;|&nbsp; Password: <code>sman68jkt</code><br>
+      <span style="margin-top:4px;display:block;color:#1D4ED8;">Ganti username & password di menu Pengaturan setelah login pertama.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- APP SHELL -->
+<!-- ============================================ -->
+<div id="appShell">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Mobile toggle -->
+  <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" aria-label="Buka sidebar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png"
+           alt="Logo SMAN 68" class="sidebar-logo">
+      <div class="sidebar-brand">
+        <span class="sidebar-brand-title">Panel Operator</span>
+        <span class="sidebar-brand-sub">SMAN 68 Jakarta</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Navigasi</span>
+
+      <div class="nav-item active" data-page="dashboard" tabindex="0">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
+        Dashboard
+        <span class="nav-badge" id="badgePending">0</span>
+      </div>
+
+      <div class="nav-item" data-page="settings" tabindex="0">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Pengaturan
+      </div>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">OP</div>
+      <div class="sidebar-user-info">
+        <span class="sidebar-user-name" id="sidebarUsername">operator68</span>
+        <span class="sidebar-user-role">Operator Aduan</span>
+      </div>
+      <button class="sidebar-logout" id="logoutBtn" title="Keluar" aria-label="Logout">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard Aduan</div>
+        <div class="topbar-realtime">
+          <span class="realtime-dot"></span>
+          <span>Sinkron real-time aktif</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-refresh" id="refreshBtn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== DASHBOARD PAGE ========== -->
+    <div class="page-view active" id="page-dashboard">
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap green">📋</div>
+          <div class="stat-info">
+            <div class="stat-label">Total Aduan</div>
+            <div class="stat-value" id="statTotal">—</div>
+            <div class="stat-sub">Semua waktu</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap amber">⏳</div>
+          <div class="stat-info">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" id="statPending">—</div>
+            <div class="stat-sub">Menunggu tindakan</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap blue">⚙️</div>
+          <div class="stat-info">
+            <div class="stat-label">Diproses</div>
+            <div class="stat-value" id="statDiproses">—</div>
+            <div class="stat-sub">Sedang ditangani</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap purple">✅</div>
+          <div class="stat-info">
+            <div class="stat-label">Selesai</div>
+            <div class="stat-value" id="statSelesai">—</div>
+            <div class="stat-sub">Telah diselesaikan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="text" id="filterSearch" placeholder="Cari nomor tiket, nama, email, atau isi aduan...">
+        </div>
+        <select class="filter-select" id="filterStatus">
+          <option value="">Semua Status</option>
+          <option value="pending">Pending</option>
+          <option value="diproses">Diproses</option>
+          <option value="selesai">Selesai</option>
+        </select>
+        <select class="filter-select" id="filterKategori">
+          <option value="">Semua Kategori</option>
+          <option value="Bullying">Bullying</option>
+          <option value="Fasilitas Sekolah">Fasilitas Sekolah</option>
+          <option value="Kekerasan">Kekerasan</option>
+          <option value="Pelecehan">Pelecehan</option>
+          <option value="Kedisiplinan">Kedisiplinan</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+        <span class="filter-count" id="filterCount">0 aduan</span>
+      </div>
+
+      <!-- Aduan List -->
+      <div id="aduanList" class="aduan-list">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+
+    </div><!-- /page-dashboard -->
+
+    <!-- ========== SETTINGS PAGE ========== -->
+    <div class="page-view" id="page-settings">
+
+      <div class="settings-section">
+        <h2>👤 Ubah Username</h2>
+        <p>Username digunakan untuk masuk ke panel operator ini.</p>
+        <div class="settings-field">
+          <label for="newUsername">Username Baru</label>
+          <input type="text" id="newUsername" class="settings-input" placeholder="Masukkan username baru" autocomplete="off">
+          <span class="field-err" id="errNewUsername"></span>
+        </div>
+        <button type="button" class="btn-settings-save" id="btnSaveUsername">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2"/></svg>
+          Simpan Username
+        </button>
+      </div>
+
+      <div class="settings-section">
+        <h2>🔑 Ubah Password</h2>
+        <p>Gunakan password yang kuat dan unik. Minimal 6 karakter.</p>
+        <div class="settings-field">
+          <label for="currentPassword">Password Saat Ini</label>
+          <div class="settings-pw-wrap">
+            <input type="password" id="currentPassword" class="settings-input" placeholder="Password yang sedang digunakan" autocomplete="current-password">
+            <button type="button" class="settings-pw-toggle" data-target="currentPassword" aria-label="Tampilkan">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+          </div>
+          <span class="field-err" id="errCurrentPw"></span>
+        </div>
+        <div class="settings-field">
+          <label for="newPassword">Password Baru</label>
+          <div class="settings-pw-wrap">
+            <input type="password" id="newPassword" class="settings-input" placeholder="Minimal 6 karakter" autocomplete="new-password">
+            <button type="button" class="settings-pw-toggle" data-target="newPassword" aria-label="Tampilkan">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+          </div>
+          <span class="settings-hint">Minimal 6 karakter.</span>
+          <span class="field-err" id="errNewPw"></span>
+        </div>
+        <div class="settings-field">
+          <label for="confirmPassword">Konfirmasi Password Baru</label>
+          <div class="settings-pw-wrap">
+            <input type="password" id="confirmPassword" class="settings-input" placeholder="Ulangi password baru" autocomplete="new-password">
+            <button type="button" class="settings-pw-toggle" data-target="confirmPassword" aria-label="Tampilkan">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+          </div>
+          <span class="field-err" id="errConfirmPw"></span>
+        </div>
+        <button type="button" class="btn-settings-save" id="btnSavePassword">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/></svg>
+          Perbarui Password
+        </button>
+      </div>
+
+    </div><!-- /page-settings -->
+
+  </div><!-- /main-content -->
+</div><!-- /appShell -->
+
+<!-- ============================================ -->
+<!-- DETAIL MODAL -->
+<!-- ============================================ -->
+<div class="modal-overlay" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Detail Aduan</div>
+        <div style="font-size:.74rem;color:var(--c-ink-400);margin-top:2px;" id="modalTicket"></div>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body" id="modalBody">
+      <!-- Dynamically filled -->
+    </div>
+
+    <div class="modal-footer" id="modalFooter">
+      <button class="btn-status pending" data-status="pending" id="btnSetPending">⏳ Pending</button>
+      <button class="btn-status diproses" data-status="diproses" id="btnSetDiproses">⚙️ Diproses</button>
+      <button class="btn-status selesai" data-status="selesai" id="btnSetSelesai">✅ Selesai</button>
+      <button class="btn-save-reply" id="btnSaveReply">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Simpan Balasan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================
+   FIREBASE CONFIG
+   ============================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
+  authDomain: "upnvjdatsystem.firebaseapp.com",
+  databaseURL: "https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "upnvjdatsystem",
+  storageBucket: "upnvjdatsystem.firebasestorage.app",
+  messagingSenderId: "57095309946",
+  appId: "1:57095309946:web:b0e9f3f86380d549ffc9c3"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const ADUAN_COLLECTION = 'aduan';
+const OPERATOR_COLLECTION = 'operator_config';
+const OPERATOR_DOC_ID = 'main';
+
+/* ============================================
+   DEFAULT CREDENTIALS
+   ============================================ */
+const DEFAULT_USERNAME = 'operator68';
+const DEFAULT_PASSWORD = 'sman68jkt';
+
+/* ============================================
+   APP STATE
+   ============================================ */
+let currentUser = null;       // { username }
+let aduanData = [];           // all loaded aduan
+let filteredData = [];        // after filter
+let activeDocId = null;       // detail modal
+let realtimeUnsub = null;     // firestore listener
+
+/* ============================================
+   TOAST
+   ============================================ */
+const toastContainer = document.getElementById('toastContainer');
+const TOAST_ICONS = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
+const TOAST_TITLES = { success:'Berhasil', error:'Terjadi Kesalahan', warning:'Perhatian', info:'Informasi' };
+
+function showToast(type, message, title) {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `
+    <span class="toast-icon">${TOAST_ICONS[type]||'ℹ️'}</span>
+    <div class="toast-body">
+      <span class="toast-title">${title||TOAST_TITLES[type]}</span>
+      <span class="toast-msg">${message}</span>
+    </div>
+    <button class="toast-close" aria-label="Tutup">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="toast-progress"></div>
+  `;
+  toastContainer.appendChild(t);
+  const dismiss = () => { t.classList.add('removing'); setTimeout(()=>t.remove(),220); };
+  t.querySelector('.toast-close').addEventListener('click', dismiss);
+  const timer = setTimeout(dismiss, 4000);
+  t.addEventListener('mouseenter', ()=>clearTimeout(timer));
+}
+
+/* ============================================
+   APP LOADING
+   ============================================ */
+const appLoading = document.getElementById('appLoading');
+const appLoadingText = document.getElementById('appLoadingText');
+function showAppLoading(msg='Memuat...') { appLoadingText.textContent = msg; appLoading.classList.add('show'); }
+function hideAppLoading() { appLoading.classList.remove('show'); }
+
+/* ============================================
+   OPERATOR CONFIG HELPERS
+   ============================================ */
+async function getOperatorConfig() {
+  try {
+    const doc = await db.collection(OPERATOR_COLLECTION).doc(OPERATOR_DOC_ID).get();
+    if (doc.exists) return doc.data();
+  } catch(e) {}
+  return { username: DEFAULT_USERNAME, password: DEFAULT_PASSWORD };
+}
+
+async function setOperatorConfig(data) {
+  await db.collection(OPERATOR_COLLECTION).doc(OPERATOR_DOC_ID).set(data, { merge: true });
+}
+
+/* ============================================
+   LOGIN
+   ============================================ */
+const loginScreen = document.getElementById('loginScreen');
+const appShell = document.getElementById('appShell');
+const loginBtn = document.getElementById('loginBtn');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+const loginErrUsername = document.getElementById('loginErrUsername');
+const loginErrPassword = document.getElementById('loginErrPassword');
+const loginErrGlobal = document.getElementById('loginErrGlobal');
+
+function clearLoginErrors() {
+  [loginErrUsername, loginErrPassword, loginErrGlobal].forEach(el => { el.textContent=''; el.classList.remove('show'); });
+  [loginUsername, loginPassword].forEach(el => el.classList.remove('invalid'));
+}
+
+document.getElementById('loginPwToggle').addEventListener('click', () => {
+  const inp = loginPassword;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+});
+
+loginUsername.addEventListener('keydown', e => { if(e.key==='Enter') loginPassword.focus(); });
+loginPassword.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+loginBtn.addEventListener('click', doLogin);
+
+async function doLogin() {
+  clearLoginErrors();
+  const u = loginUsername.value.trim();
+  const p = loginPassword.value;
+  let valid = true;
+
+  if (!u) { loginErrUsername.textContent='Username tidak boleh kosong.'; loginErrUsername.classList.add('show'); loginUsername.classList.add('invalid'); valid=false; }
+  if (!p) { loginErrPassword.textContent='Password tidak boleh kosong.'; loginErrPassword.classList.add('show'); loginPassword.classList.add('invalid'); valid=false; }
+  if (!valid) return;
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Memeriksa...';
+
+  try {
+    const cfg = await getOperatorConfig();
+    const storedUsername = cfg.username || DEFAULT_USERNAME;
+    const storedPassword = cfg.password || DEFAULT_PASSWORD;
+
+    if (u === storedUsername && p === storedPassword) {
+      currentUser = { username: u };
+      sessionStorage.setItem('op_session', JSON.stringify({ username: u }));
+      loginScreen.style.display = 'none';
+      appShell.classList.add('visible');
+      updateSidebarUser(u);
+      startRealtimeListener();
+      showToast('success', `Selamat datang, ${u}!`);
+    } else {
+      loginErrGlobal.textContent = 'Username atau password salah. Periksa kembali.';
+      loginErrGlobal.classList.add('show');
+      loginUsername.classList.add('invalid');
+      loginPassword.classList.add('invalid');
+    }
+  } catch(e) {
+    loginErrGlobal.textContent = 'Terjadi kesalahan koneksi. Coba lagi.';
+    loginErrGlobal.classList.add('show');
+    console.error(e);
+  }
+
+  loginBtn.disabled = false;
+  loginBtn.textContent = 'Masuk sebagai Operator';
+}
+
+/* ============================================
+   SESSION CHECK ON LOAD
+   ============================================ */
+window.addEventListener('DOMContentLoaded', async () => {
+  const saved = sessionStorage.getItem('op_session');
+  if (saved) {
+    try {
+      const sess = JSON.parse(saved);
+      // verify credentials still exist
+      const cfg = await getOperatorConfig();
+      if (sess.username === (cfg.username || DEFAULT_USERNAME)) {
+        currentUser = sess;
+        loginScreen.style.display = 'none';
+        appShell.classList.add('visible');
+        updateSidebarUser(sess.username);
+        startRealtimeListener();
+        return;
+      }
+    } catch(e) {}
+    sessionStorage.removeItem('op_session');
+  }
+});
+
+/* ============================================
+   LOGOUT
+   ============================================ */
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  if (!confirm('Yakin ingin keluar dari panel operator?')) return;
+  sessionStorage.removeItem('op_session');
+  currentUser = null;
+  if (realtimeUnsub) { realtimeUnsub(); realtimeUnsub = null; }
+  aduanData = []; filteredData = [];
+  loginScreen.style.display = 'flex';
+  appShell.classList.remove('visible');
+  loginUsername.value = ''; loginPassword.value = '';
+  showToast('info', 'Anda telah keluar dari sesi.');
+});
+
+/* ============================================
+   SIDEBAR USER
+   ============================================ */
+function updateSidebarUser(username) {
+  document.getElementById('sidebarUsername').textContent = username;
+  document.getElementById('sidebarAvatar').textContent = username.slice(0,2).toUpperCase();
+}
+
+/* ============================================
+   SIDEBAR NAVIGATION
+   ============================================ */
+const navItems = document.querySelectorAll('.nav-item[data-page]');
+const pageViews = document.querySelectorAll('.page-view');
+const topbarTitle = document.getElementById('topbarTitle');
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => switchPage(item.dataset.page));
+  item.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') switchPage(item.dataset.page); });
+});
+
+function switchPage(page) {
+  navItems.forEach(n => n.classList.toggle('active', n.dataset.page===page));
+  pageViews.forEach(v => v.classList.toggle('active', v.id===`page-${page}`));
+  const titles = { dashboard:'Dashboard Aduan', settings:'Pengaturan Akun' };
+  topbarTitle.textContent = titles[page] || page;
+  closeSidebar();
+}
+
+/* Mobile sidebar */
+const sidebarEl = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+document.getElementById('mobileSidebarToggle').addEventListener('click', () => {
+  sidebarEl.classList.toggle('open');
+  sidebarOverlay.classList.toggle('show');
+});
+sidebarOverlay.addEventListener('click', closeSidebar);
+function closeSidebar() { sidebarEl.classList.remove('open'); sidebarOverlay.classList.remove('show'); }
+
+/* ============================================
+   REALTIME LISTENER (no delay, onSnapshot)
+   ============================================ */
+function startRealtimeListener() {
+  if (realtimeUnsub) realtimeUnsub();
+
+  document.getElementById('aduanList').innerHTML = `
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+  `;
+
+  realtimeUnsub = db.collection(ADUAN_COLLECTION)
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      const prev = aduanData.length;
+      aduanData = [];
+      snapshot.forEach(doc => aduanData.push({ id: doc.id, ...doc.data() }));
+      // show toast if new data arrived (not first load)
+      if (prev > 0 && aduanData.length > prev) {
+        showToast('info', `${aduanData.length - prev} aduan baru masuk!`, 'Aduan Baru');
+      }
+      updateStats();
+      applyFilter();
+    }, err => {
+      console.error('Realtime error:', err);
+      showToast('error', 'Koneksi realtime terputus. Coba refresh halaman.');
+    });
+}
+
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  if (realtimeUnsub) realtimeUnsub();
+  aduanData = [];
+  startRealtimeListener();
+  showToast('info', 'Data sedang diperbarui...');
+});
+
+/* ============================================
+   STATS
+   ============================================ */
+function updateStats() {
+  const total = aduanData.length;
+  const pending = aduanData.filter(a => (a.status||'pending').toLowerCase() === 'pending').length;
+  const diproses = aduanData.filter(a => (a.status||'').toLowerCase() === 'diproses').length;
+  const selesai = aduanData.filter(a => (a.status||'').toLowerCase() === 'selesai').length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statDiproses').textContent = diproses;
+  document.getElementById('statSelesai').textContent = selesai;
+  document.getElementById('badgePending').textContent = pending;
+}
+
+/* ============================================
+   FILTER
+   ============================================ */
+const filterSearch = document.getElementById('filterSearch');
+const filterStatus = document.getElementById('filterStatus');
+const filterKategori = document.getElementById('filterKategori');
+const filterCount = document.getElementById('filterCount');
+
+filterSearch.addEventListener('input', applyFilter);
+filterStatus.addEventListener('change', applyFilter);
+filterKategori.addEventListener('change', applyFilter);
+
+function applyFilter() {
+  const q = filterSearch.value.toLowerCase().trim();
+  const st = filterStatus.value.toLowerCase();
+  const kat = filterKategori.value.toLowerCase();
+
+  filteredData = aduanData.filter(a => {
+    const status = (a.status || 'pending').toLowerCase();
+    const kategori = (a.kategoriAduan || '').toLowerCase();
+    const matchStatus = !st || status === st;
+    const matchKat = !kat || kategori.includes(kat);
+    const matchQ = !q || [
+      a.ticketNumber, a.nama, a.email, a.isiAduan, a.kategoriAduan
+    ].some(v => v && v.toLowerCase().includes(q));
+    return matchStatus && matchKat && matchQ;
+  });
+
+  filterCount.textContent = `${filteredData.length} aduan`;
+  renderList();
+}
+
+/* ============================================
+   RENDER ADUAN LIST
+   ============================================ */
+const aduanList = document.getElementById('aduanList');
+
+function renderList() {
+  if (!filteredData.length) {
+    aduanList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <p>Tidak ada aduan yang sesuai filter.</p>
+      </div>
+    `;
+    return;
+  }
+
+  aduanList.innerHTML = '';
+  filteredData.forEach(aduan => {
+    aduanList.appendChild(renderCard(aduan));
+  });
+}
+
+function renderCard(a) {
+  const card = document.createElement('div');
+  card.className = 'aduan-card';
+  card.dataset.id = a.id;
+
+  const status = (a.status || 'pending').toLowerCase();
+  const statusLabel = { pending:'⏳ Pending', diproses:'⚙️ Diproses', selesai:'✅ Selesai' }[status] || status;
+  const dateStr = a.createdAt && a.createdAt.toDate
+    ? a.createdAt.toDate().toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    : '—';
+
+  const isNew = !a.dibacaOperator;
+  const hasFile = !!(a.fileBukti && a.fileBukti.base64);
+
+  card.innerHTML = `
+    ${isNew ? '<div class="aduan-new-dot" title="Belum dibaca"></div>' : ''}
+    <div class="aduan-card-header">
+      <div>
+        <div class="aduan-ticket">${escHtml(a.ticketNumber || '—')}</div>
+        <div class="aduan-date">${dateStr}</div>
+      </div>
+      <span class="status-badge ${status}">${statusLabel}</span>
+    </div>
+    <div class="aduan-meta">
+      <span class="aduan-tag">👤 ${escHtml(a.kategoriPelapor || '—')}</span>
+      <span class="aduan-tag">📂 ${escHtml(a.kategoriAduan === 'Lainnya' ? (a.kategoriLainnya||'Lainnya') : (a.kategoriAduan||'—'))}</span>
+      ${a.nama ? `<span class="aduan-tag">🙋 ${escHtml(a.nama)}</span>` : '<span class="aduan-tag">👤 Anonim</span>'}
+    </div>
+    <div class="aduan-preview">${escHtml(a.isiAduan || '—')}</div>
+    <div class="aduan-footer">
+      <span class="aduan-reporter">${escHtml(a.email || 'Email tidak dicantumkan')}</span>
+      ${hasFile ? `<span class="aduan-has-file">📎 Ada Lampiran</span>` : ''}
+    </div>
+  `;
+
+  card.addEventListener('click', () => openDetail(a.id));
+  return card;
+}
+
+/* ============================================
+   DETAIL MODAL
+   ============================================ */
+const detailModal = document.getElementById('detailModal');
+const modalBody = document.getElementById('modalBody');
+const modalTicket = document.getElementById('modalTicket');
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+detailModal.addEventListener('click', e => { if(e.target===detailModal) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape' && detailModal.classList.contains('show')) closeModal(); });
+
+function closeModal() {
+  detailModal.classList.remove('show');
+  activeDocId = null;
+}
+
+async function openDetail(docId) {
+  activeDocId = docId;
+  const a = aduanData.find(x => x.id === docId);
+  if (!a) return;
+
+  // Mark as read
+  if (!a.dibacaOperator) {
+    db.collection(ADUAN_COLLECTION).doc(docId).update({ dibacaOperator: true }).catch(()=>{});
+  }
+
+  const dateStr = a.createdAt && a.createdAt.toDate
+    ? a.createdAt.toDate().toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    : '—';
+
+  // Build file preview
+  let fileHtml = '';
+  if (a.fileBukti && a.fileBukti.base64) {
+    const f = a.fileBukti;
+    const isImg = (f.type||'').startsWith('image/');
+    const isPdf = (f.type||'') === 'application/pdf';
+    const src = `data:${f.type};base64,${f.base64}`;
+    fileHtml = `
+      <div class="modal-section">
+        <div class="modal-section-title">📎 Lampiran Bukti</div>
+        <div class="file-preview-wrap">
+          <div class="file-preview-header">
+            <span>${escHtml(f.name || 'file-bukti')}</span>
+            <a class="file-download-btn" href="${src}" download="${escHtml(f.name||'file-bukti')}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Unduh
+            </a>
+          </div>
+          ${isImg
+            ? `<img src="${src}" alt="Lampiran bukti" class="file-preview-img">`
+            : isPdf
+              ? `<iframe src="${src}" class="file-preview-embed" title="Preview PDF"></iframe>`
+              : `<div class="file-preview-other">📄 File tidak dapat ditampilkan di sini. Klik Unduh untuk membuka.</div>`
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  // Build existing reply
+  const existingReply = a.jawabanOperator
+    ? `<div class="reply-existing">💬 "${escHtml(a.jawabanOperator)}"</div>` : '';
+
+  modalTicket.textContent = a.ticketNumber || '';
+  modalBody.innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">📋 Informasi Pelapor</div>
+      <div class="detail-grid">
+        <div class="detail-item"><span class="detail-label">Kategori Pelapor</span><span class="detail-value">${escHtml(a.kategoriPelapor||'—')}</span></div>
+        <div class="detail-item"><span class="detail-label">Nama</span><span class="detail-value">${a.nama ? escHtml(a.nama) : '<em style="color:var(--c-ink-400)">Anonim</em>'}</span></div>
+        <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">${escHtml(a.email||'—')}</span></div>
+        <div class="detail-item"><span class="detail-label">No. HP</span><span class="detail-value">${escHtml(a.noHp||'—')}</span></div>
+        ${a.kategoriPelapor==='Siswa' ? `
+        <div class="detail-item"><span class="detail-label">Kelas</span><span class="detail-value">${escHtml(a.kelas||'—')}</span></div>
+        <div class="detail-item"><span class="detail-label">Jurusan</span><span class="detail-value">${escHtml(a.jurusan||'—')}</span></div>
+        ` : ''}
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">📝 Detail Aduan</div>
+      <div class="detail-grid" style="margin-bottom:14px;">
+        <div class="detail-item"><span class="detail-label">Kategori Aduan</span><span class="detail-value">${escHtml(a.kategoriAduan==='Lainnya'?(a.kategoriLainnya||'Lainnya'):(a.kategoriAduan||'—'))}</span></div>
+        <div class="detail-item"><span class="detail-label">Status Saat Ini</span><span class="detail-value">${escHtml(a.status||'pending')}</span></div>
+        <div class="detail-item"><span class="detail-label">Tanggal Masuk</span><span class="detail-value">${dateStr}</span></div>
+        <div class="detail-item"><span class="detail-label">Nomor Tiket</span><span class="detail-value">${escHtml(a.ticketNumber||'—')}</span></div>
+      </div>
+      <div class="isi-aduan-text">${escHtml(a.isiAduan||'—')}</div>
+    </div>
+
+    ${fileHtml}
+
+    <div class="modal-section">
+      <div class="modal-section-title">💬 Balasan Operator</div>
+      <div class="reply-area">
+        <label for="replyTextarea">Tulis balasan / tanggapan untuk pelapor:</label>
+        ${existingReply}
+        <textarea id="replyTextarea" class="reply-textarea" placeholder="Tulis balasan Anda di sini...">${escHtml(a.jawabanOperator||'')}</textarea>
+      </div>
+    </div>
+  `;
+
+  detailModal.classList.add('show');
+}
+
+/* Status buttons */
+['btnSetPending','btnSetDiproses','btnSetSelesai'].forEach(btnId => {
+  document.getElementById(btnId).addEventListener('click', async () => {
+    if (!activeDocId) return;
+    const status = document.getElementById(btnId).dataset.status;
+    showAppLoading('Memperbarui status...');
+    try {
+      await db.collection(ADUAN_COLLECTION).doc(activeDocId).update({ status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      showToast('success', `Status aduan diperbarui menjadi "${status}".`);
+      closeModal();
+    } catch(e) {
+      showToast('error', 'Gagal memperbarui status. Coba lagi.');
+    }
+    hideAppLoading();
+  });
+});
+
+/* Save reply */
+document.getElementById('btnSaveReply').addEventListener('click', async () => {
+  if (!activeDocId) return;
+  const reply = document.getElementById('replyTextarea').value.trim();
+  showAppLoading('Menyimpan balasan...');
+  try {
+    await db.collection(ADUAN_COLLECTION).doc(activeDocId).update({
+      jawabanOperator: reply,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('success', 'Balasan berhasil disimpan.');
+    closeModal();
+  } catch(e) {
+    showToast('error', 'Gagal menyimpan balasan. Coba lagi.');
+  }
+  hideAppLoading();
+});
+
+/* ============================================
+   SETTINGS — PASSWORD TOGGLES
+   ============================================ */
+document.querySelectorAll('.settings-pw-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const inp = document.getElementById(btn.dataset.target);
+    if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+  });
+});
+
+/* ============================================
+   SETTINGS — SAVE USERNAME
+   ============================================ */
+document.getElementById('btnSaveUsername').addEventListener('click', async () => {
+  const newU = document.getElementById('newUsername').value.trim();
+  const errEl = document.getElementById('errNewUsername');
+  errEl.textContent = ''; errEl.classList.remove('show');
+  document.getElementById('newUsername').classList.remove('invalid');
+
+  if (!newU) {
+    errEl.textContent = 'Username baru tidak boleh kosong.';
+    errEl.classList.add('show');
+    document.getElementById('newUsername').classList.add('invalid');
+    return;
+  }
+  if (newU.length < 4) {
+    errEl.textContent = 'Username minimal 4 karakter.';
+    errEl.classList.add('show');
+    document.getElementById('newUsername').classList.add('invalid');
+    return;
+  }
+
+  showAppLoading('Menyimpan username...');
+  try {
+    const cfg = await getOperatorConfig();
+    await setOperatorConfig({ ...cfg, username: newU });
+    // update session
+    currentUser = { username: newU };
+    sessionStorage.setItem('op_session', JSON.stringify({ username: newU }));
+    updateSidebarUser(newU);
+    showToast('success', `Username berhasil diubah menjadi "${newU}".`);
+    document.getElementById('newUsername').value = '';
+  } catch(e) {
+    showToast('error', 'Gagal menyimpan username. Periksa koneksi.');
+  }
+  hideAppLoading();
+});
+
+/* ============================================
+   SETTINGS — SAVE PASSWORD
+   ============================================ */
+document.getElementById('btnSavePassword').addEventListener('click', async () => {
+  const curPw = document.getElementById('currentPassword').value;
+  const newPw = document.getElementById('newPassword').value;
+  const confPw = document.getElementById('confirmPassword').value;
+
+  const errCur = document.getElementById('errCurrentPw');
+  const errNew = document.getElementById('errNewPw');
+  const errConf = document.getElementById('errConfirmPw');
+
+  [errCur, errNew, errConf].forEach(e => { e.textContent=''; e.classList.remove('show'); });
+  ['currentPassword','newPassword','confirmPassword'].forEach(id => document.getElementById(id).classList.remove('invalid'));
+
+  let valid = true;
+
+  if (!curPw) {
+    errCur.textContent = 'Masukkan password saat ini.'; errCur.classList.add('show');
+    document.getElementById('currentPassword').classList.add('invalid'); valid = false;
+  }
+  if (!newPw || newPw.length < 6) {
+    errNew.textContent = 'Password baru minimal 6 karakter.'; errNew.classList.add('show');
+    document.getElementById('newPassword').classList.add('invalid'); valid = false;
+  }
+  if (newPw !== confPw) {
+    errConf.textContent = 'Konfirmasi password tidak cocok.'; errConf.classList.add('show');
+    document.getElementById('confirmPassword').classList.add('invalid'); valid = false;
+  }
+  if (!valid) return;
+
+  showAppLoading('Memverifikasi password...');
+  try {
+    const cfg = await getOperatorConfig();
+    const storedPw = cfg.password || DEFAULT_PASSWORD;
+
+    if (curPw !== storedPw) {
+      errCur.textContent = 'Password saat ini salah.'; errCur.classList.add('show');
+      document.getElementById('currentPassword').classList.add('invalid');
+      hideAppLoading(); return;
+    }
+
+    await setOperatorConfig({ ...cfg, password: newPw });
+    showToast('success', 'Password berhasil diperbarui. Silakan login ulang jika perlu.');
+    ['currentPassword','newPassword','confirmPassword'].forEach(id => { document.getElementById(id).value=''; });
+  } catch(e) {
+    showToast('error', 'Gagal menyimpan password. Periksa koneksi.');
+  }
+  hideAppLoading();
+});
+
+/* ============================================
+   UTILS
+   ============================================ */
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
