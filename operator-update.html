@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operator Update — SMAN 68 Jakarta</title>
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #1B7A3D;
+      --green-light: #A8E6B5;
+      --green-mid: #2E9E54;
+      --blue: #1A4F8B;
+      --blue-light: #BBDEFB;
+      --blue-mid: #1565C0;
+      --white: #FFFFFF;
+      --bg: #F4F8F5;
+      --surface: #FFFFFF;
+      --text: #1A2332;
+      --text-sec: #5F6368;
+      --border: #E0EDE5;
+      --border-focus: #1B7A3D;
+      --danger: #C62828;
+      --danger-bg: #FFF3F3;
+      --grad: linear-gradient(135deg, #1B7A3D 0%, #1A4F8B 100%);
+      --radius: 16px;
+      --shadow: 0 2px 12px rgba(27,122,61,0.08);
+      --shadow-lg: 0 8px 32px rgba(26,79,139,0.12);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--grad);
+      padding: clamp(20px, 4vw, 40px) clamp(16px, 5vw, 48px);
+      box-shadow: 0 4px 24px rgba(26,79,139,0.2);
+    }
+    .header-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .header-logo {
+      height: clamp(40px, 6vw, 60px);
+      width: auto;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    .header-text { flex: 1; min-width: 180px; }
+    .header-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green-light);
+      opacity: 0.9;
+    }
+    .header-title {
+      font-size: clamp(18px, 3.5vw, 24px);
+      font-weight: 800;
+      color: #fff;
+    }
+    .header-subtitle {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+    }
+    .op-badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px clamp(16px, 5vw, 48px) 64px;
+    }
+
+    /* ── Section heading ── */
+    .section-heading {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 32px);
+      box-shadow: var(--shadow);
+      border: 1.5px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    /* ── Form fields ── */
+    .form-group { margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    label .req { color: var(--green); margin-left: 2px; }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(27,122,61,0.1);
+    }
+    input::placeholder, textarea::placeholder { color: #B0BEC5; }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235F6368' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+
+    /* ── Changes builder ── */
+    #changesList { display: flex; flex-direction: column; gap: 10px; }
+    .change-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 36px;
+      gap: 10px;
+      align-items: center;
+      animation: fadeSlideIn 0.25s ease both;
+    }
+    @media (max-width: 520px) {
+      .change-row {
+        grid-template-columns: 1fr 36px;
+        grid-template-rows: auto auto;
+      }
+      .change-row select { grid-column: 1; grid-row: 1; }
+      .change-row input  { grid-column: 1; grid-row: 2; }
+      .change-row .del-btn { grid-column: 2; grid-row: 1; }
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .del-btn {
+      width: 36px; height: 36px;
+      border: none;
+      border-radius: 8px;
+      background: #FFF3F3;
+      color: var(--danger);
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .del-btn:hover { background: #FFCDD2; }
+
+    /* ── Buttons ── */
+    .btn-add {
+      width: 100%;
+      padding: 11px;
+      border: 1.5px dashed var(--green);
+      border-radius: 10px;
+      background: rgba(27,122,61,0.04);
+      color: var(--green);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      margin-top: 12px;
+    }
+    .btn-add:hover { background: rgba(27,122,61,0.09); }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--grad);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(27,122,61,0.25);
+      letter-spacing: 0.02em;
+    }
+    .btn-submit:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,122,61,0.35); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .btn-submit.loading::after { content: " ⏳"; }
+
+    /* ── Validation errors ── */
+    .field-error {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 4px;
+      display: none;
+    }
+    .input-error {
+      border-color: var(--danger) !important;
+      box-shadow: 0 0 0 3px rgba(198,40,40,0.08) !important;
+    }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.success { background: var(--green); }
+    .toast.error   { background: var(--danger); }
+
+    /* ── Confirm modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9000;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+      padding: 16px;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: clamp(24px, 4vw, 36px);
+      max-width: 420px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.show .modal { transform: scale(1); }
+    .modal-icon { font-size: 36px; margin-bottom: 12px; }
+    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .modal-body  { font-size: 14px; color: var(--text-sec); line-height: 1.6; margin-bottom: 24px; }
+    .modal-preview {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .modal-preview strong { color: var(--text); }
+    .modal-actions { display: flex; gap: 12px; }
+    .btn-cancel {
+      flex: 1;
+      padding: 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text-sec);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-cancel:hover { background: var(--bg); }
+    .btn-confirm {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 10px;
+      background: var(--grad);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-confirm:hover { opacity: 0.88; }
+
+    /* ── Published list ── */
+    .pub-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      animation: fadeSlideIn 0.3s ease both;
+    }
+    .pub-item:last-child { border-bottom: none; }
+    .pub-v {
+      font-size: 15px;
+      font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      min-width: 60px;
+    }
+    .pub-info { flex: 1; min-width: 0; }
+    .pub-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pub-date  { font-size: 11px; color: var(--text-sec); margin-top: 1px; }
+    .pub-count { font-size: 11px; color: var(--text-sec); background: var(--bg); padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+    .pub-actions { display: flex; gap: 6px; }
+    .btn-edit, .btn-del-pub {
+      padding: 5px 12px;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .btn-edit    { background: var(--blue-light); color: var(--blue); }
+    .btn-edit:hover { background: #90CAF9; }
+    .btn-del-pub { background: #FFF3F3; color: var(--danger); }
+    .btn-del-pub:hover { background: #FFCDD2; }
+
+    .pub-empty { font-size: 13px; color: var(--text-sec); text-align: center; padding: 24px 0; }
+
+    .skel-pub {
+      height: 52px;
+      background: linear-gradient(90deg, #E8F0EB 25%, #D0E4D8 50%, #E8F0EB 75%);
+      background-size: 200% 100%;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      animation: shimmer-move 1.4s infinite;
+    }
+    @keyframes shimmer-move {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 480px) {
+      .pub-actions { flex-direction: column; }
+      .pub-count { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <img class="header-logo" src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68 Jakarta" />
+      <div class="header-text">
+        <div class="header-eyebrow">SMAN 68 Jakarta — Panel Operator</div>
+        <div class="header-title">Publikasi Update</div>
+        <div class="header-subtitle">Tambahkan rilis versi baru ke halaman publik</div>
+      </div>
+      <div class="op-badge">🔧 Operator</div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ── Form section ── -->
+    <h2 class="section-heading">📝 Tambah Update Baru</h2>
+    <div class="card">
+      <!-- Version & Date -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fVersion">Nomor Versi <span class="req">*</span></label>
+          <input type="text" id="fVersion" placeholder="Contoh: 4.0.2" maxlength="20" />
+          <div class="field-error" id="errVersion">Nomor versi wajib diisi.</div>
+        </div>
+        <div class="form-group">
+          <label for="fDate">Tanggal Rilis <span class="req">*</span></label>
+          <input type="date" id="fDate" />
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="fTitle">Judul Rilis <span class="req">*</span></label>
+        <input type="text" id="fTitle" placeholder="Contoh: Peningkatan Performa & Perbaikan Bug" maxlength="120" />
+        <div class="field-error" id="errTitle">Judul rilis wajib diisi.</div>
+      </div>
+
+      <!-- Changes builder -->
+      <div class="form-group">
+        <label>Rincian Perubahan <span class="req">*</span></label>
+        <div id="changesList"></div>
+        <div class="field-error" id="errChanges">Tambahkan minimal satu rincian perubahan.</div>
+        <button class="btn-add" id="btnAddChange" type="button">+ Tambah Rincian</button>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn-submit" id="btnSubmit" type="button">🚀 Publikasikan Update</button>
+    </div>
+
+    <!-- ── Published list ── -->
+    <h2 class="section-heading">📋 Update Terpublikasi</h2>
+    <div class="card">
+      <div id="pubSkeleton">
+        <div class="skel-pub"></div>
+        <div class="skel-pub"></div>
+        <div class="skel-pub" style="width:70%"></div>
+      </div>
+      <div id="pubList" style="display:none;"></div>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Confirm Modal -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-icon">📢</div>
+      <div class="modal-title" id="modalTitle">Konfirmasi Publikasi</div>
+      <div class="modal-body">Pastikan informasi sudah benar. Setelah dipublikasikan, update ini akan langsung tampil di halaman publik secara real-time.</div>
+      <div class="modal-preview" id="modalPreview"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btnCancel">Batal</button>
+        <button class="btn-confirm" id="btnConfirm">Ya, Publikasikan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, getDocs, doc,
+      updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getDatabase, ref, set, serverTimestamp as rtdbTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ── Firebase init ──
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
+      authDomain: "upnvjdatsystem.firebaseapp.com",
+      databaseURL: "https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "upnvjdatsystem",
+      storageBucket: "upnvjdatsystem.firebasestorage.app",
+      messagingSenderId: "57095309946",
+      appId: "1:57095309946:web:b0e9f3f86380d549ffc9c3"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const rtdb = getDatabase(app);
+
+    // ── DOM ──
+    const fVersion    = document.getElementById("fVersion");
+    const fDate       = document.getElementById("fDate");
+    const fTitle      = document.getElementById("fTitle");
+    const changesList = document.getElementById("changesList");
+    const btnAddChg   = document.getElementById("btnAddChange");
+    const btnSubmit   = document.getElementById("btnSubmit");
+    const toast       = document.getElementById("toast");
+    const modal       = document.getElementById("modalOverlay");
+    const btnCancel   = document.getElementById("btnCancel");
+    const btnConfirm  = document.getElementById("btnConfirm");
+    const modalPreview= document.getElementById("modalPreview");
+    const pubList     = document.getElementById("pubList");
+    const pubSkeleton = document.getElementById("pubSkeleton");
+
+    // ── Category options ──
+    const CATS = [
+      { value: "feature",     label: "✨ Fitur Baru"  },
+      { value: "fix",         label: "🛠️ Perbaikan"   },
+      { value: "improvement", label: "⚡ Peningkatan"  },
+      { value: "security",    label: "🔒 Keamanan"    },
+    ];
+
+    function catOptions(selected = "feature") {
+      return CATS.map(c =>
+        `<option value="${c.value}" ${c.value === selected ? "selected" : ""}>${c.label}</option>`
+      ).join("");
+    }
+
+    // ── Set default date to today ──
+    const today = new Date().toISOString().slice(0, 10);
+    fDate.value = today;
+
+    // ── Add a change row ──
+    let rowId = 0;
+    function addRow(type = "feature", text = "") {
+      const id = ++rowId;
+      const row = document.createElement("div");
+      row.className = "change-row";
+      row.dataset.rowId = id;
+      row.innerHTML = `
+        <select aria-label="Kategori perubahan">${catOptions(type)}</select>
+        <input type="text" placeholder="Deskripsi perubahan…" value="${escHtml(text)}" maxlength="200" />
+        <button class="del-btn" type="button" aria-label="Hapus baris" title="Hapus">✕</button>
+      `;
+      row.querySelector(".del-btn").addEventListener("click", () => row.remove());
+      changesList.appendChild(row);
+    }
+
+    // Default: 1 baris kosong
+    addRow();
+
+    btnAddChg.addEventListener("click", () => addRow());
+
+    // ── Collect changes from rows ──
+    function collectChanges() {
+      return Array.from(changesList.querySelectorAll(".change-row")).map(row => ({
+        type: row.querySelector("select").value,
+        text: row.querySelector("input").value.trim(),
+      })).filter(c => c.text);
+    }
+
+    // ── Validate ──
+    function validate() {
+      let ok = true;
+      const setErr = (id, show) => {
+        const el = document.getElementById(id);
+        el.style.display = show ? "block" : "none";
+      };
+      const setIn = (el, err) => {
+        if (err) el.classList.add("input-error"); else el.classList.remove("input-error");
+      };
+
+      if (!fVersion.value.trim()) { ok = false; setErr("errVersion", true); setIn(fVersion, true); }
+      else { setErr("errVersion", false); setIn(fVersion, false); }
+
+      if (!fTitle.value.trim()) { ok = false; setErr("errTitle", true); setIn(fTitle, true); }
+      else { setErr("errTitle", false); setIn(fTitle, false); }
+
+      if (collectChanges().length === 0) { ok = false; setErr("errChanges", true); }
+      else setErr("errChanges", false);
+
+      return ok;
+    }
+
+    // ── Show toast ──
+    let toastTimer;
+    function showToast(msg, type = "success") {
+      toast.textContent = msg;
+      toast.className = `toast ${type} show`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
+    }
+
+    // ── Format date ──
+    function formatDate(str) {
+      if (!str) return "—";
+      const d = new Date(str + "T00:00:00");
+      return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    }
+
+    // ── Escape ──
+    function escHtml(s) {
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    // ── Submit flow: validate → confirm modal → write to Firebase ──
+    btnSubmit.addEventListener("click", () => {
+      if (!validate()) return;
+
+      const payload = {
+        version: fVersion.value.trim(),
+        title: fTitle.value.trim(),
+        releaseDate: fDate.value,
+        changes: collectChanges(),
+      };
+
+      // Show confirmation modal with preview
+      modalPreview.innerHTML = `
+        <strong>v${escHtml(payload.version)}</strong> — ${escHtml(payload.title)}<br>
+        <span style="font-size:12px;color:var(--text-sec);">
+          🗓 ${formatDate(payload.releaseDate)} &nbsp;|&nbsp;
+          ${payload.changes.length} rincian perubahan
+        </span>
+      `;
+      modal.classList.add("show");
+      pendingPayload = payload;
+    });
+
+    let pendingPayload = null;
+
+    btnCancel.addEventListener("click",  () => { modal.classList.remove("show"); pendingPayload = null; });
+    modal.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.remove("show"); pendingPayload = null; } });
+
+    btnConfirm.addEventListener("click", async () => {
+      if (!pendingPayload) return;
+      modal.classList.remove("show");
+      await publishUpdate(pendingPayload);
+      pendingPayload = null;
+    });
+
+    // ── Publish to Firestore + RTDB ──
+    async function publishUpdate(payload) {
+      btnSubmit.disabled = true;
+      btnSubmit.classList.add("loading");
+      btnSubmit.textContent = "Mempublikasikan…";
+
+      try {
+        // 1. Tulis ke Firestore
+        await addDoc(collection(db, "updates"), {
+          ...payload,
+          createdAt: serverTimestamp(),
+        });
+
+        // 2. Update meta/lastUpdated di RTDB sebagai trigger notifikasi real-time
+        await set(ref(rtdb, "meta/lastUpdated"), rtdbTimestamp());
+
+        showToast("✅ Update berhasil dipublikasikan!");
+        resetForm();
+      } catch (err) {
+        console.error("Publish error:", err);
+        showToast("❌ Gagal memublikasikan. Coba lagi.", "error");
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove("loading");
+        btnSubmit.textContent = "🚀 Publikasikan Update";
+      }
+    }
+
+    // ── Reset form ──
+    function resetForm() {
+      fVersion.value = "";
+      fTitle.value   = "";
+      fDate.value    = today;
+      changesList.innerHTML = "";
+      addRow();
+      ["errVersion","errTitle","errChanges"].forEach(id => document.getElementById(id).style.display = "none");
+      [fVersion, fTitle].forEach(el => el.classList.remove("input-error"));
+    }
+
+    // ── Real-time list of published updates ──
+    const q = query(collection(db, "updates"), orderBy("releaseDate", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+      pubSkeleton.style.display = "none";
+      pubList.style.display = "block";
+      pubList.innerHTML = "";
+
+      if (snapshot.empty) {
+        pubList.innerHTML = '<div class="pub-empty">Belum ada update yang dipublikasikan.</div>';
+        return;
+      }
+
+      snapshot.docs.forEach((d, i) => {
+        const u = d.data();
+        const item = document.createElement("div");
+        item.className = "pub-item";
+        item.style.animationDelay = `${i * 40}ms`;
+        item.innerHTML = `
+          <div class="pub-v">v${escHtml(u.version || "")}</div>
+          <div class="pub-info">
+            <div class="pub-title">${escHtml(u.title || "")}</div>
+            <div class="pub-date">🗓 ${formatDate(u.releaseDate)}</div>
+          </div>
+          <span class="pub-count">${(u.changes || []).length} item</span>
+          <div class="pub-actions">
+            <button class="btn-edit"    data-id="${d.id}" type="button">Edit</button>
+            <button class="btn-del-pub" data-id="${d.id}" type="button">Hapus</button>
+          </div>
+        `;
+
+        // Edit: populate form
+        item.querySelector(".btn-edit").addEventListener("click", () => {
+          fVersion.value = u.version || "";
+          fTitle.value   = u.title   || "";
+          fDate.value    = u.releaseDate || today;
+          changesList.innerHTML = "";
+          (u.changes || []).forEach(c => addRow(c.type, c.text));
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          // Override submit to update existing doc
+          pendingEditId = d.id;
+          btnSubmit.textContent = "💾 Simpan Perubahan";
+          showToast("📝 Edit mode aktif — ubah data lalu simpan.");
+        });
+
+        // Delete
+        item.querySelector(".btn-del-pub").addEventListener("click", async () => {
+          if (!confirm(`Hapus update v${u.version}? Tindakan ini tidak bisa dibatalkan.`)) return;
+          try {
+            await deleteDoc(doc(db, "updates", d.id));
+            await set(ref(rtdb, "meta/lastUpdated"), rtdbTimestamp());
+            showToast("🗑 Update dihapus.");
+          } catch(e) {
+            showToast("❌ Gagal menghapus.", "error");
+          }
+        });
+
+        pubList.appendChild(item);
+      });
+    }, (err) => {
+      console.error("Snapshot error:", err);
+      pubSkeleton.style.display = "none";
+      pubList.style.display = "block";
+      pubList.innerHTML = '<div class="pub-empty" style="color:var(--danger);">Gagal memuat data. Periksa koneksi.</div>';
+    });
+
+    // ── Edit mode state ──
+    let pendingEditId = null;
+
+    // Override submit for edit mode
+    btnSubmit.addEventListener("click", async () => {
+      if (!pendingEditId) return; // non-edit handled above
+      if (!validate()) return;
+
+      const payload = {
+        version: fVersion.value.trim(),
+        title: fTitle.value.trim(),
+        releaseDate: fDate.value,
+        changes: collectChanges(),
+      };
+
+      btnSubmit.disabled = true;
+      try {
+        await updateDoc(doc(db, "updates", pendingEditId), payload);
+        await set(ref(rtdb, "meta/lastUpdated"), rtdbTimestamp());
+        showToast("✅ Update berhasil disimpan!");
+        pendingEditId = null;
+        btnSubmit.textContent = "🚀 Publikasikan Update";
+        resetForm();
+      } catch(e) {
+        showToast("❌ Gagal menyimpan.", "error");
+      } finally {
+        btnSubmit.disabled = false;
+      }
+    }, { capture: false });
+
+    /* NOTE (Arsitektur):
+       - Firestore `onSnapshot` sudah real-time — halaman publik menerima push update
+         segera setelah dokumen ditulis, tanpa polling.
+       - RTDB `meta/lastUpdated` diperbarui setiap write/update/delete sebagai sinyal
+         tambahan bagi client lain yang mungkin mendengarkan RTDB.
+       - Tanpa login = keamanan mengandalkan kerahasiaan URL halaman ini.
+         Untuk keamanan lebih tinggi di masa depan, tambahkan Firebase Authentication
+         tanpa perlu mengubah struktur data/Firestore.
+    */
+  </script>
+</body>
+</html>
