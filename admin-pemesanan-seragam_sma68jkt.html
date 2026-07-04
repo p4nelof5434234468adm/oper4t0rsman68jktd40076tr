@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<!-- ============================================================
+     ADMIN PANEL — PEMESANAN SERAGAM SEKOLAH SMAN 68 JAKARTA
+     File terpisah dari situs publik. Wajib login untuk mengakses.
+     Terhubung ke Firestore/Realtime Database/Storage yang SAMA
+     dengan situs publik (pemesanan-seragam-sekolah.sman68jkt.html).
+     ============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin Panel | Koperasi SMAN 68 Jakarta</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+<meta name="theme-color" content="#1d4ed8">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+<style>
+/* ================================================================
+   1. DESIGN TOKENS — sumber kebenaran tunggal untuk warna & tipografi
+   ================================================================ */
+:root{
+  /* -- Warna utama: putih dominan, aksen biru & hijau -- */
+  --white:#ffffff;
+  --bg-soft:#f4f8fc;
+  --bg-soft-2:#eef6f4;
+  --blue-50:#eaf1ff;
+  --blue-100:#d6e4ff;
+  --blue-500:#2563eb;
+  --blue-600:#1d4ed8;
+  --blue-700:#173f9e;
+  --blue-900:#0e2a56;
+  --green-50:#e8faf3;
+  --green-100:#cdf4e4;
+  --green-500:#10b981;
+  --green-600:#059669;
+  --green-700:#047857;
+  --ink-900:#0f1b2d;
+  --ink-700:#33445c;
+  --ink-500:#5b6b81;
+  --ink-300:#94a3b8;
+  --border:#e3ebf3;
+  --danger:#e5484d;
+  --warning:#f5a623;
+
+  /* -- Radius & bayangan -- */
+  --r-sm:10px;
+  --r-md:16px;
+  --r-lg:24px;
+  --r-full:999px;
+  --shadow-soft:0 8px 28px rgba(14,42,86,.08);
+  --shadow-hover:0 18px 44px rgba(14,42,86,.16);
+  --shadow-inset:inset 0 1px 0 rgba(255,255,255,.6);
+
+  /* -- Kaca (glassmorphism) -- */
+  --glass-bg:rgba(255,255,255,.66);
+  --glass-border:rgba(255,255,255,.5);
+  --glass-blur:18px;
+
+  /* -- Gradasi tanda tangan sekolah -- */
+  --gradient-hero:linear-gradient(135deg,#0e2a56 0%, #1d4ed8 48%, #059669 100%);
+  --gradient-accent:linear-gradient(120deg,#2563eb,#10b981);
+  --gradient-seal:conic-gradient(from 180deg,#1d4ed8,#10b981,#1d4ed8);
+
+  /* -- Tipografi -- */
+  --font-display:'Poppins',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-ui:'Nunito',sans-serif;
+
+  --transition:.28s cubic-bezier(.4,0,.2,1);
+  --nav-h:76px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+body{
+  font-family:var(--font-body);
+  background:var(--bg-soft);
+  color:var(--ink-900);
+  line-height:1.6;
+  overflow-x:hidden;
+  transition:background var(--transition),color var(--transition);
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;}
+ul{list-style:none;}
+h1,h2,h3,h4,h5{font-family:var(--font-display);color:var(--ink-900);line-height:1.25;}
+.container{width:100%;max-width:1240px;margin:0 auto;padding:0 24px;}
+:focus-visible{outline:3px solid var(--green-500);outline-offset:3px;border-radius:6px;}
+.skip-link{position:absolute;left:-999px;top:0;background:var(--blue-600);color:#fff;padding:10px 18px;border-radius:0 0 10px 0;z-index:9999;}
+.skip-link:focus{left:0;}
+
+/* ================================================================
+   2. UTILITAS UMUM
+   ================================================================ */
+.section{padding:96px 0;}
+.section-tight{padding:64px 0;}
+.section-head{text-align:center;max-width:640px;margin:0 auto 52px;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-ui);font-weight:800;font-size:.75rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--blue-600);
+  background:var(--blue-50);padding:8px 16px;border-radius:var(--r-full);
+  margin-bottom:16px;
+}
+.eyebrow i{color:var(--green-600);}
+.section-head h2{font-size:clamp(1.7rem,3vw,2.5rem);font-weight:700;margin-bottom:14px;}
+.section-head p{color:var(--ink-500);font-size:1.02rem;}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--font-ui);font-weight:800;font-size:.95rem;
+  padding:15px 28px;border-radius:var(--r-full);
+  transition:transform var(--transition),box-shadow var(--transition),background var(--transition);
+  position:relative;overflow:hidden;white-space:nowrap;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--gradient-accent);color:#fff;box-shadow:0 10px 26px rgba(29,78,216,.28);}
+.btn-primary:hover{box-shadow:0 16px 34px rgba(16,185,129,.32);transform:translateY(-2px);}
+.btn-ghost{background:var(--white);color:var(--blue-700);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--blue-500);color:var(--blue-600);transform:translateY(-2px);}
+.btn-outline-light{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.55);backdrop-filter:blur(6px);}
+.btn-outline-light:hover{background:rgba(255,255,255,.22);}
+.btn-sm{padding:9px 18px;font-size:.82rem;border-radius:var(--r-full);}
+.btn-block{width:100%;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none !important;}
+
+/* Ripple effect */
+.ripple{position:relative;overflow:hidden;}
+.ripple-circle{
+  position:absolute;border-radius:50%;background:rgba(255,255,255,.55);
+  transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;
+}
+@keyframes rippleAnim{to{transform:scale(3.2);opacity:0;}}
+
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:blur(var(--glass-blur));
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+}
+.card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-soft);transition:box-shadow var(--transition),transform var(--transition);
+}
+.card:hover{box-shadow:var(--shadow-hover);}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;font-family:var(--font-ui);font-weight:800;
+  font-size:.68rem;letter-spacing:.03em;padding:5px 11px;border-radius:var(--r-full);text-transform:uppercase;
+}
+.badge-new{background:#e6f0ff;color:var(--blue-600);}
+.badge-best{background:#fff2df;color:#b8722a;}
+.badge-ready{background:var(--green-50);color:var(--green-700);}
+.badge-sale{background:#ffe7e8;color:#c23a3f;}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+
+/* Loading skeleton */
+.skeleton{
+  background:linear-gradient(90deg,var(--border) 25%,#f2f6fa 37%,var(--border) 63%);
+  background-size:400% 100%;animation:skeletonLoad 1.4s ease infinite;border-radius:var(--r-md);
+}
+@keyframes skeletonLoad{0%{background-position:100% 50%;}100%{background-position:0 50%;}}
+
+/* Scrollbar tipis */
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--blue-100);border-radius:var(--r-full);}
+::-webkit-scrollbar-thumb:hover{background:var(--blue-500);}
+
+/* Toast / Snackbar */
+#toastStack{position:fixed;top:96px;right:20px;z-index:9500;display:flex;flex-direction:column;gap:10px;max-width:min(360px,90vw);}
+.toast{
+  display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:var(--r-md);
+  background:var(--white);border:1px solid var(--border);box-shadow:var(--shadow-hover);
+  animation:toastIn .35s ease;font-size:.88rem;
+}
+.toast i{font-size:1.1rem;margin-top:2px;}
+.toast.success i{color:var(--green-600);}
+.toast.error i{color:var(--danger);}
+.toast.info i{color:var(--blue-600);}
+.toast .toast-close{margin-left:auto;color:var(--ink-300);}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px);}}
+
+/* ================================================================
+
+/* ================================================================
+   8. MODAL DASAR (overlay) — dipakai ulang untuk produk, cart, checkout, admin
+   ================================================================ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(10,20,35,.55);backdrop-filter:blur(4px);z-index:2000;
+  display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;
+  transition:opacity var(--transition),visibility var(--transition);
+}
+.modal-overlay.show{opacity:1;visibility:visible;}
+.modal-box{
+  background:var(--white);border-radius:var(--r-lg);width:100%;box-shadow:0 30px 70px rgba(0,0,0,.3);
+  max-height:90vh;overflow-y:auto;transform:translateY(24px) scale(.97);transition:transform var(--transition);position:relative;
+}
+.modal-overlay.show .modal-box{transform:translateY(0) scale(1);}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;padding:20px 24px;
+  border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:5;
+}
+.modal-header h3{font-size:1.1rem;font-weight:700;}
+.modal-close{width:36px;height:36px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--ink-700);}
+.modal-close:hover{background:var(--danger);color:#fff;}
+.modal-body{padding:24px;}
+.modal-footer{padding:18px 24px;border-top:1px solid var(--border);display:flex;gap:12px;justify-content:flex-end;position:sticky;bottom:0;background:var(--white);}
+
+/* Produk detail modal */
+#productModal .modal-box{max-width:920px;}
+.product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+.zoom-frame{border-radius:var(--r-md);overflow:hidden;aspect-ratio:1/1;background:var(--bg-soft);cursor:zoom-in;}
+.zoom-frame img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease;}
+.zoom-frame:hover img{transform:scale(1.35);}
+.detail-price-row{display:flex;align-items:baseline;gap:10px;margin:10px 0 4px;}
+.detail-price-row .now{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--blue-700);}
+.detail-price-row .old{text-decoration:line-through;color:var(--ink-300);font-size:.9rem;}
+.size-options{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px;}
+
+.field-label{display:block;font-family:var(--font-ui);font-weight:800;font-size:.78rem;color:var(--ink-700);margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em;}
+textarea.input-base,input.input-base,select.input-base{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:.9rem;
+  outline:none;transition:border-color var(--transition),box-shadow var(--transition);background:var(--white);color:var(--ink-900);
+}
+textarea.input-base:focus,input.input-base:focus,select.input-base:focus{border-color:var(--blue-500);box-shadow:0 0 0 4px var(--blue-50);}
+.input-base.invalid{border-color:var(--danger);}
+.field-error{color:var(--danger);font-size:.74rem;margin-top:5px;display:none;}
+.field-error.show{display:block;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-grid .full{grid-column:1/-1;}
+@media(max-width:720px){.form-grid{grid-template-columns:1fr;}}
+/* ================================================================
+   17. ADMIN PANEL
+   ================================================================ */
+#adminView{display:none;min-height:100vh;background:var(--bg-soft);}
+#adminView.show{display:block;}
+.admin-shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+.admin-sidebar{background:var(--blue-900);color:rgba(255,255,255,.82);padding:22px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.admin-sidebar .footer-brand{color:#fff;padding:0 8px 20px;}
+.admin-nav-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-sm);font-size:.85rem;font-weight:600;color:rgba(255,255,255,.75);width:100%;text-align:left;}
+.admin-nav-btn i{width:18px;text-align:center;}
+.admin-nav-btn:hover{background:rgba(255,255,255,.08);color:#fff;}
+.admin-nav-btn.active{background:var(--gradient-accent);color:#fff;}
+.admin-main{padding:26px 30px 60px;}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;flex-wrap:wrap;gap:12px;}
+.admin-stat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:26px;}
+@media(max-width:1200px){.admin-stat-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:640px){.admin-stat-grid{grid-template-columns:repeat(2,1fr);}}
+.admin-stat-card{padding:18px;}
+.admin-stat-card i{width:38px;height:38px;border-radius:10px;background:var(--blue-50);color:var(--blue-600);display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.admin-stat-card strong{display:block;font-family:var(--font-display);font-size:1.35rem;}
+.admin-stat-card span{font-size:.72rem;color:var(--ink-500);font-weight:700;}
+.admin-panels{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:26px;}
+.admin-card{padding:20px;}
+.admin-card h4{font-size:.92rem;margin-bottom:16px;}
+.data-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.data-table th{text-align:left;padding:10px 12px;background:var(--bg-soft);font-family:var(--font-ui);font-weight:800;font-size:.72rem;text-transform:uppercase;color:var(--ink-500);}
+.data-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tr:hover td{background:var(--blue-50);}
+.table-wrap{overflow-x:auto;}
+.status-pill{padding:5px 12px;border-radius:var(--r-full);font-size:.7rem;font-weight:800;}
+.pill-menunggu{background:#fff3d6;color:#9a6b00;}
+.pill-diproses{background:var(--blue-50);color:var(--blue-700);}
+.pill-disiapkan{background:#f0e6ff;color:#6a3fc4;}
+.pill-siap{background:var(--green-50);color:var(--green-700);}
+.pill-selesai{background:#e2f5ea;color:#227a4b;}
+.pill-ditolak{background:#ffe3e3;color:#c23a3f;}
+.icon-action{width:30px;height:30px;border-radius:8px;background:var(--bg-soft);display:inline-flex;align-items:center;justify-content:center;margin-right:4px;font-size:.78rem;}
+.icon-action:hover{background:var(--blue-100);}
+.admin-login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--gradient-hero);padding:20px;}
+.admin-login-box{max-width:400px;width:100%;padding:36px 30px;text-align:center;}
+.admin-login-box img{width:64px;margin:0 auto 14px;}
+.svg-chart-bar{fill:url(#barGrad);}
+
+
+/* ================================================================
+   HALAMAN ADMIN — layout tambahan khusus file ini
+   ================================================================ */
+body{font-family:var(--font-body);background:var(--bg-soft);color:var(--ink-900);line-height:1.6;}
+*,*::before,*::after{box-sizing:border-box;}
+h1,h2,h3,h4,h5{font-family:var(--font-display);color:var(--ink-900);line-height:1.25;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;}
+:focus-visible{outline:3px solid var(--green-500);outline-offset:3px;border-radius:6px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--font-ui);font-weight:800;font-size:.95rem;padding:15px 28px;border-radius:var(--r-full);transition:transform var(--transition),box-shadow var(--transition),background var(--transition);position:relative;overflow:hidden;white-space:nowrap;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--gradient-accent);color:#fff;box-shadow:0 10px 26px rgba(29,78,216,.28);}
+.btn-primary:hover{box-shadow:0 16px 34px rgba(16,185,129,.32);transform:translateY(-2px);}
+.btn-ghost{background:var(--white);color:var(--blue-700);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--blue-500);color:var(--blue-600);transform:translateY(-2px);}
+.btn-sm{padding:9px 18px;font-size:.82rem;border-radius:var(--r-full);}
+.btn-block{width:100%;}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none !important;}
+.admin-page{animation:fadeInPage .35s ease;}
+@keyframes fadeInPage{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+</style>
+<!-- jsPDF + autoTable — dipakai untuk membuat file PDF invoice yang siap diunduh & ditempel di barang -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<div id="toastStack" aria-live="polite"></div>
+
+<!-- --- Layar Login Admin --- -->
+<div class="admin-login-wrap" id="adminLoginWrap">
+  <div class="card admin-login-box">
+    <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68 Jakarta">
+    <h3>Login Admin Koperasi</h3>
+    <p style="font-size:.8rem;color:var(--ink-500);margin:6px 0 20px;">Khusus petugas koperasi SMAN 68 Jakarta</p>
+    <form id="adminLoginForm" style="text-align:left;">
+      <label class="field-label">Username</label>
+      <input class="input-base" type="text" id="adminUsername" placeholder="admin" required autocomplete="username" style="margin-bottom:14px;">
+      <label class="field-label">Kata Sandi</label>
+      <input class="input-base" type="password" id="adminPassword" placeholder="••••••••" required autocomplete="current-password" style="margin-bottom:8px;">
+      <button type="submit" class="btn btn-primary btn-block ripple" id="adminLoginBtn" style="margin-top:14px;"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+      <p class="field-error" id="adminLoginError" style="text-align:center;margin-top:10px;"></p>
+    </form>
+    <div class="card" style="background:var(--blue-50);border:1px dashed var(--blue-100);padding:14px;margin-top:18px;text-align:left;">
+      <p style="font-size:.74rem;color:var(--blue-700);line-height:1.6;"><i class="fa-solid fa-circle-info"></i> <strong>Login pertama kali?</strong> Gunakan akun default:<br>
+      Username: <code>admin</code> &nbsp;|&nbsp; Password: <code>Admin68Jkt!</code><br>
+      Akun ini otomatis dibuat saat pertama kali login, lalu segera ganti password di menu Pengaturan.</p>
+    </div>
+    <a href="pemesanan-seragam-sekolah.sman68jkt.html" style="display:inline-block;margin-top:18px;font-size:.8rem;color:var(--ink-500);"><i class="fa-solid fa-arrow-left"></i> Kembali ke situs utama</a>
+  </div>
+</div>
+
+<!-- --- Dashboard Admin (tampil setelah login berhasil) --- -->
+<div class="admin-shell" id="adminShell" style="display:none;">
+  <aside class="admin-sidebar">
+    <div class="footer-brand">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68 Jakarta">
+      <strong style="font-size:.85rem;">Admin Koperasi</strong>
+    </div>
+    <button class="admin-nav-btn active" data-admin-page="dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</button>
+    <button class="admin-nav-btn" data-admin-page="produk"><i class="fa-solid fa-shirt"></i> Kelola Produk</button>
+    <button class="admin-nav-btn" data-admin-page="pesanan"><i class="fa-solid fa-receipt"></i> Kelola Pesanan</button>
+    <button class="admin-nav-btn" data-admin-page="voucher"><i class="fa-solid fa-ticket"></i> Kelola Voucher</button>
+    <button class="admin-nav-btn" data-admin-page="faq"><i class="fa-solid fa-circle-question"></i> Kelola FAQ</button>
+    <button class="admin-nav-btn" data-admin-page="banner"><i class="fa-solid fa-image"></i> Kelola Banner</button>
+    <button class="admin-nav-btn" data-admin-page="pengumuman"><i class="fa-solid fa-bullhorn"></i> Pengumuman</button>
+    <button class="admin-nav-btn" data-admin-page="pengguna"><i class="fa-solid fa-users"></i> Kelola Pengguna</button>
+    <button class="admin-nav-btn" data-admin-page="pengaturan"><i class="fa-solid fa-gear"></i> Pengaturan</button>
+    <a class="admin-nav-btn" href="pemesanan-seragam-sekolah.sman68jkt.html" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Situs Utama</a>
+    <div style="flex:1;"></div>
+    <button class="admin-nav-btn" id="adminLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== Halaman: Dashboard ===== -->
+    <div class="admin-page" id="page-dashboard">
+      <div class="admin-topbar">
+        <div><h2 style="font-size:1.3rem;">Dashboard</h2><p style="color:var(--ink-500);font-size:.82rem;">Ringkasan performa koperasi hari ini</p></div>
+        <span id="adminWelcomeText" style="font-size:.8rem;color:var(--ink-500);"></span>
+      </div>
+      <div class="admin-stat-grid">
+        <div class="card admin-stat-card"><i class="fa-solid fa-shirt"></i><strong id="statTotalProduk">0</strong><span>Total Produk</span></div>
+        <div class="card admin-stat-card"><i class="fa-solid fa-receipt"></i><strong id="statTotalPesanan">0</strong><span>Total Pesanan</span></div>
+        <div class="card admin-stat-card"><i class="fa-solid fa-sack-dollar"></i><strong id="statTotalPendapatan">Rp0</strong><span>Total Pendapatan</span></div>
+        <div class="card admin-stat-card"><i class="fa-solid fa-users"></i><strong id="statTotalPembeli">0</strong><span>Total Pembeli</span></div>
+        <div class="card admin-stat-card"><i class="fa-solid fa-calendar-day"></i><strong id="statPesananHariIni">0</strong><span>Pesanan Hari Ini</span></div>
+        <div class="card admin-stat-card"><i class="fa-solid fa-triangle-exclamation"></i><strong id="statProdukHabis">0</strong><span>Produk Habis</span></div>
+      </div>
+      <div class="admin-panels">
+        <div class="card admin-card">
+          <h4><i class="fa-solid fa-chart-column"></i> Grafik Penjualan (7 Hari Terakhir)</h4>
+          <svg id="chartPenjualan" viewBox="0 0 560 220" width="100%" height="220"></svg>
+        </div>
+        <div class="card admin-card">
+          <h4><i class="fa-solid fa-chart-pie"></i> Grafik Produk per Kategori</h4>
+          <svg id="chartProduk" viewBox="0 0 300 260" width="100%" height="260"></svg>
+        </div>
+      </div>
+      <div class="card admin-card">
+        <h4><i class="fa-solid fa-clock-rotate-left"></i> Aktivitas Terbaru</h4>
+        <div id="activityList" style="font-size:.82rem;display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </div>
+
+    <!-- ===== Halaman: Kelola Produk ===== -->
+    <div class="admin-page" id="page-produk" style="display:none;">
+      <div class="admin-topbar">
+        <div><h2 style="font-size:1.3rem;">Kelola Produk</h2><p style="color:var(--ink-500);font-size:.82rem;">Tambah, edit, dan atur stok produk seragam. URL foto produk yang diisi di sini akan otomatis tampil di situs utama.</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" class="input-base" id="produkSearchAdmin" placeholder="Cari produk..." style="width:200px;">
+          <button class="btn btn-ghost btn-sm ripple" id="exportProdukBtn"><i class="fa-solid fa-file-export"></i> Export</button>
+          <button class="btn btn-primary btn-sm ripple" id="addProdukBtn"><i class="fa-solid fa-plus"></i> Tambah Produk</button>
+        </div>
+      </div>
+      <div class="card table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Foto</th><th>Nama</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Badge</th><th>Aksi</th></tr></thead>
+          <tbody id="produkTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== Halaman: Kelola Pesanan ===== -->
+    <div class="admin-page" id="page-pesanan" style="display:none;">
+      <div class="admin-topbar">
+        <div><h2 style="font-size:1.3rem;">Kelola Pesanan</h2><p style="color:var(--ink-500);font-size:.82rem;">Verifikasi pembayaran &amp; ubah status pesanan</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" class="input-base" id="pesananSearchAdmin" placeholder="Cari nomor/nama..." style="width:200px;">
+          <select class="input-base" id="pesananFilterStatus" style="width:170px;">
+            <option value="">Semua Status</option>
+            <option>Menunggu Pembayaran</option><option>Diproses</option><option>Sedang Disiapkan</option>
+            <option>Siap Diambil</option><option>Selesai</option><option>Ditolak</option>
+          </select>
+          <button class="btn btn-ghost btn-sm ripple" id="exportPesananBtn"><i class="fa-solid fa-file-export"></i> Export</button>
+        </div>
+      </div>
+      <div class="card table-wrap">
+        <table class="data-table">
+          <thead><tr><th>No. Pesanan</th><th>Pembeli</th><th>Total</th><th>Pembayaran</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+          <tbody id="pesananTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== Halaman generik: Voucher / FAQ / Banner / Pengumuman / Pengguna ===== -->
+    <div class="admin-page" id="page-voucher" style="display:none;"></div>
+    <div class="admin-page" id="page-faq" style="display:none;"></div>
+    <div class="admin-page" id="page-banner" style="display:none;"></div>
+    <div class="admin-page" id="page-pengumuman" style="display:none;"></div>
+    <div class="admin-page" id="page-pengguna" style="display:none;"></div>
+
+    <!-- ===== Halaman: Pengaturan ===== -->
+    <div class="admin-page" id="page-pengaturan" style="display:none;">
+      <div class="admin-topbar"><div><h2 style="font-size:1.3rem;">Pengaturan</h2><p style="color:var(--ink-500);font-size:.82rem;">Informasi koperasi &amp; keamanan akun admin</p></div></div>
+
+      <div class="admin-panels">
+        <div class="card admin-card">
+          <h4><i class="fa-solid fa-school"></i> Informasi Umum</h4>
+          <form id="settingsForm">
+            <label class="field-label">Nama Sekolah</label>
+            <input class="input-base" id="setNamaSekolah" style="margin-bottom:14px;" placeholder="SMAN 68 Jakarta">
+            <label class="field-label">Alamat Koperasi</label>
+            <input class="input-base" id="setAlamatKoperasi" style="margin-bottom:14px;" placeholder="Jl. Salemba Raya No. 18, Paseban, Senen, Jakarta Pusat">
+            <label class="field-label">Nomor WhatsApp Koperasi (dipakai juga untuk tombol Chat Admin)</label>
+            <input class="input-base" id="setWaKoperasi" style="margin-bottom:14px;" placeholder="6281234567890">
+            <label class="field-label">Email Koperasi</label>
+            <input class="input-base" id="setEmailKoperasi" style="margin-bottom:14px;" placeholder="koperasi@sman68jkt.sch.id">
+            <label class="field-label">Jam Operasional</label>
+            <input class="input-base" id="setJamOperasional" style="margin-bottom:14px;" placeholder="Senin - Jumat, 07.00 - 15.00 WIB">
+            <label class="field-label">Biaya Admin per Transaksi (Rp)</label>
+            <input class="input-base" type="number" id="setBiayaAdmin" style="margin-bottom:18px;" placeholder="2500">
+            <p style="font-size:.72rem;color:var(--ink-500);margin:-10px 0 14px;line-height:1.6;"><i class="fa-solid fa-circle-info"></i> Alamat, WhatsApp, email, jam operasional, dan biaya admin di atas langsung tersinkronisasi ke halaman Kontak &amp; keranjang belanja di web utama begitu disimpan.</p>
+            <button type="submit" class="btn btn-primary btn-sm ripple"><i class="fa-solid fa-floppy-disk"></i> Simpan Informasi</button>
+          </form>
+        </div>
+
+        <div class="card admin-card">
+          <h4><i class="fa-solid fa-shield-halved"></i> Ubah Username &amp; Password</h4>
+          <form id="credentialsForm">
+            <label class="field-label">Password Saat Ini</label>
+            <input class="input-base" type="password" id="credCurrentPassword" required autocomplete="current-password" style="margin-bottom:14px;">
+            <label class="field-label">Username Baru (opsional)</label>
+            <input class="input-base" type="text" id="credNewUsername" placeholder="Kosongkan jika tidak diubah" style="margin-bottom:14px;">
+            <label class="field-label">Password Baru (opsional)</label>
+            <input class="input-base" type="password" id="credNewPassword" placeholder="Minimal 8 karakter" autocomplete="new-password" style="margin-bottom:8px;">
+            <p class="field-error" id="credentialsError" style="margin-bottom:10px;"></p>
+            <button type="submit" class="btn btn-primary btn-sm ripple" style="margin-top:6px;"><i class="fa-solid fa-key"></i> Perbarui Kredensial</button>
+          </form>
+          <p style="font-size:.72rem;color:var(--ink-500);margin-top:14px;line-height:1.6;"><i class="fa-solid fa-circle-info"></i> Username &amp; password baru langsung tersimpan aman di Firebase (Authentication + Firestore) dan berlaku untuk login berikutnya.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal generik CRUD (dipakai ulang untuk produk, voucher, FAQ, banner, dsb.) -->
+<div class="modal-overlay" id="crudModal" role="dialog" aria-modal="true">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header"><h3 id="crudModalTitle">Form</h3><button class="modal-close" data-close-modal="crudModal" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="crudModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost ripple" data-close-modal="crudModal">Batal</button>
+      <button class="btn btn-primary ripple" id="crudSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+    </div>
+  </div>
+</div>
+<script type="module">
+/* ================================================================================================
+   ADMIN PANEL — PEMESANAN SERAGAM SEKOLAH SMAN 68 JAKARTA
+   File terpisah dari situs publik, terhubung ke proyek Firebase yang sama.
+   Autentikasi: sistem username/password kustom (disimpan di Firestore "adminAccounts"),
+   dijalankan DI ATAS Firebase Authentication (email sintetis per-username) supaya tetap
+   aman (dikelola Firebase) tapi UX-nya tetap "username & password" seperti yang diminta.
+   ================================================================================================ */
+
+/* ============================================================
+   [1] FIREBASE INIT — proyek SAMA dengan situs publik
+   ============================================================ */
+// PENTING — jaring pengaman yang sama seperti situs publik: SDK Firebase dimuat lewat dynamic
+// import() dengan timeout + try/catch, BUKAN static import di baris paling atas. Static import
+// bersifat semua-atau-tidak-sama-sekali — kalau CDN Firebase lambat/gagal, seluruh skrip modul ini
+// (termasuk yang menyembunyikan layar loading) gagal total dieksekusi dan panel terlihat macet.
+function importWithTimeout(url, ms=7000){
+  return Promise.race([
+    import(url),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error("Timeout memuat "+url)), ms)),
+  ]);
+}
+
+let initializeApp, getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
+    query, where, serverTimestamp, fsIncrement, onSnapshot, runTransaction,
+    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+    updatePassword, reauthenticateWithCredential, EmailAuthProvider,
+    getDatabase, rtdbRef, rtdbSet;
+let firebaseSdkLoaded = false;
+try{
+  const [appMod, fsMod, authMod, rtMod] = await Promise.all([
+    importWithTimeout("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js"),
+    importWithTimeout("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js"),
+    importWithTimeout("https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js"),
+    importWithTimeout("https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"),
+  ]);
+  ({ initializeApp } = appMod);
+  ({ getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
+     query, where, serverTimestamp, increment: fsIncrement, onSnapshot, runTransaction } = fsMod);
+  ({ getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+     updatePassword, reauthenticateWithCredential, EmailAuthProvider } = authMod);
+  ({ getDatabase, ref: rtdbRef, set: rtdbSet } = rtMod);
+  firebaseSdkLoaded = true;
+}catch(err){
+  console.warn("[Firebase] Gagal memuat SDK dari CDN (jaringan lambat/terblokir) — panel tetap terbuka, tapi fitur yang butuh server tidak akan berfungsi sampai koneksi pulih.", err);
+}
+// Catatan: panel admin ini TIDAK memakai Firebase Storage — bukti pembayaran dibaca
+// langsung sebagai string base64 dari field "buktiPembayaran" di Firestore.
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
+  authDomain:        "upnvjdatsystem.firebaseapp.com",
+  databaseURL:       "https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "upnvjdatsystem",
+  storageBucket:      "upnvjdatsystem.firebasestorage.app",
+  messagingSenderId:  "57095309946",
+  appId:              "1:57095309946:web:b0e9f3f86380d549ffc9c3"
+};
+// Ganti dengan konfigurasi proyek Firebase Anda sendiri bila proyek di atas bukan milik Anda.
+// WAJIB sama persis dengan firebaseConfig di file situs publik (pemesanan-seragam-sekolah.sman68jkt.html)
+// karena keduanya membaca/menulis koleksi Firestore yang sama.
+// PENTING: pastikan Firestore Security Rules proyek ini sudah memakai versi yang mengizinkan
+// pembeli publik memperbarui field stock/sold pada "products" dan usedBy/usedCount pada
+// "vouchers" — lihat komentar lengkap Rules di bagian [1] file situs publik.
+
+let app, db, auth, rtdb, firebaseReady=false;
+if(firebaseSdkLoaded){
+  try{
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    rtdb = getDatabase(app);
+    firebaseReady = true;
+  }catch(err){ console.warn("[Firebase] Gagal inisialisasi.", err); }
+}
+
+const COL = {
+  products: firebaseReady?collection(db,"products"):null, orders: firebaseReady?collection(db,"orders"):null,
+  faqs: firebaseReady?collection(db,"faqs"):null, vouchers: firebaseReady?collection(db,"vouchers"):null,
+  banners: firebaseReady?collection(db,"banners"):null, announcements: firebaseReady?collection(db,"announcements"):null,
+  admins: firebaseReady?collection(db,"admins"):null, users: firebaseReady?collection(db,"users"):null,
+  adminAccounts: firebaseReady?collection(db,"adminAccounts"):null,
+};
+const DEFAULT_USERNAME = "admin", DEFAULT_PASSWORD = "Admin68Jkt!";
+const SYNTHETIC_EMAIL_DOMAIN = "@sman68jkt-koperasi.internal"; // domain palsu tapi valid-format, khusus untuk Firebase Auth
+
+/* ============================================================
+   [2] UTIL UMUM (sama seperti situs publik)
+   ============================================================ */
+const $  = (sel,ctx=document)=>ctx.querySelector(sel);
+const $$ = (sel,ctx=document)=>Array.from(ctx.querySelectorAll(sel));
+function escapeHtml(str=""){ return String(str).replace(/[&<>"']/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])); }
+function sanitizeInput(str=""){ return String(str).replace(/[<>]/g,"").replace(/\s+/g," ").trim(); }
+function formatRupiah(n=0){ return "Rp"+Math.round(n).toLocaleString("id-ID"); }
+function formatDate(d){ if(!d) return "-"; const date=d instanceof Date?d:(d.toDate?d.toDate():new Date(d)); return date.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+function debounce(fn,delay=300){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),delay); }; }
+function toast(message,type="info",timeout=3800){
+  const stack=$("#toastStack"); const icons={success:"fa-circle-check",error:"fa-circle-exclamation",info:"fa-circle-info"};
+  const el=document.createElement("div"); el.className=`toast ${type}`;
+  el.innerHTML=`<i class="fa-solid ${icons[type]||icons.info}"></i><span>${escapeHtml(message)}</span><button class="toast-close" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>`;
+  stack.appendChild(el);
+  const remove=()=>{ el.style.animation="toastOut .3s ease forwards"; setTimeout(()=>el.remove(),280); };
+  el.querySelector(".toast-close").addEventListener("click",remove); setTimeout(remove,timeout);
+}
+document.addEventListener("click",(e)=>{
+  const btn=e.target.closest(".ripple"); if(!btn) return;
+  const rect=btn.getBoundingClientRect(); const circle=document.createElement("span");
+  const size=Math.max(rect.width,rect.height); circle.className="ripple-circle";
+  circle.style.width=circle.style.height=size+"px";
+  circle.style.left=(e.clientX-rect.left-size/2)+"px"; circle.style.top=(e.clientY-rect.top-size/2)+"px";
+  btn.appendChild(circle); setTimeout(()=>circle.remove(),650);
+});
+function openModal(id){ $("#"+id)?.classList.add("show"); document.body.style.overflow="hidden"; }
+function closeModal(id){
+  $("#"+id)?.classList.remove("show"); document.body.style.overflow="";
+  if(id==="crudModal"){
+    const b=$("#crudSaveBtn");
+    if(b){ b.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Simpan'; b.style.display=""; }
+    const box=$("#crudModal .modal-box"); if(box) box.style.maxWidth="520px";
+  }
+}
+document.addEventListener("click",(e)=>{
+  const c=e.target.closest("[data-close-modal]"); if(c) closeModal(c.dataset.closeModal);
+  if(e.target.classList.contains("modal-overlay")){ e.target.classList.remove("show"); document.body.style.overflow=""; }
+});
+document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"){ $$(".modal-overlay.show").forEach(m=>m.classList.remove("show")); document.body.style.overflow=""; } });
+
+const state = { products:[], adminOrders:[], vouchers:[], adminFeeDefault:2500, currentUsername:"", logoutTimer:null };
+let unsubscribeOrders = null; // fungsi untuk menghentikan listener realtime pesanan (dipanggil saat logout)
+const STATUS_STEPS = ["Menunggu Pembayaran","Diproses","Sedang Disiapkan","Siap Diambil","Selesai"];
+
+/** Total stok produk (dijumlahkan dari seluruh ukuran) — struktur stok sekarang objek per-ukuran */
+function totalStock(p){
+  if(!p || !p.stock) return 0;
+  if(typeof p.stock === "number") return p.stock;
+  return Object.values(p.stock).reduce((s,n)=>s+(Number(n)||0),0);
+}
+
+/* ============================================================
+   [3] AUTENTIKASI ADMIN (username & password kustom di atas Firebase Auth)
+   ============================================================ */
+function usernameToEmail(username){ return username.toLowerCase().trim()+SYNTHETIC_EMAIL_DOMAIN; }
+
+async function handleAdminLogin(username, password){
+  username = sanitizeInput(username).toLowerCase();
+  if(!firebaseReady) throw new Error("Firebase belum terhubung.");
+
+  const accSnap = await getDoc(doc(db,"adminAccounts",username));
+
+  // Bootstrap akun default HANYA jika koleksi adminAccounts masih benar-benar kosong
+  // (mencegah orang lain membuat akun sembarangan dengan menebak username "admin").
+  if(!accSnap.exists()){
+    const anyAccounts = await getDocs(COL.adminAccounts);
+    const isFirstRun = anyAccounts.empty;
+    if(isFirstRun && username===DEFAULT_USERNAME && password===DEFAULT_PASSWORD){
+      const email = usernameToEmail(username);
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db,"adminAccounts",username), { uid:cred.user.uid, email, createdAt: serverTimestamp() });
+      await setDoc(doc(db,"admins",cred.user.uid), { username, email, createdAt: serverTimestamp() });
+      return { uid:cred.user.uid, username };
+    }
+    throw new Error("Username tidak ditemukan.");
+  }
+
+  const { email } = accSnap.data();
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+  const adminDoc = await getDoc(doc(db,"admins",cred.user.uid));
+  if(!adminDoc.exists()) throw new Error("Akun ini tidak memiliki akses admin.");
+  return { uid:cred.user.uid, username };
+}
+
+function initAdminAuth(){
+  $("#adminLoginForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const username = $("#adminUsername").value, password = $("#adminPassword").value;
+    const errEl = $("#adminLoginError"), btn = $("#adminLoginBtn");
+    errEl.textContent=""; btn.disabled=true; btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i> Memproses...`;
+    try{
+      const result = await handleAdminLogin(username, password);
+      state.currentUsername = result.username;
+      enterAdminDashboard();
+      resetAutoLogout();
+    }catch(err){
+      console.warn(err);
+      errEl.textContent = "Username atau password salah. Periksa kembali kredensial Anda.";
+    }finally{
+      btn.disabled=false; btn.innerHTML=`<i class="fa-solid fa-right-to-bracket"></i> Masuk`;
+    }
+  });
+
+  $("#adminLogoutBtn").addEventListener("click", async ()=>{
+    if(firebaseReady) try{ await signOut(auth); }catch(e){}
+    if(unsubscribeOrders){ unsubscribeOrders(); unsubscribeOrders=null; }
+    state.currentUsername="";
+    $("#adminShell").style.display="none"; $("#adminLoginWrap").style.display="flex";
+    clearTimeout(state.logoutTimer);
+  });
+
+  ["click","keydown","mousemove"].forEach(evt=>document.addEventListener(evt,()=>{ if(state.currentUsername) resetAutoLogout(); }));
+}
+function resetAutoLogout(){
+  clearTimeout(state.logoutTimer);
+  state.logoutTimer = setTimeout(()=>{ toast("Sesi admin berakhir karena tidak aktif.","info"); $("#adminLogoutBtn").click(); }, 15*60*1000);
+}
+function enterAdminDashboard(){
+  $("#adminLoginWrap").style.display="none";
+  $("#adminShell").style.display="grid";
+  $("#adminWelcomeText").textContent = `Halo, ${state.currentUsername}`;
+  loadAdminProducts();
+  initRealtimeOrders();
+}
+
+/* Ubah username & password — form di halaman Pengaturan */
+function initCredentialsForm(){
+  $("#credentialsForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const errEl = $("#credentialsError"); errEl.classList.remove("show"); errEl.textContent="";
+    const currentPassword = $("#credCurrentPassword").value;
+    const newUsername = sanitizeInput($("#credNewUsername").value).toLowerCase();
+    const newPassword = $("#credNewPassword").value;
+    if(!currentPassword){ errEl.textContent="Masukkan password saat ini untuk verifikasi."; errEl.classList.add("show"); return; }
+    if(newPassword && newPassword.length<8){ errEl.textContent="Password baru minimal 8 karakter."; errEl.classList.add("show"); return; }
+    try{
+      const user = auth.currentUser;
+      const oldEmail = usernameToEmail(state.currentUsername);
+      await reauthenticateWithCredential(user, EmailAuthProvider.credential(oldEmail, currentPassword));
+
+      if(newPassword){ await updatePassword(user, newPassword); }
+
+      if(newUsername && newUsername!==state.currentUsername){
+        const exists = await getDoc(doc(db,"adminAccounts",newUsername));
+        if(exists.exists()){ errEl.textContent="Username baru sudah dipakai."; errEl.classList.add("show"); return; }
+        await setDoc(doc(db,"adminAccounts",newUsername), { uid:user.uid, email:oldEmail, createdAt: serverTimestamp() });
+        await deleteDoc(doc(db,"adminAccounts",state.currentUsername));
+        await updateDoc(doc(db,"admins",user.uid), { username:newUsername });
+        state.currentUsername = newUsername;
+        $("#adminWelcomeText").textContent = `Halo, ${state.currentUsername}`;
+      }
+      toast("Kredensial berhasil diperbarui","success");
+      $("#credentialsForm").reset();
+    }catch(err){
+      console.warn(err);
+      errEl.textContent = "Gagal memperbarui. Pastikan password saat ini benar.";
+      errEl.classList.add("show");
+    }
+  });
+}
+
+/* ============================================================
+   [4] NAVIGASI SIDEBAR ADMIN
+   ============================================================ */
+function initAdminNav(){
+  $$(".admin-nav-btn[data-admin-page]").forEach(btn=>btn.addEventListener("click",()=>{
+    $$(".admin-nav-btn[data-admin-page]").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    $$(".admin-page").forEach(p=>p.style.display="none");
+    $("#page-"+btn.dataset.adminPage).style.display="block";
+    if(btn.dataset.adminPage==="produk") renderAdminProducts();
+    if(btn.dataset.adminPage==="pesanan") renderAdminOrders();
+    if(["voucher","faq","banner","pengumuman","pengguna"].includes(btn.dataset.adminPage)) renderGenericAdminPage(btn.dataset.adminPage);
+  }));
+}
+
+/* ============================================================
+   [5] DASHBOARD: statistik & grafik
+   ============================================================ */
+async function loadAdminProducts(){
+  try{
+    if(firebaseReady){
+      const prodSnap = await getDocs(COL.products);
+      state.products=[]; prodSnap.forEach(d=>state.products.push({id:d.id,...d.data()}));
+    }
+  }catch(err){ console.warn("[Admin] Gagal memuat data produk.", err); }
+  renderDashboardStats();
+}
+/** Pantau koleksi "orders" secara REALTIME (bukan sekali ambil data) — begitu ada
+ *  pesanan baru masuk, atau status/data pesanan berubah dari perangkat lain, panel
+ *  admin langsung ter-update sendiri tanpa perlu refresh halaman & tanpa delay. */
+function initRealtimeOrders(){
+  if(!firebaseReady){ renderDashboardStats(); return; }
+  if(unsubscribeOrders) unsubscribeOrders(); // hindari listener dobel kalau dipanggil ulang
+  unsubscribeOrders = onSnapshot(COL.orders, (snap)=>{
+    state.adminOrders = [];
+    snap.forEach(d=>state.adminOrders.push({id:d.id, ...d.data()}));
+    renderDashboardStats();
+    renderAdminOrders();
+  }, (err)=>{ console.warn("[Realtime] Gagal memantau pesanan.", err); toast("Koneksi realtime pesanan bermasalah, coba muat ulang halaman.","error"); });
+}
+function renderDashboardStats(){
+  const totalPendapatan = state.adminOrders.filter(o=>o.status==="Selesai").reduce((s,o)=>s+(o.total||0),0);
+  const pembeliUnik = new Set(state.adminOrders.map(o=>o.buyer?.nisn)).size;
+  const today = new Date().toDateString();
+  const pesananHariIni = state.adminOrders.filter(o=>{ const d=o.createdAt?.toDate?o.createdAt.toDate():new Date(o.createdAt||Date.now()); return d.toDateString()===today; }).length;
+  const produkHabis = state.products.filter(p=>totalStock(p)<=0).length;
+
+  $("#statTotalProduk").textContent = state.products.length;
+  $("#statTotalPesanan").textContent = state.adminOrders.length;
+  $("#statTotalPendapatan").textContent = formatRupiah(totalPendapatan);
+  $("#statTotalPembeli").textContent = pembeliUnik;
+  $("#statPesananHariIni").textContent = pesananHariIni;
+  $("#statProdukHabis").textContent = produkHabis;
+
+  drawSalesChart(); drawCategoryChart();
+  $("#activityList").innerHTML = state.adminOrders.slice(-6).reverse().map(o=>`
+    <div style="display:flex;gap:10px;border-bottom:1px solid var(--border);padding-bottom:10px;">
+      <i class="fa-solid fa-receipt" style="color:var(--blue-600);"></i>
+      <div><strong>${escapeHtml(o.orderId||"-")}</strong> — ${escapeHtml(o.buyer?.nama||"-")} <span style="color:var(--ink-500);">(${escapeHtml(o.status||"-")})</span></div>
+    </div>`).join("") || `<p style="color:var(--ink-500);">Belum ada aktivitas.</p>`;
+}
+function drawSalesChart(){
+  const svg=$("#chartPenjualan"); const days=[]; const now=new Date();
+  for(let i=6;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); days.push(d); }
+  const totals = days.map(d=>state.adminOrders.filter(o=>{ const od=o.createdAt?.toDate?o.createdAt.toDate():new Date(o.createdAt||Date.now()); return od.toDateString()===d.toDateString(); }).reduce((s,o)=>s+(o.total||0),0));
+  const max = Math.max(...totals,1); const barW=56, gap=20, chartH=170;
+  let bars="", labels="";
+  totals.forEach((val,i)=>{
+    const h=(val/max)*chartH; const x=20+i*(barW+gap);
+    bars += `<rect x="${x}" y="${190-h}" width="${barW}" height="${h}" rx="8" fill="url(#barGrad)"><title>${formatRupiah(val)}</title></rect>`;
+    labels += `<text x="${x+barW/2}" y="210" font-size="11" fill="var(--ink-500)" text-anchor="middle" font-family="Nunito,sans-serif">${days[i].toLocaleDateString("id-ID",{weekday:"short"})}</text>`;
+  });
+  svg.innerHTML = `<defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs>${bars}${labels}`;
+}
+function drawCategoryChart(){
+  const svg=$("#chartProduk"); const counts={};
+  state.products.forEach(p=>{ counts[p.category]=(counts[p.category]||0)+1; });
+  const entries=Object.entries(counts); const total=entries.reduce((s,[,v])=>s+v,0)||1;
+  const colors=["#2563eb","#10b981","#f5a623","#e5484d","#7c5cff","#0ea5e9","#059669","#b8722a","#6a3fc4","#227a4b","#c23a3f","#1d4ed8","#0e2a56","#94a3b8"];
+  let cumulative=0, paths=""; const cx=110, cy=110, r=85;
+  entries.forEach(([cat,count],i)=>{
+    const frac=count/total; const start=cumulative*2*Math.PI; const end=(cumulative+frac)*2*Math.PI;
+    const x1=cx+r*Math.sin(start), y1=cy-r*Math.cos(start), x2=cx+r*Math.sin(end), y2=cy-r*Math.cos(end);
+    const large=frac>0.5?1:0;
+    paths += `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${colors[i%colors.length]}" opacity="0.9"><title>${escapeHtml(cat)}: ${count}</title></path>`;
+    cumulative += frac;
+  });
+  const legendHtml = entries.map(([cat,count],i)=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:.68rem;margin:3px 6px 0 0;"><span style="width:8px;height:8px;border-radius:50%;background:${colors[i%colors.length]};display:inline-block;"></span>${escapeHtml(cat)} (${count})</span>`).join("");
+  svg.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--bg-soft)"/>${paths}<circle cx="${cx}" cy="${cy}" r="48" fill="var(--white)"/><foreignObject x="0" y="230" width="300" height="30"><div xmlns="http://www.w3.org/1999/xhtml">${legendHtml}</div></foreignObject>`;
+}
+
+/* ============================================================
+   [6] KELOLA PRODUK — URL foto yang diisi di sini otomatis tampil di situs utama
+   ============================================================ */
+function badgeMarkup(p){
+  if(totalStock(p)<=0) return `<span class="badge badge-soldout" style="background:var(--ink-900);color:#fff;">Sold Out</span>`;
+  const map = { new:{c:"badge-new",t:"Baru"}, best:{c:"badge-best",t:"Best Seller"}, ready:{c:"badge-ready",t:"Ready Stock"}, sale:{c:"badge-sale",t:"Diskon"} };
+  const b=map[p.badge]; return b?`<span class="badge ${b.c}">${b.t}</span>`:"";
+}
+function renderAdminProducts(){
+  const tbody=$("#produkTableBody");
+  tbody.innerHTML = state.products.map(p=>{
+    const breakdown = (p.stock && typeof p.stock==="object")
+      ? Object.entries(p.stock).map(([sz,n])=>`${escapeHtml(sz)}:${n}`).join(" &middot; ")
+      : "";
+    return `
+    <tr>
+      <td><img src="${escapeHtml(p.img||"")}" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:8px;background:var(--bg-soft);"></td>
+      <td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.category)}</td><td>${formatRupiah(p.price)}</td>
+      <td><strong>${totalStock(p)}</strong>${breakdown?`<br><span style="font-size:.68rem;color:var(--ink-500);">${breakdown}</span>`:""}</td>
+      <td>${badgeMarkup(p)}</td>
+      <td><button class="icon-action" data-edit-produk="${p.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+      <button class="icon-action" data-del-produk="${p.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="7" style="text-align:center;color:var(--ink-500);">Belum ada produk. Klik "Tambah Produk" untuk mulai.</td></tr>`;
+}
+/** ID input HTML yang aman dari nama ukuran apa pun (S, M, L, Custom, dst.) */
+function sizeInputId(size){ return "cfmStockSize_"+String(size).replace(/[^a-zA-Z0-9]/g,"_"); }
+
+/** Bangun grid input "Stok per Ukuran" — jumlahnya otomatis mengikuti daftar di field Ukuran Tersedia */
+function stockSizeGridHtml(sizes, stockObj={}){
+  if(!sizes.length){
+    return `<p style="font-size:.78rem;color:var(--ink-500);padding:8px 0;">Isi "Ukuran Tersedia" di atas terlebih dahulu — kolom stok per ukuran akan muncul otomatis di sini.</p>`;
+  }
+  const total = sizes.reduce((s,sz)=>s+(Number(stockObj[sz])||0),0);
+  return `
+    <div class="form-grid">
+      ${sizes.map(s=>`<div><label class="field-label">Stok "${escapeHtml(s)}"</label><input class="input-base cfm-stock-input" type="number" min="0" id="${sizeInputId(s)}" data-stock-size="${escapeHtml(s)}" value="${Number(stockObj[s])||0}"></div>`).join("")}
+    </div>
+    <p style="font-size:.75rem;color:var(--ink-500);margin-top:8px;">Total stok (otomatis terjumlah dari semua ukuran): <strong id="cfmStockTotal">${total}</strong> unit</p>`;
+}
+let cfmStockDraft = {}; // nilai stok per ukuran yang sedang diketik admin, dipertahankan saat grid di-render ulang
+function refreshStockGridTotal(){
+  const total = $$(".cfm-stock-input").reduce((s,el)=>s+(Number(el.value)||0),0);
+  const totalEl = $("#cfmStockTotal"); if(totalEl) totalEl.textContent = total;
+}
+function wireStockInputs(){
+  $$(".cfm-stock-input").forEach(el=>el.addEventListener("input",()=>{
+    cfmStockDraft[el.dataset.stockSize] = Number(el.value)||0;
+    refreshStockGridTotal();
+  }));
+}
+function regenerateStockGrid(){
+  // simpan dulu nilai yang sedang diketik sebelum grid dibangun ulang, supaya tidak hilang
+  $$(".cfm-stock-input").forEach(el=>{ cfmStockDraft[el.dataset.stockSize] = Number(el.value)||0; });
+  const sizes = $("#cfmSizes").value.split(",").map(s=>s.trim()).filter(Boolean);
+  $("#cfmStockGridWrap").innerHTML = stockSizeGridHtml(sizes, cfmStockDraft);
+  wireStockInputs();
+}
+function productFormTemplate(p={}){
+  cfmStockDraft = (p.stock && typeof p.stock==="object") ? { ...p.stock } : {};
+  return `
+    <label class="field-label">Nama Produk</label><input class="input-base" id="cfmName" value="${escapeHtml(p.name||"")}" style="margin-bottom:12px;">
+    <label class="field-label">Kategori</label>
+    <select class="input-base" id="cfmCategory" style="margin-bottom:12px;">
+      ${["Seragam Putih Abu","Seragam Batik","Seragam Olahraga","Jaket Sekolah","Topi","Dasi","Sabuk","Kaos Kaki","Atribut","Name Tag","OSIS","Pramuka","PDK","Ekskul"].map(c=>`<option ${p.category===c?"selected":""}>${c}</option>`).join("")}
+    </select>
+    <label class="field-label">URL Foto Produk</label><input class="input-base" id="cfmImg" value="${escapeHtml(p.img||"")}" placeholder="https://..." style="margin-bottom:6px;">
+    <p style="font-size:.72rem;color:var(--ink-500);margin-bottom:12px;">Tempel link gambar (misal dari Google Drive/Imgur/hosting gambar). Otomatis tampil di katalog situs utama.</p>
+    <label class="field-label">Deskripsi</label><textarea class="input-base" id="cfmDesc" rows="2" style="margin-bottom:12px;">${escapeHtml(p.desc||"")}</textarea>
+    <div class="form-grid" style="margin-bottom:12px;">
+      <div><label class="field-label">Harga (Rp)</label><input class="input-base" type="number" id="cfmPrice" value="${p.price||0}"></div>
+      <div><label class="field-label">Harga Coret (opsional)</label><input class="input-base" type="number" id="cfmOldPrice" value="${p.oldPrice||0}"></div>
+      <div><label class="field-label">Badge</label>
+        <select class="input-base" id="cfmBadge">
+          ${["","new","best","ready","sale"].map(b=>`<option value="${b}" ${p.badge===b?"selected":""}>${b||"Tanpa badge"}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+    <label class="field-label">Ukuran Tersedia (pisahkan koma, contoh: S, M, L, XL, XXL)</label>
+    <input class="input-base" id="cfmSizes" value="${(p.sizes||[]).join(", ")}" placeholder="S, M, L, XL, XXL atau Custom" style="margin-bottom:14px;">
+    <label class="field-label">Stok per Ukuran <span style="font-weight:400;color:var(--ink-500);text-transform:none;letter-spacing:0;">(wajib diisi per ukuran, bukan satu angka total)</span></label>
+    <div id="cfmStockGridWrap" style="margin-bottom:4px;">${stockSizeGridHtml(p.sizes||[], cfmStockDraft)}</div>
+    <p style="font-size:.7rem;color:var(--ink-500);margin-top:10px;"><i class="fa-solid fa-circle-info"></i> Badge "Sold Out" &amp; penguncian pilihan ukuran di situs utama muncul OTOMATIS begitu total stok mencapai 0 — tidak perlu diatur manual.</p>`;
+}
+function initAdminProductCrud(){
+  $("#addProdukBtn").addEventListener("click",()=>{
+    $("#crudModalTitle").textContent="Tambah Produk"; $("#crudModalBody").innerHTML=productFormTemplate();
+    wireStockInputs();
+    $("#cfmSizes").addEventListener("input", debounce(regenerateStockGrid,400));
+    $("#crudSaveBtn").onclick=()=>saveProduct(null); openModal("crudModal");
+  });
+  $("#produkTableBody").addEventListener("click",(e)=>{
+    const edit=e.target.closest("[data-edit-produk]"), del=e.target.closest("[data-del-produk]");
+    if(edit){
+      const p=state.products.find(x=>x.id===edit.dataset.editProduk);
+      $("#crudModalTitle").textContent="Edit Produk"; $("#crudModalBody").innerHTML=productFormTemplate(p);
+      wireStockInputs();
+      $("#cfmSizes").addEventListener("input", debounce(regenerateStockGrid,400));
+      $("#crudSaveBtn").onclick=()=>saveProduct(p.id); openModal("crudModal");
+    }
+    if(del){ if(confirm("Hapus produk ini?")) deleteProduct(del.dataset.delProduk); }
+  });
+  $("#produkSearchAdmin").addEventListener("input",debounce((e)=>{
+    const term=e.target.value.toLowerCase();
+    $$("#produkTableBody tr").forEach(tr=>{ tr.style.display = tr.textContent.toLowerCase().includes(term)?"":"none"; });
+  },200));
+  $("#exportProdukBtn").addEventListener("click",()=>exportToCsv(state.products.map(p=>({Nama:p.name,Kategori:p.category,Harga:p.price,TotalStok:totalStock(p),StokPerUkuran:(p.stock&&typeof p.stock==="object")?Object.entries(p.stock).map(([sz,n])=>`${sz}:${n}`).join(" "):""})),"data-produk"));
+}
+async function saveProduct(id){
+  const sizes = $("#cfmSizes").value.split(",").map(s=>s.trim()).filter(Boolean);
+  const stock = {};
+  $$(".cfm-stock-input").forEach(el=>{ stock[el.dataset.stockSize] = Math.max(0, Number(el.value)||0); });
+  if(!sizes.length){ toast("Isi minimal 1 ukuran (contoh: S, M, L atau Custom)","error"); return; }
+  const data = {
+    name: sanitizeInput($("#cfmName").value), category: $("#cfmCategory").value,
+    img: sanitizeInput($("#cfmImg").value), desc: sanitizeInput($("#cfmDesc").value),
+    price: Number($("#cfmPrice").value)||0, oldPrice: Number($("#cfmOldPrice").value)||0,
+    stock, badge: $("#cfmBadge").value, sizes,
+  };
+  try{
+    if(firebaseReady){
+      if(id) await updateDoc(doc(db,"products",id), data);
+      else{ const ref=await addDoc(COL.products, { ...data, createdAt: serverTimestamp(), sold:0 }); id=ref.id; }
+      // Sinkron stok realtime (per-ukuran) ke situs utama lewat Realtime Database — pelengkap
+      // dari sinkronisasi utama via Firestore onSnapshot yang sudah realtime dengan sendirinya.
+      try{ await rtdbSet(rtdbRef(rtdb,"stockSync/"+id), data.stock); }catch(e){}
+    }
+    if(id && state.products.find(p=>p.id===id)){ const idx=state.products.findIndex(p=>p.id===id); state.products[idx]={...state.products[idx],...data}; }
+    else state.products.push({ id: id||("local-"+Date.now()), ...data, sold:0 });
+    toast("Produk berhasil disimpan","success"); closeModal("crudModal");
+    renderAdminProducts(); renderDashboardStats();
+  }catch(err){ console.error(err); toast("Gagal menyimpan produk","error"); }
+}
+async function deleteProduct(id){
+  try{
+    if(firebaseReady) await deleteDoc(doc(db,"products",id));
+    state.products = state.products.filter(p=>p.id!==id);
+    renderAdminProducts(); renderDashboardStats(); toast("Produk dihapus","info");
+  }catch(err){ toast("Gagal menghapus produk","error"); }
+}
+
+/* ============================================================
+   [7] KELOLA PESANAN
+   ============================================================ */
+function renderAdminOrders(){
+  const tbody=$("#pesananTableBody");
+  const search=($("#pesananSearchAdmin").value||"").toLowerCase();
+  const statusFilter=$("#pesananFilterStatus").value;
+  const pillClass={ "Menunggu Pembayaran":"pill-menunggu","Diproses":"pill-diproses","Sedang Disiapkan":"pill-disiapkan","Siap Diambil":"pill-siap","Selesai":"pill-selesai","Ditolak":"pill-ditolak" };
+  let list = state.adminOrders.filter(o=>{
+    const matchSearch=!search||(o.orderId||"").toLowerCase().includes(search)||(o.buyer?.nama||"").toLowerCase().includes(search);
+    const matchStatus=!statusFilter||o.status===statusFilter;
+    return matchSearch && matchStatus;
+  });
+  tbody.innerHTML = list.slice().reverse().map(o=>`
+    <tr>
+      <td><strong>${escapeHtml(o.orderId||"-")}</strong></td><td>${escapeHtml(o.buyer?.nama||"-")}</td><td>${formatRupiah(o.total||0)}</td>
+      <td>${escapeHtml(o.metodePembayaran||"-")}</td><td><span class="status-pill ${pillClass[o.status]||"pill-menunggu"}">${escapeHtml(o.status||"-")}</span></td>
+      <td>${formatDate(o.createdAt)}</td>
+      <td><button class="icon-action" data-view-order="${o.id}" title="Lihat"><i class="fa-solid fa-eye"></i></button>
+      <button class="icon-action" data-print-order="${o.id}" title="Unduh Invoice PDF"><i class="fa-solid fa-file-pdf"></i></button></td>
+    </tr>`).join("") || `<tr><td colspan="7" style="text-align:center;color:var(--ink-500);">Belum ada pesanan.</td></tr>`;
+}
+function initAdminOrderCrud(){
+  $("#pesananSearchAdmin").addEventListener("input",debounce(renderAdminOrders,200));
+  $("#pesananFilterStatus").addEventListener("change",renderAdminOrders);
+  $("#exportPesananBtn").addEventListener("click",()=>exportToCsv(state.adminOrders.map(o=>({NoPesanan:o.orderId,Pembeli:o.buyer?.nama,Total:o.total,Status:o.status})),"data-pesanan"));
+  $("#pesananTableBody").addEventListener("click",(e)=>{
+    const view=e.target.closest("[data-view-order]"), print=e.target.closest("[data-print-order]");
+    if(view) openOrderStatusEditor(view.dataset.viewOrder);
+    if(print) printInvoice(print.dataset.printOrder, print);
+  });
+}
+function openOrderStatusEditor(id){
+  const o=state.adminOrders.find(x=>x.id===id); if(!o) return;
+  const isRejected = o.status==="Ditolak";
+  $("#crudModal .modal-box").style.maxWidth = "640px";
+  $("#crudModalTitle").textContent="Detail Pesanan "+o.orderId;
+  $("#crudModalBody").innerHTML = `
+    <div class="card" style="padding:14px 16px;margin-bottom:14px;background:var(--bg-soft);border:none;">
+      <p style="font-size:.72rem;color:var(--ink-500);text-transform:uppercase;font-weight:800;margin-bottom:10px;letter-spacing:.03em;">Data Pembeli (sesuai isian di web utama)</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:.83rem;">
+        <div><span style="color:var(--ink-500);">Nama Lengkap</span><br><strong>${escapeHtml(o.buyer?.nama||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">Kelas</span><br><strong>${escapeHtml(o.buyer?.kelas||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">NISN</span><br><strong>${escapeHtml(o.buyer?.nisn||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">NIS</span><br><strong>${escapeHtml(o.buyer?.nis||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">No. WhatsApp</span><br><strong>${escapeHtml(o.buyer?.wa||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">Email</span><br><strong>${escapeHtml(o.buyer?.email||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">Nama Orang Tua/Wali</span><br><strong>${escapeHtml(o.buyer?.namaOrtu||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">Metode Pengambilan</span><br><strong>${escapeHtml(o.pengambilan||"-")}</strong></div>
+        <div style="grid-column:1/-1;"><span style="color:var(--ink-500);">Alamat</span><br><strong>${escapeHtml(o.buyer?.alamat||"-")}</strong></div>
+        ${o.buyer?.catatan?`<div style="grid-column:1/-1;"><span style="color:var(--ink-500);">Catatan dari Pembeli</span><br><strong>${escapeHtml(o.buyer.catatan)}</strong></div>`:""}
+        <div><span style="color:var(--ink-500);">Metode Pembayaran</span><br><strong>${escapeHtml(o.metodePembayaran||"-")}</strong></div>
+        <div><span style="color:var(--ink-500);">Voucher Dipakai</span><br><strong>${escapeHtml(o.voucher||"Tidak ada")}</strong></div>
+      </div>
+    </div>
+
+    <label class="field-label">Ubah / Konfirmasi Status Pesanan</label>
+    <select class="input-base" id="cfmOrderStatus" style="margin-bottom:10px;" ${isRejected?"disabled":""}>
+      ${STATUS_STEPS.map(s=>`<option ${o.status===s?"selected":""}>${s}</option>`).join("")}
+    </select>
+    <button class="btn btn-ghost ripple btn-block" id="cfmDownloadInvoiceBtn" style="margin-bottom:14px;"><i class="fa-solid fa-file-pdf"></i> Unduh Invoice PDF (untuk ditempel di barang)</button>
+
+    ${o.buktiPembayaran?`<label class="field-label">Bukti Pembayaran</label><img src="${o.buktiPembayaran}" style="width:100%;border-radius:10px;margin-bottom:14px;">`:`<p style="font-size:.78rem;color:var(--ink-500);margin-bottom:14px;">Tidak ada bukti pembayaran diunggah (mis. metode Cash Saat Ambil).</p>`}
+
+    <div class="table-wrap" style="margin-bottom:14px;"><table class="data-table"><thead><tr><th>Produk</th><th>Ukuran</th><th>Qty</th><th>Subtotal</th></tr></thead>
+    <tbody>${(o.items||[]).map(i=>`<tr><td>${escapeHtml(i.name)}</td><td>${escapeHtml(i.size)}</td><td>${i.qty}</td><td>${formatRupiah(i.price*i.qty)}</td></tr>`).join("")}</tbody></table></div>
+
+    <div style="font-size:.83rem;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;padding:3px 0;"><span>Subtotal</span><strong>${formatRupiah(o.subtotal||0)}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;"><span>Diskon</span><strong>-${formatRupiah(o.diskon||0)}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;"><span>Biaya Admin</span><strong>${formatRupiah(o.biayaAdmin||0)}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0 0;border-top:1px dashed var(--border);margin-top:4px;"><span>Total</span><strong style="color:var(--blue-700);">${formatRupiah(o.total||0)}</strong></div>
+    </div>
+
+    <div style="border-top:1px dashed var(--border);padding-top:14px;">
+      ${isRejected ? `
+        <label class="field-label" style="color:var(--danger);">Pesanan Ini Ditolak</label>
+        <p style="font-size:.8rem;background:#ffe3e3;color:#c23a3f;padding:10px 12px;border-radius:10px;margin-bottom:10px;"><strong>Alasan:</strong> ${escapeHtml(o.alasanDitolak||"-")}</p>
+        ${o.stockRestored?`<p style="font-size:.76rem;background:var(--green-50);color:var(--green-700);padding:8px 12px;border-radius:10px;margin-bottom:10px;"><i class="fa-solid fa-box-open"></i> Stok produk pesanan ini sudah otomatis dikembalikan.</p>`:""}
+        <button class="btn ripple" id="cfmUndoRejectBtn" style="width:100%;border:1.5px solid var(--border);color:var(--ink-700);background:var(--bg-soft);"><i class="fa-solid fa-rotate-left"></i> Batalkan Penolakan (kembalikan ke Menunggu Pembayaran)</button>
+      ` : `
+        <label class="field-label" style="color:var(--danger);">Tolak Pesanan (jika ada kekeliruan)</label>
+        <textarea class="input-base" id="cfmRejectReason" rows="3" placeholder="Tuliskan alasan penolakan, contoh: bukti pembayaran tidak valid, stok habis, data tidak sesuai, dsb."></textarea>
+        <button class="btn btn-danger ripple" id="cfmRejectBtn" style="width:100%;margin-top:10px;"><i class="fa-solid fa-ban"></i> Pesanan Ditolak</button>
+      `}
+    </div>`;
+
+  $("#crudSaveBtn").innerHTML = '<i class="fa-solid fa-check"></i> Konfirmasi Pesanan';
+  $("#crudSaveBtn").style.display = isRejected ? "none" : "";
+  $("#crudSaveBtn").onclick=()=>updateOrderStatus(o.id, $("#cfmOrderStatus").value);
+
+  $("#cfmDownloadInvoiceBtn").addEventListener("click",(e)=>generateInvoicePDF(o, e.currentTarget));
+  $("#cfmRejectBtn")?.addEventListener("click",()=>{
+    const reason = sanitizeInput($("#cfmRejectReason").value);
+    if(!reason){ toast("Mohon isi alasan penolakan terlebih dahulu","error"); return; }
+    if(!confirm("Tolak pesanan ini? Alasan akan tampil ke pembeli saat cek status pesanan.")) return;
+    updateOrderStatus(o.id, "Ditolak", reason);
+  });
+  $("#cfmUndoRejectBtn")?.addEventListener("click",()=>{
+    if(!confirm("Batalkan penolakan dan kembalikan pesanan ke status Menunggu Pembayaran?")) return;
+    updateOrderStatus(o.id, "Menunggu Pembayaran", null);
+  });
+
+  openModal("crudModal");
+}
+/** Kembalikan (direction=+1) atau kurangi lagi (direction=-1) stok per-ukuran untuk seluruh item pesanan.
+ *  Dipakai saat admin MENOLAK pesanan (stok otomatis kembali) atau MEMBATALKAN penolakan (stok
+ *  dipotong lagi). Mengembalikan `false` jika ada ukuran yang stoknya tidak cukup saat dikurangi lagi
+ *  (tetap dijalankan, tapi diklem ke 0, supaya admin bisa cek manual). */
+async function adjustStockForOrderItems(items, direction){
+  if(!firebaseReady || !items?.length) return true;
+  const byProduct = {};
+  items.forEach(item=>{
+    if(!byProduct[item.productId]) byProduct[item.productId] = { ref: doc(db,"products",item.productId), sizes:{} };
+    byProduct[item.productId].sizes[item.size] = (byProduct[item.productId].sizes[item.size]||0) + item.qty;
+  });
+  let insufficient = false;
+  try{
+    await runTransaction(db, async (tx)=>{
+      const snaps = {};
+      for(const pid of Object.keys(byProduct)) snaps[pid] = await tx.get(byProduct[pid].ref);
+      Object.entries(byProduct).forEach(([pid,info])=>{
+        if(!snaps[pid].exists()) return;
+        const data = snaps[pid].data();
+        const currentStock = (data.stock && typeof data.stock==="object") ? { ...data.stock } : {};
+        let totalDelta = 0;
+        Object.entries(info.sizes).forEach(([size,qty])=>{
+          const cur = Number(currentStock[size])||0;
+          let next = cur + direction*qty;
+          if(next < 0){ insufficient = true; next = 0; }
+          totalDelta += (next - cur);
+          currentStock[size] = next;
+        });
+        tx.update(info.ref, { stock: currentStock, sold: fsIncrement(-totalDelta) });
+      });
+    });
+  }catch(err){ console.error("[Stok] Gagal menyesuaikan stok pesanan.", err); return false; }
+  return !insufficient;
+}
+async function updateOrderStatus(id,newStatus,reason=null){
+  try{
+    const o=state.adminOrders.find(x=>x.id===id);
+    const wasRejected = o.status === "Ditolak";
+    const willBeRejected = newStatus === "Ditolak";
+    let stockRestored = o.stockRestored || false;
+    let stockWarning = false;
+
+    if(willBeRejected && !wasRejected && !stockRestored){
+      // Pesanan baru saja ditolak → kembalikan stok per ukuran yang tadi dipesan
+      await adjustStockForOrderItems(o.items, +1);
+      stockRestored = true;
+    }else if(!willBeRejected && wasRejected && stockRestored){
+      // Penolakan dibatalkan → potong lagi stoknya (admin override, tetap jalan walau stok sudah menipis)
+      const ok = await adjustStockForOrderItems(o.items, -1);
+      if(!ok) stockWarning = true;
+      stockRestored = false;
+    }
+
+    const historyEntry = { status:newStatus, at:new Date().toISOString() };
+    if(reason) historyEntry.catatan = reason;
+    const history=(o.statusHistory||[]).concat([historyEntry]);
+    const alasanDitolak = newStatus==="Ditolak" ? (reason||"") : "";
+    const updateData = { status:newStatus, statusHistory:history, alasanDitolak, stockRestored };
+    if(firebaseReady) await updateDoc(doc(db,"orders",id), updateData);
+    o.status=newStatus; o.statusHistory=history; o.alasanDitolak=alasanDitolak; o.stockRestored=stockRestored;
+    if(firebaseReady){ try{ await rtdbSet(rtdbRef(rtdb,"orderStatus/"+o.orderId), newStatus); }catch(e){} }
+    if(stockWarning) toast("Status diperbarui, namun stok sebagian ukuran tidak cukup saat dipotong ulang (diset ke 0) — mohon cek manual.","error",6000);
+    else toast(newStatus==="Ditolak" ? "Pesanan ditolak — stok otomatis dikembalikan & alasan tampil ke pembeli" : (wasRejected&&!willBeRejected ? "Penolakan dibatalkan — stok dipotong ulang" : "Status pesanan diperbarui"),"success");
+    closeModal("crudModal");
+    renderAdminOrders(); renderDashboardStats();
+  }catch(err){ console.error(err); toast("Gagal memperbarui status","error"); }
+}
+/** Muat gambar eksternal (mis. QR code) menjadi data URL agar bisa disematkan ke dalam PDF */
+function loadImageAsDataURL(src){
+  return new Promise((resolve)=>{
+    try{
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = ()=>{
+        try{
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img,0,0);
+          resolve(canvas.toDataURL("image/png"));
+        }catch(e){ resolve(null); }
+      };
+      img.onerror = ()=>resolve(null);
+      img.src = src;
+    }catch(e){ resolve(null); }
+  });
+}
+
+/** Bangun & unduh invoice PDF yang rapi ala dokumen resmi.
+ *  Bisa dipanggil dari mana saja (modal sukses setelah checkout, ATAU halaman cek status pesanan)
+ *  selama diberi objek `orderInput` yang berbentuk sama seperti dokumen pesanan di Firestore. */
+async function generateInvoicePDF(orderInput, triggerBtn){
+  const order = orderInput || { orderId:"SRG-000000-0000", buyer:{}, items:[], subtotal:0, diskon:0, biayaAdmin:0, total:0, status:"Menunggu Pembayaran", metodePembayaran:"-", pengambilan:"-", createdAtLocal:new Date().toISOString() };
+  const orderId = order.orderId || "SRG-000000-0000";
+  const btn = triggerBtn || null;
+  const originalLabel = btn ? btn.innerHTML : null;
+  if(btn){ btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyiapkan Invoice...`; }
+
+  try{
+    if(!order || !order.orderId){
+      toast("Data pesanan tidak ditemukan untuk membuat invoice.","error");
+      return;
+    }
+    if(!window.jspdf || !window.jspdf.jsPDF){
+      toast("Gagal memuat komponen PDF. Periksa koneksi internet lalu coba lagi.","error");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:"mm", format:"a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const marginX = 15;
+
+    // -- Palet warna (disamakan dengan design token situs) --
+    const COLOR_BLUE_DARK  = [14, 42, 86];    // --blue-900
+    const COLOR_BLUE_MAIN  = [23, 63, 158];   // --blue-700
+    const COLOR_BLUE_ACC   = [29, 77, 216];   // --blue-600
+    const COLOR_GREEN      = [5, 150, 105];   // --green-600
+    const COLOR_INK_900    = [15, 27, 45];
+    const COLOR_INK_500    = [91, 107, 129];
+    const COLOR_BORDER     = [227, 235, 243];
+    const COLOR_BG_SOFT    = [244, 248, 252];
+    const COLOR_WHITE      = [255,255,255];
+    const COLOR_DANGER     = [197, 58, 63];
+
+    // QR code selalu dibangkitkan langsung dari nomor pesanan, tidak bergantung pada elemen DOM tertentu,
+    // supaya invoice bisa dibuat baik dari modal sukses checkout maupun dari halaman cek status pesanan.
+    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(orderId)}`;
+    const qrDataUrl = await loadImageAsDataURL(qrSrc);
+
+    // Header disisipkan ulang di setiap halaman lewat hook autoTable "didDrawPage"
+    const drawHeader = ()=>{
+      doc.setFillColor(...COLOR_BLUE_MAIN);
+      doc.rect(0,0,pageW,34,"F");
+      doc.setFillColor(...COLOR_GREEN);
+      doc.rect(0,34,pageW,1.6,"F");
+
+      doc.setTextColor(...COLOR_WHITE);
+      doc.setFont("helvetica","bold"); doc.setFontSize(15);
+      doc.text("SMAN 68 JAKARTA", marginX, 15);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9);
+      doc.text("Koperasi Sekolah — Pemesanan Seragam Online", marginX, 21.5);
+      doc.setFontSize(8);
+      doc.text("sman68jakarta.sch.id", marginX, 27);
+
+      doc.setFont("helvetica","bold"); doc.setFontSize(20);
+      doc.text("INVOICE", pageW-marginX, 16, { align:"right" });
+      doc.setFont("helvetica","normal"); doc.setFontSize(10);
+      doc.text(order.orderId || orderId, pageW-marginX, 23, { align:"right" });
+      doc.setFontSize(8); doc.setTextColor(214,228,255);
+      doc.text(formatDate(order.createdAtLocal||order.createdAt||new Date()), pageW-marginX, 28.5, { align:"right" });
+    };
+
+    const drawFooter = (pageNumber, pageCount)=>{
+      doc.setDrawColor(...COLOR_BORDER);
+      doc.setLineWidth(0.3);
+      doc.line(marginX, pageH-16, pageW-marginX, pageH-16);
+      doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...COLOR_INK_500);
+      doc.text("Invoice ini dibuat otomatis oleh sistem dan sah tanpa tanda tangan basah.", marginX, pageH-11);
+      doc.text("Simpan invoice ini sebagai bukti pengambilan seragam di koperasi sekolah.", marginX, pageH-7);
+      doc.text(`Halaman ${pageNumber} dari ${pageCount}`, pageW-marginX, pageH-7, { align:"right" });
+    };
+
+    drawHeader();
+
+    // -- Kartu info: Ditagihkan Kepada (kiri) & Detail Pesanan (kanan) --
+    const cardTop = 42, cardH = 48, cardGap = 6, cardW = (pageW - marginX*2 - cardGap)/2;
+
+    const drawCard = (x, title, lines)=>{
+      doc.setFillColor(...COLOR_BG_SOFT);
+      doc.roundedRect(x, cardTop, cardW, cardH, 3, 3, "F");
+      doc.setDrawColor(...COLOR_BORDER); doc.setLineWidth(0.3);
+      doc.roundedRect(x, cardTop, cardW, cardH, 3, 3, "S");
+
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(...COLOR_BLUE_ACC);
+      doc.text(title.toUpperCase(), x+6, cardTop+8);
+
+      doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(...COLOR_INK_900);
+      let y = cardTop+15;
+      lines.forEach(line=>{
+        if(!line) return;
+        const wrapped = doc.splitTextToSize(line, cardW-12);
+        wrapped.forEach(w=>{ doc.text(w, x+6, y); y += 4.6; });
+      });
+    };
+
+    const b = order.buyer||{};
+    drawCard(marginX, "Ditagihkan Kepada", [
+      b.nama || "-",
+      `Kelas ${b.kelas||"-"}  •  NISN ${b.nisn||"-"}${b.nis?(" / NIS "+b.nis):""}`,
+      `WA: ${b.wa||"-"}${b.email?"  •  "+b.email:""}`,
+      b.alamat ? `Alamat: ${b.alamat}` : null,
+    ]);
+
+    // -- Status pesanan untuk INVOICE mengikuti tahap prosesnya, BUKAN nama status mentah:
+    //    • Menunggu Pembayaran → tetap apa adanya
+    //    • Diproses s.d. Selesai → tampil sebagai "Pesanan Terkonfirmasi" + pita hijau pembayaran terverifikasi
+    //    • Ditolak → tampil sebagai "Pesanan Ditolak Karena Tidak Sesuai Kebijakan" + pita merah peringatan
+    const CONFIRMED_STATUSES = ["Diproses","Sedang Disiapkan","Siap Diambil","Selesai"];
+    const isConfirmed = CONFIRMED_STATUSES.includes(order.status);
+    const isRejectedOrder = order.status === "Ditolak";
+    let displayStatusLabel = order.status || "-";
+    if(isConfirmed) displayStatusLabel = "Pesanan Terkonfirmasi";
+    else if(isRejectedOrder) displayStatusLabel = "Pesanan Ditolak Karena Tidak Sesuai Kebijakan";
+
+    drawCard(marginX+cardW+cardGap, "Detail Pesanan", [
+      `No. Pesanan: ${order.orderId||orderId}`,
+      `Status: ${displayStatusLabel}`,
+      `Metode Bayar: ${order.metodePembayaran||"-"}`,
+      `Pengambilan: ${order.pengambilan||"-"}`,
+      order.voucher ? `Voucher: ${order.voucher}` : null,
+    ]);
+
+    // -- Pita status (banner) di bawah kedua kartu — hijau untuk pembayaran terverifikasi, merah untuk ditolak --
+    let tableStartY = cardTop + cardH + 8;
+    if(isConfirmed){
+      const bannerY = cardTop + cardH + 4, bannerH = 10;
+      doc.setFillColor(232,250,243); // --green-50
+      doc.roundedRect(marginX, bannerY, pageW-marginX*2, bannerH, 2.5, 2.5, "F");
+      doc.setDrawColor(...COLOR_GREEN); doc.setLineWidth(0.4);
+      doc.roundedRect(marginX, bannerY, pageW-marginX*2, bannerH, 2.5, 2.5, "S");
+      doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...COLOR_GREEN);
+      doc.text("PEMBAYARAN SUDAH TERVERIFIKASI", pageW/2, bannerY+6.8, { align:"center" });
+      tableStartY = bannerY + bannerH + 6;
+    }else if(isRejectedOrder){
+      const bannerY = cardTop + cardH + 4, bannerH = 10;
+      doc.setFillColor(255,227,227);
+      doc.roundedRect(marginX, bannerY, pageW-marginX*2, bannerH, 2.5, 2.5, "F");
+      doc.setDrawColor(...COLOR_DANGER); doc.setLineWidth(0.4);
+      doc.roundedRect(marginX, bannerY, pageW-marginX*2, bannerH, 2.5, 2.5, "S");
+      doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...COLOR_DANGER);
+      doc.text("PESANAN DITOLAK", pageW/2, bannerY+6.8, { align:"center" });
+      tableStartY = bannerY + bannerH + 6;
+    }
+
+    // -- Tabel item pesanan --
+    const items = (order.items&&order.items.length) ? order.items : [];
+    const rows = items.map((it,i)=>[
+      String(i+1),
+      it.name||"-",
+      it.size||"-",
+      String(it.qty||0),
+      formatRupiah(it.price||0),
+      formatRupiah((it.price||0)*(it.qty||0)),
+    ]);
+
+    doc.autoTable({
+      startY: tableStartY,
+      margin: { left:marginX, right:marginX, bottom:26 },
+      head: [["No","Produk","Ukuran","Qty","Harga Satuan","Subtotal"]],
+      body: rows.length ? rows : [["-","Tidak ada item","-","-","-","-"]],
+      styles: { font:"helvetica", fontSize:9, textColor:COLOR_INK_900, cellPadding:3.2, lineColor:COLOR_BORDER, lineWidth:0.25 },
+      headStyles: { fillColor:COLOR_BLUE_ACC, textColor:COLOR_WHITE, fontStyle:"bold", halign:"center" },
+      alternateRowStyles: { fillColor:COLOR_BG_SOFT },
+      columnStyles:{
+        0:{ halign:"center", cellWidth:10 },
+        1:{ cellWidth:"auto" },
+        2:{ halign:"center", cellWidth:18 },
+        3:{ halign:"center", cellWidth:14 },
+        4:{ halign:"right", cellWidth:30 },
+        5:{ halign:"right", cellWidth:32, fontStyle:"bold" },
+      },
+      didDrawPage: ()=>{ drawHeader(); },
+    });
+
+    let y = doc.lastAutoTable.finalY + 8;
+    if(y > pageH-70){ doc.addPage(); drawHeader(); y = 42; }
+
+    // -- Ringkasan total (rata kanan) --
+    const sumW = 78, sumX = pageW-marginX-sumW;
+    const totalLines = [
+      ["Subtotal", formatRupiah(order.subtotal||0), COLOR_INK_900, false],
+      ...(order.diskon ? [["Diskon", "-"+formatRupiah(order.diskon), COLOR_GREEN, false]] : []),
+      ["Biaya Admin", formatRupiah(order.biayaAdmin||0), COLOR_INK_900, false],
+    ];
+    doc.setFontSize(9.5);
+    totalLines.forEach(([label,val,color])=>{
+      doc.setFont("helvetica","normal"); doc.setTextColor(...COLOR_INK_500);
+      doc.text(label, sumX, y);
+      doc.setFont("helvetica","normal"); doc.setTextColor(...color);
+      doc.text(val, sumX+sumW, y, { align:"right" });
+      y += 6.2;
+    });
+    doc.setDrawColor(...COLOR_BORDER); doc.setLineWidth(0.3);
+    doc.line(sumX, y-2.5, sumX+sumW, y-2.5);
+    y += 2.5;
+
+    doc.setFillColor(...COLOR_BLUE_DARK);
+    doc.roundedRect(sumX-6, y-5.5, sumW+6, 12, 2.5, 2.5, "F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.setTextColor(...COLOR_WHITE);
+    doc.text("TOTAL BAYAR", sumX, y+1.8);
+    doc.setFontSize(12);
+    doc.text(formatRupiah(order.total||0), sumX+sumW, y+2, { align:"right" });
+    y += 16;
+
+    // -- Catatan pembeli (jika ada) --
+    if(b.catatan){
+      const noteWrapped = doc.splitTextToSize(`Catatan: ${b.catatan}`, pageW-marginX*2-46);
+      const noteH = 8 + noteWrapped.length*4.4;
+      if(y+noteH > pageH-30){ doc.addPage(); drawHeader(); y = 42; }
+      doc.setFillColor(255,247,225);
+      doc.roundedRect(marginX, y, pageW-marginX*2-46, noteH, 2.5, 2.5, "F");
+      doc.setFont("helvetica","italic"); doc.setFontSize(8.5); doc.setTextColor(...COLOR_INK_900);
+      noteWrapped.forEach((line,i)=>doc.text(line, marginX+5, y+7+i*4.4));
+      y += noteH + 6;
+    }
+
+    // -- QR code kecil untuk verifikasi cepat, diletakkan sejajar di kiri sebagai penutup --
+    if(qrDataUrl){
+      try{
+        const qrSize = 22;
+        if(y+qrSize > pageH-30){ doc.addPage(); drawHeader(); y = 42; }
+        doc.setDrawColor(...COLOR_BORDER); doc.setLineWidth(0.3);
+        doc.roundedRect(marginX, y-2, qrSize+4, qrSize+4, 2.5, 2.5, "S");
+        doc.addImage(qrDataUrl, "PNG", marginX+2, y, qrSize, qrSize);
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...COLOR_INK_500);
+        doc.text("Kode verifikasi pesanan", marginX+qrSize+10, y+8);
+        doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(...COLOR_INK_900);
+        doc.text(order.orderId||orderId, marginX+qrSize+10, y+13.5);
+      }catch(e){ /* abaikan bila gagal disematkan */ }
+    }
+
+    const pageCount = doc.internal.getNumberOfPages();
+    for(let p=1; p<=pageCount; p++){ doc.setPage(p); drawFooter(p, pageCount); }
+
+    const fileName = `INVOICE_${(order.orderId||orderId).replace(/[^A-Za-z0-9_-]/g,"")}.pdf`;
+    doc.save(fileName);
+    toast("Invoice berhasil diunduh","success");
+  }catch(err){
+    console.error(err);
+    toast("Gagal membuat invoice PDF. Coba lagi.","error");
+  }finally{
+    if(btn){ btn.disabled = false; btn.innerHTML = originalLabel; }
+  }
+}
+
+/** Tombol "Unduh Invoice PDF" di tabel pesanan admin — memakai generator PDF modern yang sama
+ *  dengan situs utama (header biru koperasi, kartu info, tabel item, ringkasan total, QR verifikasi). */
+function printInvoice(id, triggerBtn){
+  const o = state.adminOrders.find(x=>x.id===id); if(!o) return;
+  generateInvoicePDF(o, triggerBtn);
+}
+
+function exportToCsv(rows, filename){
+  if(!rows.length){ toast("Tidak ada data untuk diekspor","error"); return; }
+  const headers=Object.keys(rows[0]);
+  const csv=[headers.join(",")].concat(rows.map(r=>headers.map(h=>`"${String(r[h]??"").replace(/"/g,'""')}"`).join(","))).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
+  const link=document.createElement("a"); link.href=URL.createObjectURL(blob); link.download=filename+".csv"; link.click();
+}
+
+/* ============================================================
+   [8] HALAMAN GENERIK: Voucher / FAQ / Banner / Pengumuman / Pengguna
+   ============================================================ */
+const GENERIC_ADMIN_CONFIG = {
+  voucher:{ title:"Kelola Voucher", col:"vouchers",
+    fields:[["code","Kode Voucher"],["type","Tipe (percent/nominal)"],["value","Nilai"],["maxUsage","Batas Pemakaian (0 = tanpa batas)"]],
+    displayOnly:[["usedCount","Terpakai"]], defaults:{ usedCount:0, usedBy:[] }, historyField:"usedBy" },
+  faq:{ title:"Kelola FAQ", col:"faqs", fields:[["q","Pertanyaan"],["a","Jawaban"]] },
+  banner:{ title:"Kelola Banner", col:"banners", fields:[["title","Judul"],["imageUrl","URL Gambar"],["linkUrl","URL Tautan"]] },
+  pengumuman:{ title:"Kelola Pengumuman", col:"announcements", fields:[["title","Judul"],["message","Isi Pengumuman"]] },
+  pengguna:{ title:"Kelola Pengguna", col:"users", fields:[["nama","Nama"],["email","Email"],["role","Role"]] },
+};
+async function renderGenericAdminPage(key){
+  const cfg=GENERIC_ADMIN_CONFIG[key]; const page=$("#page-"+key); let items=[];
+  const displayOnly = cfg.displayOnly||[];
+  const allCols = cfg.fields.concat(displayOnly);
+  try{ if(firebaseReady){ const snap=await getDocs(collection(db,cfg.col)); snap.forEach(d=>items.push({id:d.id,...d.data()})); } }catch(err){}
+  page.innerHTML = `
+    <div class="admin-topbar"><div><h2 style="font-size:1.3rem;">${cfg.title}</h2>${cfg.historyField?`<p style="font-size:.78rem;color:var(--ink-500);margin-top:2px;">Kolom "Riwayat" menampilkan siapa saja (nama/NISN/WA) yang sudah memakai tiap voucher — satu NISN otomatis tidak bisa memakai kode yang sama dua kali.</p>`:""}</div>
+      <button class="btn btn-primary btn-sm ripple" id="add-${key}-btn"><i class="fa-solid fa-plus"></i> Tambah</button></div>
+    <div class="card table-wrap"><table class="data-table"><thead><tr>${allCols.map(f=>`<th>${f[1]}</th>`).join("")}${cfg.historyField?`<th>Riwayat</th>`:""}<th>Aksi</th></tr></thead>
+    <tbody>${items.map(it=>`<tr>${allCols.map(f=>`<td>${escapeHtml(String(it[f[0]]??(f[0]==="maxUsage"?"0 (tanpa batas)":"")))}</td>`).join("")}
+      ${cfg.historyField?`<td><button class="icon-action" data-generic-history="${it.id}" title="Lihat riwayat pemakaian"><i class="fa-solid fa-clock-rotate-left"></i> ${(it[cfg.historyField]||[]).length}</button></td>`:""}
+      <td><button class="icon-action" data-generic-edit="${it.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+      <button class="icon-action" data-generic-del="${it.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button></td></tr>`).join("") || `<tr><td colspan="${allCols.length+(cfg.historyField?2:1)}" style="text-align:center;color:var(--ink-500);">Belum ada data.</td></tr>`}</tbody></table></div>`;
+  $("#add-"+key+"-btn").addEventListener("click",()=>{
+    $("#crudModalTitle").textContent="Tambah — "+cfg.title;
+    $("#crudModalBody").innerHTML = cfg.fields.map(f=>`<label class="field-label">${f[1]}</label><input class="input-base" data-generic-field="${f[0]}" style="margin-bottom:12px;">`).join("");
+    $("#crudSaveBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan';
+    $("#crudSaveBtn").onclick = async ()=>{
+      const data={}; cfg.fields.forEach(f=>data[f[0]]=sanitizeInput($(`[data-generic-field="${f[0]}"]`).value));
+      Object.assign(data, cfg.defaults||{});
+      try{ if(firebaseReady) await addDoc(collection(db,cfg.col), data); toast("Data disimpan","success"); closeModal("crudModal"); renderGenericAdminPage(key); }
+      catch(err){ toast("Gagal menyimpan data","error"); }
+    };
+    openModal("crudModal");
+  });
+  page.querySelectorAll("[data-generic-edit]").forEach(btn=>btn.addEventListener("click",()=>{
+    const it = items.find(x=>x.id===btn.dataset.genericEdit); if(!it) return;
+    $("#crudModalTitle").textContent="Edit — "+cfg.title;
+    $("#crudModalBody").innerHTML = cfg.fields.map(f=>`<label class="field-label">${f[1]}</label><input class="input-base" data-generic-field="${f[0]}" value="${escapeHtml(String(it[f[0]]??""))}" style="margin-bottom:12px;">`).join("");
+    $("#crudSaveBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan';
+    $("#crudSaveBtn").onclick = async ()=>{
+      const data={}; cfg.fields.forEach(f=>data[f[0]]=sanitizeInput($(`[data-generic-field="${f[0]}"]`).value));
+      try{ if(firebaseReady) await updateDoc(doc(db,cfg.col,it.id), data); toast("Data diperbarui","success"); closeModal("crudModal"); renderGenericAdminPage(key); }
+      catch(err){ toast("Gagal memperbarui data","error"); }
+    };
+    openModal("crudModal");
+  }));
+  page.querySelectorAll("[data-generic-del]").forEach(btn=>btn.addEventListener("click", async ()=>{
+    if(!confirm("Hapus data ini?")) return;
+    try{ if(firebaseReady) await deleteDoc(doc(db,cfg.col,btn.dataset.genericDel)); renderGenericAdminPage(key); }catch(err){ toast("Gagal menghapus","error"); }
+  }));
+  if(cfg.historyField){
+    page.querySelectorAll("[data-generic-history]").forEach(btn=>btn.addEventListener("click",()=>{
+      const it = items.find(x=>x.id===btn.dataset.genericHistory); if(!it) return;
+      showVoucherUsageHistory(it, cfg.historyField);
+    }));
+  }
+}
+/** Tampilkan daftar pembeli (nama/NISN/WA/waktu) yang sudah memakai kode voucher tertentu —
+ *  ini yang dipakai admin untuk melacak & memastikan satu siswa tidak memakai kode yang sama 2x. */
+function showVoucherUsageHistory(voucherItem, field){
+  const usedBy = voucherItem[field]||[];
+  $("#crudModal .modal-box").style.maxWidth = "560px";
+  $("#crudModalTitle").textContent = `Riwayat Pemakaian — ${voucherItem.code||"-"}`;
+  $("#crudModalBody").innerHTML = usedBy.length ? `
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Nama</th><th>NISN</th><th>No. WA</th><th>Waktu Pakai</th></tr></thead>
+    <tbody>${usedBy.slice().reverse().map(u=>`<tr><td>${escapeHtml(u.nama||"-")}</td><td>${escapeHtml(u.nisn||"-")}</td><td>${escapeHtml(u.wa||"-")}</td><td>${formatDate(u.at)}</td></tr>`).join("")}</tbody></table></div>
+    <p style="font-size:.76rem;color:var(--ink-500);margin-top:10px;"><i class="fa-solid fa-circle-info"></i> Setiap NISN yang tercatat di sini otomatis DITOLAK sistem bila mencoba memakai kode voucher ini lagi.</p>
+  ` : `<p style="color:var(--ink-500);text-align:center;padding:20px 0;">Voucher ini belum pernah dipakai oleh siapa pun.</p>`;
+  $("#crudSaveBtn").style.display = "none";
+  openModal("crudModal");
+}
+
+/* ============================================================
+   [9] PENGATURAN — informasi umum
+   ============================================================ */
+function initSettingsForm(){
+  $("#settingsForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const data = {
+      namaSekolah: sanitizeInput($("#setNamaSekolah").value), alamatKoperasi: sanitizeInput($("#setAlamatKoperasi").value),
+      waKoperasi: sanitizeInput($("#setWaKoperasi").value), emailKoperasi: sanitizeInput($("#setEmailKoperasi").value),
+      jamOperasional: sanitizeInput($("#setJamOperasional").value), biayaAdmin: Number($("#setBiayaAdmin").value)||0,
+    };
+    try{ if(firebaseReady) await setDoc(doc(db,"settings","general"), data, { merge:true }); toast("Informasi disimpan & tersinkronisasi ke web utama","success"); }
+    catch(err){ toast("Gagal menyimpan pengaturan","error"); }
+  });
+  if(firebaseReady){
+    getDoc(doc(db,"settings","general")).then(snap=>{
+      if(!snap.exists()) return;
+      const d=snap.data();
+      if(d.namaSekolah) $("#setNamaSekolah").value=d.namaSekolah;
+      if(d.alamatKoperasi) $("#setAlamatKoperasi").value=d.alamatKoperasi;
+      if(d.waKoperasi) $("#setWaKoperasi").value=d.waKoperasi;
+      if(d.emailKoperasi) $("#setEmailKoperasi").value=d.emailKoperasi;
+      if(d.jamOperasional) $("#setJamOperasional").value=d.jamOperasional;
+      if(d.biayaAdmin) $("#setBiayaAdmin").value=d.biayaAdmin;
+    }).catch(()=>{});
+  }
+}
+
+/* ============================================================
+   [10] INISIALISASI
+   ============================================================ */
+/** Sama seperti situs publik: modul ini memakai `await` di bagian atas (memuat SDK Firebase
+ *  dengan timeout), jadi "DOMContentLoaded" browser bisa saja SUDAH lewat sebelum baris di bawah
+ *  ini sempat berjalan. Cek document.readyState dulu supaya listener tidak pernah "kelewatan". */
+function whenDomReady(fn){
+  if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", fn); }
+  else{ fn(); }
+}
+whenDomReady(()=>{
+  initAdminAuth();
+  initCredentialsForm();
+  initAdminNav();
+  initAdminProductCrud();
+  initAdminOrderCrud();
+  initSettingsForm();
+});
+</script>
+</body>
+</html>
