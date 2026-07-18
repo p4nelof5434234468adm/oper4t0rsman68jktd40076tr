@@ -388,6 +388,47 @@
     .color-red{color:var(--red);}
     .color-orange{color:var(--orange);}
     .color-blue{color:var(--blue2);}
+
+    /* ═══════════ VERIFIKASI SURAT KESIAPAN ═══════════ */
+    .badge-warn{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+    .badge-info{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+    .doc-link-op{color:var(--blue2);font-weight:700;font-size:.75rem;text-decoration:none;white-space:nowrap;}
+    .doc-link-op:hover{text-decoration:underline;}
+
+    /* ═══════════ LIVE CHAT DAFTAR ULANG ═══════════ */
+    .chatop-wrap{display:flex;height:calc(100vh - 210px);min-height:460px;background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-md);border:1px solid var(--slate100);overflow:hidden;}
+    .chatop-list{width:300px;flex-shrink:0;border-right:1px solid var(--slate100);overflow-y:auto;background:var(--slate50);}
+    .chatop-item{display:flex;flex-direction:column;gap:3px;padding:13px 16px;border-bottom:1px solid var(--slate100);cursor:pointer;transition:var(--trans);position:relative;}
+    .chatop-item:hover{background:var(--slate100);}
+    .chatop-item.active{background:#fff;border-left:3px solid var(--blue2);}
+    .chatop-item-top{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+    .chatop-item-name{font-weight:700;font-size:.83rem;color:var(--slate800);}
+    .chatop-item-time{font-size:.65rem;color:var(--slate400);flex-shrink:0;}
+    .chatop-item-msg{font-size:.74rem;color:var(--slate500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .chatop-unread-dot{width:9px;height:9px;border-radius:50%;background:var(--red2);flex-shrink:0;}
+    .chatop-room{flex:1;display:flex;flex-direction:column;min-width:0;}
+    .chatop-room-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--slate100);flex-shrink:0;min-height:60px;}
+    .chatop-room-body{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:11px;}
+    .chatop-msg-row{display:flex;flex-direction:column;max-width:65%;}
+    .chatop-msg-row.op{align-self:flex-end;align-items:flex-end;}
+    .chatop-msg-row.siswa{align-self:flex-start;align-items:flex-start;}
+    .chatop-msg-bubble{padding:9px 14px;border-radius:14px;font-size:.83rem;line-height:1.55;word-break:break-word;white-space:pre-wrap;}
+    .chatop-msg-row.op .chatop-msg-bubble{background:var(--navy);color:#fff;border-bottom-right-radius:4px;}
+    .chatop-msg-row.siswa .chatop-msg-bubble{background:var(--slate100);color:var(--slate800);border-bottom-left-radius:4px;}
+    .chatop-msg-meta{font-size:.63rem;color:var(--slate400);margin-top:3px;padding:0 4px;}
+    .chatop-room-input{display:flex;gap:8px;align-items:flex-end;padding:12px 16px;border-top:1px solid var(--slate100);flex-shrink:0;}
+    .chatop-room-input textarea{flex:1;resize:none;border:1.5px solid var(--slate200);border-radius:var(--r-md);padding:10px 13px;font-family:'Sora',sans-serif;font-size:.85rem;outline:none;max-height:90px;}
+    .chatop-room-input textarea:focus{border-color:var(--blue2);}
+    .chatop-typing{display:flex;gap:4px;padding:9px 14px;background:var(--slate100);border-radius:14px;width:fit-content;}
+    .chatop-typing span{width:6px;height:6px;border-radius:50%;background:var(--slate400);animation:chatopBounce 1.2s infinite;}
+    .chatop-typing span:nth-child(2){animation-delay:.2s;}
+    .chatop-typing span:nth-child(3){animation-delay:.4s;}
+    @keyframes chatopBounce{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-5px);opacity:1;}}
+    @media(max-width:900px){
+      .chatop-wrap{flex-direction:column;height:auto;}
+      .chatop-list{width:100%;max-height:220px;border-right:none;border-bottom:1px solid var(--slate100);}
+      .chatop-room{height:520px;}
+    }
   </style>
 </head>
 <body>
@@ -467,6 +508,12 @@
       <div class="nav-section-label">Daftar Ulang</div>
       <div class="nav-item" onclick="switchTab('daftarUlang',this)">
         <i class="fas fa-file-pen"></i> Daftar Ulang <span class="nav-badge" id="duNavBadge" style="background:var(--green)">0</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('duVerifikasi',this)">
+        <i class="fas fa-file-signature"></i> Verifikasi Surat Kesiapan <span class="nav-badge" id="duVerifBadge" style="background:#f59e0b">0</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('duChat',this)">
+        <i class="fas fa-comments"></i> Live Chat Daftar Ulang <span class="nav-badge" id="duChatBadge" style="background:#f43f5e">0</span>
       </div>
 
       <div class="nav-section-label">Sistem</div>
@@ -989,6 +1036,21 @@
         </div>
       </div>
 
+      <!-- Format Surat Pernyataan -->
+      <div class="panel">
+        <div class="panel-head"><h3><i class="fas fa-file-arrow-down"></i> Format Surat Pernyataan Siap Menjadi Siswa</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-info"><i class="fas fa-circle-info"></i><span>Masukkan tautan (Google Drive/PDF) format resmi Surat Pernyataan Siap Menjadi Siswa. Tautan ini akan muncul sebagai tombol "Unduh Format" di halaman Daftar Ulang calon murid.</span></div>
+          <div class="frow full">
+            <div class="fg">
+              <label><i class="fab fa-google-drive"></i> Tautan Format Dokumen</label>
+              <input type="url" id="duFormatSuratUrl" placeholder="https://drive.google.com/file/d/...">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="duSaveFormatSurat" onclick="saveDUFormatSurat()"><i class="fas fa-save"></i> Simpan Tautan Format</button>
+        </div>
+      </div>
+
       <!-- Tutup Website -->
       <div class="panel">
         <div class="panel-head"><h3><i class="fas fa-door-closed"></i> Status Website Daftar Ulang</h3></div>
@@ -1057,6 +1119,85 @@
       </div>
     </div><!-- /tab-daftarUlang -->
 
+    <!-- ═══ VERIFIKASI SURAT KESIAPAN (Daftar Ulang) ═══ -->
+    <div id="tab-duVerifikasi" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-file-signature"></i> Verifikasi Surat Pernyataan Siap Menjadi Siswa</h2>
+        <p>Verifikasi dokumen wajib Daftar Ulang. Finalisasi Daftar Ulang siswa hanya akan terbuka setelah dokumen ini dinyatakan <strong>Valid</strong>.</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-ic" style="background:#fef3c7;color:#92400e;"><i class="fas fa-hourglass-half"></i></div>
+          <div><div class="stat-num" id="duvStatPending">0</div><div class="stat-lbl">Menunggu Verifikasi</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic green"><i class="fas fa-circle-check"></i></div>
+          <div><div class="stat-num" id="duvStatValid">0</div><div class="stat-lbl">Dokumen Valid</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic red"><i class="fas fa-circle-xmark"></i></div>
+          <div><div class="stat-num" id="duvStatDitolak">0</div><div class="stat-lbl">Ditolak</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ic blue"><i class="fas fa-file-circle-question"></i></div>
+          <div><div class="stat-num" id="duvStatBelum">0</div><div class="stat-lbl">Belum Upload</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fas fa-list-check"></i> Daftar Surat Pernyataan Siap Menjadi Siswa</h3>
+          <button class="btn btn-primary btn-sm" onclick="loadDUVerifikasi()"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="panel-body no-pad">
+          <div class="tbl-wrap">
+            <table class="data-tbl" id="duVerifTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>No. Daftar</th>
+                  <th>Nama</th>
+                  <th>Tanggal Upload</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="duVerifBody">
+                <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-duVerifikasi -->
+
+    <!-- ═══ LIVE CHAT DAFTAR ULANG ═══ -->
+    <div id="tab-duChat" class="tab-section">
+      <div class="page-header">
+        <h2><i class="fas fa-comments"></i> Live Chat Daftar Ulang</h2>
+        <p>Balas aduan calon murid mutasi pada tahap Daftar Ulang secara realtime.</p>
+      </div>
+
+      <div class="chatop-wrap">
+        <div class="chatop-list" id="duChatList">
+          <div style="padding:24px;text-align:center;color:var(--slate400);font-size:.8rem;"><i class="fas fa-spinner fa-spin"></i> Memuat percakapan...</div>
+        </div>
+        <div class="chatop-room">
+          <div class="chatop-room-head" id="duChatRoomHead">
+            <i class="fas fa-comments" style="font-size:1.4rem;color:var(--slate300);"></i>
+            <span style="color:var(--slate400);font-size:.85rem;">Pilih salah satu percakapan di sebelah kiri untuk mulai membalas.</span>
+          </div>
+          <div class="chatop-room-body" id="duChatRoomBody"></div>
+          <div class="chatop-room-input" id="duChatRoomInputBar" style="display:none;">
+            <button class="btn btn-ghost btn-sm" id="duChatUnlockBtn" title="Buka akses upload ulang Surat Pernyataan untuk siswa ini" onclick="unlockSelectedStudentUpload()"><i class="fas fa-unlock"></i></button>
+            <textarea id="duChatInput" rows="1" placeholder="Ketik balasan..."></textarea>
+            <button class="btn btn-primary" id="duChatSendBtn" onclick="sendOperatorReply()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-duChat -->
+
   </div><!-- /content -->
 </div><!-- /appShell -->
 
@@ -1115,6 +1256,7 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
 // ══════════════════════════════════════════════════
 // FIREBASE
@@ -1125,10 +1267,13 @@ const firebaseConfig={
   projectId:"upnvjdatsystem",
   storageBucket:"upnvjdatsystem.firebasestorage.app",
   messagingSenderId:"57095309946",
-  appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3"
+  appId:"1:57095309946:web:b0e9f3f86380d549ffc9c3",
+  databaseURL:"https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
+let rtdb=null;
+try{ rtdb=firebase.database(); }catch(e){ console.error('Realtime Database gagal diinisialisasi (fitur Live Chat Daftar Ulang tidak tersedia).', e); }
 
 // ══════════════════════════════════════════════════
 // AUTH — Firestore-based, password di-hash SHA-256
@@ -1996,6 +2141,54 @@ if(isLoggedIn())init();
   </div>
 </div>
 
+<!-- Modal Verifikasi Surat Kesiapan -->
+<div class="modal-bg" id="duVerifModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-file-signature"></i> Verifikasi Surat Pernyataan</h3>
+      <button class="btn-close-modal" onclick="closeDUVerifModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="duVerifDocId">
+      <div class="frow">
+        <div class="fg"><label>Nama</label><input type="text" id="duVerifNama" readonly style="background:var(--slate100)"></div>
+        <div class="fg"><label>No. Pendaftaran</label><input type="text" id="duVerifNoDaftar" readonly style="background:var(--slate100)"></div>
+      </div>
+      <div class="frow full">
+        <div class="fg">
+          <label><i class="fab fa-google-drive"></i> Tautan Dokumen</label>
+          <div><a href="#" target="_blank" id="duVerifLink" class="doc-link-op">—</a></div>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--slate200);margin:14px 0;">
+      <div class="frow full">
+        <div class="fg">
+          <label><i class="fas fa-flag"></i> Keputusan Verifikasi <span style="color:var(--red)">*</span></label>
+          <select id="duVerifStatus" onchange="document.getElementById('duVerifAlasanWrap').style.display=this.value==='ditolak'?'block':'none';">
+            <option value="valid">✅ Valid</option>
+            <option value="ditolak">❌ Ditolak</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow full" id="duVerifAlasanWrap" style="display:none;">
+        <div class="fg">
+          <label><i class="fas fa-comment"></i> Alasan Penolakan <span style="color:var(--red)">*</span></label>
+          <textarea id="duVerifAlasan" placeholder="Jelaskan alasan penolakan agar siswa dapat memperbaiki dokumennya..." rows="3"></textarea>
+        </div>
+      </div>
+      <div class="frow full">
+        <label style="display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;cursor:pointer;">
+          <input type="checkbox" id="duVerifUnlock" style="width:auto;"> Buka akses upload ulang meski status masih "Menunggu Verifikasi" (mis. atas permintaan siswa via chat)
+        </label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeDUVerifModal()">Batal</button>
+      <button class="btn btn-primary" onclick="submitDUVerif()"><i class="fas fa-save"></i> Simpan Verifikasi</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // FITUR DAFTAR ULANG — PANEL OPERATOR
@@ -2233,11 +2426,43 @@ async function toggleDUWebsite() {
   }
 }
 
+// ---- FORMAT SURAT PERNYATAAN SIAP MENJADI SISWA ----
+async function loadDUFormatSurat() {
+  try {
+    const snap = await db.collection('operatorSettings').doc('daftarUlangConfig').get();
+    const input = document.getElementById('duFormatSuratUrl');
+    if (input) input.value = snap.exists ? (snap.data().formatSuratUrl || '') : '';
+  } catch (e) { console.error('Load format surat error:', e); }
+}
+
+async function saveDUFormatSurat() {
+  const url = document.getElementById('duFormatSuratUrl').value.trim();
+  const btn = document.getElementById('duSaveFormatSurat');
+  if (url && !/^https?:\/\//i.test(url)) {
+    toast('Tautan harus diawali dengan http:// atau https://', 'error');
+    return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+  try {
+    await db.collection('operatorSettings').doc('daftarUlangConfig').set({
+      formatSuratUrl: url || firebase.firestore.FieldValue.delete(),
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+    toast(url ? 'Tautan format Surat Pernyataan berhasil disimpan!' : 'Tautan format Surat Pernyataan dihapus.', 'success');
+  } catch (e) {
+    toast('Gagal menyimpan: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Simpan Tautan Format';
+}
+
 // ---- INIT DAFTAR ULANG PANEL ----
 function initDaftarUlangPanel() {
   loadDUPeserta();
   loadDUSchedule();
   loadDUWebsiteStatus();
+  loadDUFormatSurat();
 
   // Subscribe realtime status website
   db.collection('operatorSettings').doc('daftarUlangConfig')
@@ -2267,6 +2492,319 @@ function initDaftarUlangPanel() {
       if (badge) badge.textContent = snap.size;
     });
   }
+})();
+</script>
+
+<!-- ============================================================
+     FITUR BARU: VERIFIKASI SURAT KESIAPAN & LIVE CHAT DAFTAR ULANG
+     (Ditambahkan tanpa mengubah fitur/kode yang sudah ada di atas)
+============================================================ -->
+<script>
+// ══════════════════════════════════════════════════
+// VERIFIKASI SURAT PERNYATAAN SIAP MENJADI SISWA
+// ══════════════════════════════════════════════════
+function suratStatusBadge(status) {
+  const map = {
+    belum: '<span class="badge badge-pending"><i class="fas fa-minus"></i> Belum Upload</span>',
+    pending: '<span class="badge badge-warn"><i class="fas fa-hourglass-half"></i> Menunggu Verifikasi</span>',
+    valid: '<span class="badge badge-lolos"><i class="fas fa-check"></i> Valid</span>',
+    ditolak: '<span class="badge badge-tidak"><i class="fas fa-times"></i> Ditolak</span>'
+  };
+  return map[status] || map.belum;
+}
+
+function fmtTglWaktuOp(val) {
+  if (!val) return '—';
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function loadDUVerifikasi() {
+  const tbody = document.getElementById('duVerifBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--slate400)"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>';
+  try {
+    const snap = await db.collection('daftarUlang').orderBy('createdAt', 'desc').get();
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--slate400)">Belum ada peserta Daftar Ulang.</td></tr>';
+    } else {
+      tbody.innerHTML = data.map((p, i) => {
+        const sk = p.suratKesiapan || {};
+        const status = sk.status || 'belum';
+        return `<tr>
+          <td>${i + 1}</td>
+          <td class="mono">${esc(p.noDaftar)}</td>
+          <td>${esc(p.nama)}</td>
+          <td style="font-size:.75rem;">${sk.tanggalUpload ? fmtTglWaktuOp(sk.tanggalUpload) : '—'}</td>
+          <td>${suratStatusBadge(status)}</td>
+          <td style="white-space:nowrap;">
+            ${sk.link ? `<a href="${esc(sk.link)}" target="_blank" class="doc-link-op"><i class="fas fa-arrow-up-right-from-square"></i> Lihat</a> ` : ''}
+            ${status !== 'belum' ? `<button class="btn btn-primary btn-xs" onclick="openDUVerifModal('${p.id}')"><i class="fas fa-check-double"></i> Verifikasi</button>` : '<span style="font-size:.7rem;color:var(--slate400)">Belum ada dokumen</span>'}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    updateDUVerifStats(data);
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--red)">Gagal memuat data: ${e.message}</td></tr>`;
+  }
+}
+
+function updateDUVerifStats(data) {
+  let pending = 0, valid = 0, ditolak = 0, belum = 0;
+  data.forEach(p => {
+    const s = p.suratKesiapan?.status || 'belum';
+    if (s === 'pending') pending++; else if (s === 'valid') valid++; else if (s === 'ditolak') ditolak++; else belum++;
+  });
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('duvStatPending', pending);
+  set('duvStatValid', valid);
+  set('duvStatDitolak', ditolak);
+  set('duvStatBelum', belum);
+}
+
+let duVerifDocId = null;
+function openDUVerifModal(docId) {
+  db.collection('daftarUlang').doc(docId).get()
+    .then(snap => {
+      if (!snap.exists) { toast('Data tidak ditemukan.', 'error'); return; }
+      const data = snap.data();
+      const sk = data.suratKesiapan || {};
+      duVerifDocId = docId;
+      document.getElementById('duVerifDocId').value = docId;
+      document.getElementById('duVerifNama').value = data.nama || '—';
+      document.getElementById('duVerifNoDaftar').value = data.noDaftar || '—';
+      const linkEl = document.getElementById('duVerifLink');
+      if (sk.link) { linkEl.href = sk.link; linkEl.textContent = sk.link; }
+      else { linkEl.removeAttribute('href'); linkEl.textContent = 'Belum ada dokumen'; }
+      document.getElementById('duVerifStatus').value = sk.status === 'ditolak' ? 'ditolak' : 'valid';
+      document.getElementById('duVerifAlasanWrap').style.display = sk.status === 'ditolak' ? 'block' : 'none';
+      document.getElementById('duVerifAlasan').value = sk.alasanDitolak || '';
+      document.getElementById('duVerifUnlock').checked = sk.uploadUnlocked === true;
+      document.getElementById('duVerifModal').classList.add('open');
+    })
+    .catch(e => toast('Gagal memuat data: ' + e.message, 'error'));
+}
+
+function closeDUVerifModal() {
+  document.getElementById('duVerifModal').classList.remove('open');
+  duVerifDocId = null;
+}
+
+async function submitDUVerif() {
+  const docId = document.getElementById('duVerifDocId').value;
+  const status = document.getElementById('duVerifStatus').value;
+  const alasan = document.getElementById('duVerifAlasan').value.trim();
+  const unlock = document.getElementById('duVerifUnlock').checked;
+
+  if (!docId) { toast('Data tidak valid.', 'error'); return; }
+  if (status === 'ditolak' && !alasan) { toast('Alasan penolakan wajib diisi.', 'error'); return; }
+
+  const nowIso = new Date().toISOString();
+  const update = {
+    'suratKesiapan.status': status,
+    'suratKesiapan.uploadUnlocked': unlock,
+    'suratKesiapan.riwayat': firebase.firestore.FieldValue.arrayUnion({ status, catatan: status === 'ditolak' ? alasan : '', waktu: nowIso, oleh: 'operator' }),
+    updatedAt: nowIso
+  };
+  update['suratKesiapan.alasanDitolak'] = status === 'ditolak' ? alasan : firebase.firestore.FieldValue.delete();
+
+  try {
+    await db.collection('daftarUlang').doc(docId).update(update);
+    toast(`Surat Pernyataan berhasil ditandai ${status === 'valid' ? 'VALID' : 'DITOLAK'}.`, 'success');
+    closeDUVerifModal();
+    loadDUVerifikasi();
+  } catch (e) {
+    toast('Gagal menyimpan verifikasi: ' + e.message, 'error');
+  }
+}
+
+// Badge realtime: jumlah surat kesiapan menunggu verifikasi
+(function() {
+  if (typeof db !== 'undefined') {
+    db.collection('daftarUlang').onSnapshot(snap => {
+      let pending = 0;
+      snap.forEach(d => { if ((d.data().suratKesiapan?.status) === 'pending') pending++; });
+      const b = document.getElementById('duVerifBadge');
+      if (b) b.textContent = pending;
+    }, err => console.error('duVerifBadge listener error:', err));
+  }
+})();
+
+// ══════════════════════════════════════════════════
+// LIVE CHAT DAFTAR ULANG (REALTIME DATABASE)
+// ══════════════════════════════════════════════════
+let duChatActiveNoDaftar = null;
+let duChatMsgRef = null;
+let duChatTypingRef = null;
+let duChatMeta = {};
+let duChatListInited = false;
+
+function initDUChatPanel() {
+  if (!rtdb) {
+    const listEl = document.getElementById('duChatList');
+    if (listEl) listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--red);font-size:.8rem;">Realtime Database tidak tersedia. Periksa konfigurasi databaseURL.</div>';
+    return;
+  }
+  if (duChatListInited) return;
+  duChatListInited = true;
+  const ref = rtdb.ref('aduanDU');
+  ref.on('value', snap => {
+    const all = snap.val() || {};
+    duChatMeta = {};
+    Object.entries(all).forEach(([noDaftar, node]) => {
+      duChatMeta[noDaftar] = node.meta || { namaSiswa: noDaftar, noDaftar };
+    });
+    renderDUChatList();
+    updateDUChatBadge();
+  }, err => console.error('DU Chat list listener error:', err));
+}
+
+function renderDUChatList() {
+  const list = document.getElementById('duChatList');
+  if (!list) return;
+  const entries = Object.entries(duChatMeta).sort((a, b) => (b[1].lastWaktu || 0) - (a[1].lastWaktu || 0));
+  if (!entries.length) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--slate400);font-size:.8rem;">Belum ada percakapan.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(([noDaftar, m]) => {
+    const time = m.lastWaktu ? new Date(m.lastWaktu).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+    const unread = m.unreadOperator === true;
+    const activeCls = noDaftar === duChatActiveNoDaftar ? ' active' : '';
+    return `<div class="chatop-item${activeCls}" onclick="openDUChatRoom('${esc(noDaftar)}')">
+      <div class="chatop-item-top">
+        <span class="chatop-item-name">${esc(m.namaSiswa || noDaftar)}</span>
+        <span class="chatop-item-time">${time}</span>
+      </div>
+      <div class="chatop-item-top">
+        <span class="chatop-item-msg">${esc(m.lastMessage || 'Belum ada pesan')}</span>
+        ${unread ? '<span class="chatop-unread-dot"></span>' : ''}
+      </div>
+      <div style="font-size:.65rem;color:var(--slate400);" class="mono">${esc(noDaftar)}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateDUChatBadge() {
+  const count = Object.values(duChatMeta).filter(m => m.unreadOperator === true).length;
+  const badge = document.getElementById('duChatBadge');
+  if (badge) badge.textContent = count;
+}
+
+function openDUChatRoom(noDaftar) {
+  duChatActiveNoDaftar = noDaftar;
+  renderDUChatList();
+  const meta = duChatMeta[noDaftar] || {};
+  document.getElementById('duChatRoomHead').innerHTML = `
+    <div style="width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">${esc((meta.namaSiswa || noDaftar).charAt(0).toUpperCase())}</div>
+    <div style="min-width:0;">
+      <div style="font-weight:700;font-size:.9rem;">${esc(meta.namaSiswa || noDaftar)}</div>
+      <div style="font-size:.7rem;color:var(--slate400);" class="mono">${esc(noDaftar)}</div>
+    </div>`;
+  document.getElementById('duChatRoomInputBar').style.display = 'flex';
+
+  if (duChatMsgRef) duChatMsgRef.off();
+  duChatMsgRef = rtdb.ref(`aduanDU/${noDaftar}/messages`);
+  duChatMsgRef.on('value', snap => {
+    renderDUChatRoomMessages(snap.val() || {});
+  }, err => console.error('DU Chat room listener error:', err));
+
+  if (duChatTypingRef) duChatTypingRef.off();
+  duChatTypingRef = rtdb.ref(`aduanDU/${noDaftar}/typing/siswa`);
+  duChatTypingRef.on('value', snap => {
+    document.getElementById('duChatTypingSlot')?.remove();
+    if (snap.val() === true) {
+      const bodyEl = document.getElementById('duChatRoomBody');
+      const wrap = document.createElement('div');
+      wrap.id = 'duChatTypingSlot';
+      wrap.innerHTML = '<div class="chatop-typing"><span></span><span></span><span></span></div>';
+      bodyEl.appendChild(wrap);
+      bodyEl.scrollTop = bodyEl.scrollHeight;
+    }
+  });
+
+  rtdb.ref(`aduanDU/${noDaftar}/meta/unreadOperator`).set(false).catch(() => {});
+  rtdb.ref(`aduanDU/${noDaftar}/messages`).once('value').then(snap => {
+    const val = snap.val() || {};
+    const updates = {};
+    Object.entries(val).forEach(([id, m]) => { if (m.sender === 'siswa' && !m.dibaca) updates[`${id}/dibaca`] = true; });
+    if (Object.keys(updates).length) rtdb.ref(`aduanDU/${noDaftar}/messages`).update(updates).catch(() => {});
+  }).catch(() => {});
+}
+
+function renderDUChatRoomMessages(val) {
+  const bodyEl = document.getElementById('duChatRoomBody');
+  if (!bodyEl) return;
+  const entries = Object.entries(val).sort((a, b) => (a[1].waktu || 0) - (b[1].waktu || 0));
+  if (!entries.length) {
+    bodyEl.innerHTML = '<div style="margin:auto;text-align:center;color:var(--slate400);font-size:.8rem;"><i class="fas fa-comment-dots" style="display:block;font-size:1.8rem;margin-bottom:8px;"></i>Belum ada pesan pada percakapan ini.</div>';
+    return;
+  }
+  bodyEl.innerHTML = entries.map(([, m]) => {
+    const isOp = m.sender === 'operator';
+    const time = m.waktu ? new Date(m.waktu).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+    return `<div class="chatop-msg-row ${isOp ? 'op' : 'siswa'}"><div class="chatop-msg-bubble">${esc(m.text || '')}</div><div class="chatop-msg-meta">${time}</div></div>`;
+  }).join('');
+  bodyEl.scrollTop = bodyEl.scrollHeight;
+}
+
+let duChatTypingTimer = null;
+document.getElementById('duChatInput')?.addEventListener('input', () => {
+  if (!duChatActiveNoDaftar || !rtdb) return;
+  const ref = rtdb.ref(`aduanDU/${duChatActiveNoDaftar}/typing/operator`);
+  ref.set(true).catch(() => {});
+  clearTimeout(duChatTypingTimer);
+  duChatTypingTimer = setTimeout(() => ref.set(false).catch(() => {}), 2000);
+});
+document.getElementById('duChatInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendOperatorReply(); }
+});
+
+let duChatLastSend = 0;
+function sendOperatorReply() {
+  if (!duChatActiveNoDaftar || !rtdb) return;
+  const input = document.getElementById('duChatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (Date.now() - duChatLastSend < 800) return;
+  duChatLastSend = Date.now();
+  const noDaftar = duChatActiveNoDaftar;
+  rtdb.ref(`aduanDU/${noDaftar}/messages`).push({ sender: 'operator', text: text.slice(0, 1000), waktu: firebase.database.ServerValue.TIMESTAMP, dibaca: false })
+    .then(() => {
+      input.value = '';
+      rtdb.ref(`aduanDU/${noDaftar}/typing/operator`).set(false).catch(() => {});
+      rtdb.ref(`aduanDU/${noDaftar}/meta`).update({
+        lastMessage: text.slice(0, 120),
+        lastWaktu: firebase.database.ServerValue.TIMESTAMP,
+        unreadSiswa: true
+      }).catch(() => {});
+    })
+    .catch(err => { console.error(err); toast('Gagal mengirim balasan.', 'error'); });
+}
+
+function unlockSelectedStudentUpload() {
+  if (!duChatActiveNoDaftar) { toast('Pilih percakapan terlebih dahulu.', 'error'); return; }
+  db.collection('daftarUlang').where('noDaftar', '==', duChatActiveNoDaftar).get()
+    .then(snap => {
+      if (snap.empty) { toast('Data Daftar Ulang siswa ini tidak ditemukan.', 'error'); return; }
+      const docRef = snap.docs[0].ref;
+      return docRef.update({ 'suratKesiapan.uploadUnlocked': true, updatedAt: new Date().toISOString() });
+    })
+    .then(() => { toast('Akses upload ulang Surat Pernyataan untuk siswa ini telah dibuka.', 'success'); })
+    .catch(err => { toast('Gagal membuka akses: ' + err.message, 'error'); });
+}
+
+// ---- Patch switchTab (lapisan tambahan, tidak mengubah patch yang sudah ada) ----
+(function() {
+  const _origSwitchTabDU2 = window.switchTab;
+  window.switchTab = function(name, el) {
+    _origSwitchTabDU2(name, el);
+    if (name === 'duVerifikasi') { setTimeout(loadDUVerifikasi, 150); }
+    if (name === 'duChat') { setTimeout(initDUChatPanel, 150); }
+  };
 })();
 </script>
 </body>
