@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Panel Operator — Daya Tampung Mutasi SMAN 68 Jakarta</title>
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SMAN 68 Jakarta — Sistem Informasi Daya Tampung Mutasi
+   Shared design tokens & components
+   ============================================================ */
+
+:root{
+  --blue-900:#0A3555;
+  --blue-700:#0B5FA5;
+  --blue-600:#1470BE;
+  --blue-500:#2E86D6;
+  --blue-100:#E5F1FB;
+  --green-700:#166A46;
+  --green-600:#1C7A4F;
+  --green-500:#2FA968;
+  --green-100:#E3F6EC;
+  --ink:#0F2438;
+  --ink-soft:#4C6478;
+  --ink-faint:#7C93A5;
+  --line:#DEE7EF;
+  --line-soft:#EEF3F8;
+  --bg:#FFFFFF;
+  --bg-soft:#F5F9FC;
+  --amber-600:#B5790A;
+  --amber-100:#FCF1DB;
+  --red-600:#C4432E;
+  --red-100:#FBE8E4;
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:9px;
+  --shadow-sm:0 1px 2px rgba(15,36,56,.06), 0 1px 1px rgba(15,36,56,.04);
+  --shadow-md:0 8px 24px -8px rgba(11,95,165,.18);
+  --shadow-lg:0 20px 48px -12px rgba(10,53,85,.22);
+  --font-display:'Fraunces', 'Georgia', serif;
+  --font-body:'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;line-height:1.15;color:var(--blue-900);}
+p{margin:0;}
+button{font-family:inherit;}
+:focus-visible{outline:3px solid var(--green-500);outline-offset:2px;border-radius:4px;}
+
+.wrap{max-width:1120px;margin:0 auto;padding-inline:24px;}
+@media (max-width:640px){.wrap{padding-inline:16px;}}
+
+/* ---------- Top bar / kop surat ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{display:flex;align-items:center;gap:14px;padding:12px 24px;max-width:1120px;margin:0 auto;}
+.topbar-logo{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bg-soft);border:1px solid var(--line);}
+.topbar-text{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
+.topbar-eyebrow{font-size:.68rem;letter-spacing:.10em;text-transform:uppercase;color:var(--green-700);font-weight:700;}
+.topbar-title{font-family:var(--font-display);font-size:1.02rem;font-weight:600;color:var(--blue-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none;}
+.topbar-nav::-webkit-scrollbar{display:none;}
+.topbar-nav a{
+  font-size:.86rem;font-weight:600;color:var(--ink-soft);
+  padding:8px 12px;border-radius:999px;white-space:nowrap;text-decoration:none;
+  transition:background .15s,color .15s;
+}
+.topbar-nav a:hover{background:var(--blue-100);color:var(--blue-700);}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:700;font-size:.92rem;padding:12px 22px;border-radius:999px;
+  border:1.5px solid transparent;cursor:pointer;text-decoration:none;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+  line-height:1;
+}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--blue-700);color:#fff;box-shadow:var(--shadow-md);}
+.btn-primary:hover{background:var(--blue-600);}
+.btn-outline{background:transparent;border-color:var(--blue-700);color:var(--blue-700);}
+.btn-outline:hover{background:var(--blue-100);}
+.btn-green{background:var(--green-600);color:#fff;}
+.btn-green:hover{background:var(--green-700);}
+.btn-ghost{background:transparent;color:var(--ink-soft);border-color:var(--line);}
+.btn-ghost:hover{background:var(--bg-soft);}
+.btn-sm{padding:8px 14px;font-size:.8rem;}
+.btn-danger{background:var(--red-100);color:var(--red-600);}
+.btn-danger:hover{background:#f6d5cd;}
+.btn[disabled]{opacity:.55;cursor:not-allowed;}
+
+/* ---------- Hero ---------- */
+.hero{
+  position:relative;overflow:hidden;
+  padding:56px 0 64px;
+  background:
+    radial-gradient(900px 420px at 85% -10%, var(--blue-100) 0%, transparent 60%),
+    radial-gradient(700px 380px at 0% 110%, var(--green-100) 0%, transparent 65%);
+}
+.hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:32px;}}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.74rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--green-700);background:var(--green-100);
+  padding:6px 14px;border-radius:999px;margin-bottom:18px;
+}
+.hero h1{font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:600;letter-spacing:-.01em;margin-bottom:14px;}
+.hero-lead{color:var(--ink-soft);font-size:1.02rem;max-width:52ch;margin-bottom:24px;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px 22px;margin-bottom:28px;}
+.hero-meta div{font-size:.84rem;color:var(--ink-soft);}
+.hero-meta b{color:var(--ink);font-weight:700;}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;}
+
+/* Stat / stamp card */
+.stat-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);padding:28px 24px;text-align:center;position:relative;
+}
+.stat-number{font-family:var(--font-display);font-size:clamp(2.6rem,7vw,3.6rem);font-weight:700;color:var(--blue-700);letter-spacing:-.02em;}
+.stat-label{font-size:.82rem;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+.stat-foot{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);}
+
+.stempel{width:58px;height:58px;border-radius:50%;border:2px dashed var(--green-500);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;}
+.stempel::before{content:'';position:absolute;inset:6px;border:1px solid var(--blue-500);border-radius:50%;}
+.stempel span{font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--blue-700);position:relative;}
+.live-row{display:flex;align-items:center;gap:7px;font-size:.76rem;font-weight:700;color:var(--green-700);text-align:left;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green-500);flex-shrink:0;animation:pulse 1.8s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,169,104,.55);}70%{box-shadow:0 0 0 9px rgba(47,169,104,0);}100%{box-shadow:0 0 0 0 rgba(47,169,104,0);}}
+
+/* ---------- Section shell ---------- */
+.section{padding:56px 0;border-top:1px solid var(--line-soft);}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+.section-tag{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-700);display:flex;align-items:center;gap:8px;}
+.section-tag .letter{
+  width:26px;height:26px;border-radius:8px;background:var(--blue-700);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.82rem;
+}
+.section-title{font-size:clamp(1.3rem,2.6vw,1.7rem);font-weight:600;margin-top:6px;}
+.section-desc{color:var(--ink-soft);font-size:.94rem;max-width:60ch;margin-top:6px;}
+
+/* ---------- Daya tampung cards ---------- */
+.kelas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+.kelas-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:20px;transition:box-shadow .15s, transform .15s;
+}
+.kelas-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.kelas-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.kelas-name{font-family:var(--font-display);font-weight:700;font-size:1.15rem;color:var(--blue-900);}
+.kuota-pill{background:var(--green-100);color:var(--green-700);font-weight:800;font-size:.86rem;padding:4px 12px;border-radius:999px;}
+.kuota-pill.habis{background:var(--red-100);color:var(--red-600);}
+.kelas-peminatan{font-size:.84rem;color:var(--ink-soft);margin-bottom:12px;}
+.mapel-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.mapel-tag{font-size:.72rem;font-weight:600;color:var(--blue-700);background:var(--blue-100);padding:4px 9px;border-radius:7px;}
+
+/* ---------- Timeline (jadwal) ---------- */
+.timeline{position:relative;padding-left:44px;}
+.timeline::before{content:'';position:absolute;left:15px;top:6px;bottom:6px;width:2px;background:var(--line);}
+.timeline-item{position:relative;padding-bottom:26px;}
+.timeline-item:last-child{padding-bottom:0;}
+.timeline-dot{
+  position:absolute;left:-44px;top:0;width:32px;height:32px;border-radius:50%;
+  background:#fff;border:2px solid var(--blue-500);color:var(--blue-700);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;z-index:1;
+}
+.timeline-item.aktif .timeline-dot{background:var(--green-600);border-color:var(--green-600);color:#fff;box-shadow:0 0 0 5px var(--green-100);}
+.timeline-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 18px;}
+.timeline-item.aktif .timeline-card{border-color:var(--green-500);background:var(--green-100);}
+.timeline-date{font-weight:700;font-size:.9rem;color:var(--blue-900);}
+.timeline-tag{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--green-700);background:#fff;border:1px solid var(--green-500);padding:2px 8px;border-radius:999px;margin-left:8px;vertical-align:middle;}
+.timeline-desc{color:var(--ink-soft);font-size:.88rem;margin-top:3px;}
+
+/* ---------- Persyaratan ---------- */
+.syarat-list{display:grid;gap:12px;}
+.syarat-item{display:flex;gap:14px;align-items:flex-start;background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:14px 16px;}
+.syarat-num{width:26px;height:26px;border-radius:50%;background:var(--blue-700);color:#fff;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.syarat-text{font-size:.92rem;color:var(--ink);}
+
+/* ---------- Kriteria bar ---------- */
+.kriteria-box{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius-md);padding:22px;}
+.kriteria-bar{display:flex;height:16px;border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+.kriteria-seg-a{background:var(--blue-600);}
+.kriteria-seg-b{background:var(--green-500);}
+.kriteria-legend{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px;}
+.kriteria-legend div{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--ink-soft);}
+.dot-sq{width:10px;height:10px;border-radius:3px;}
+
+/* ---------- Footer / kop tanda tangan ---------- */
+.footer{background:var(--blue-900);color:#dce9f5;padding:44px 0 28px;}
+.footer .wrap{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+.footer h4{color:#fff;font-size:1rem;margin-bottom:10px;}
+.footer-sign{text-align:right;}
+.footer small{color:#9db6ce;display:block;margin-top:18px;font-size:.78rem;}
+.footer a{text-decoration:underline;}
+@media (max-width:640px){.footer .wrap{flex-direction:column;}.footer-sign{text-align:left;}}
+
+/* ---------- Loading / empty states ---------- */
+.skeleton{background:linear-gradient(90deg,var(--line-soft) 25%,var(--line) 37%,var(--line-soft) 63%);background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:8px;}
+@keyframes sk{0%{background-position:100% 50%;}100%{background-position:0 50%;}}
+.empty-state{text-align:center;padding:36px 20px;color:var(--ink-soft);}
+.toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;width:calc(100% - 32px);max-width:420px;}
+.toast{background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:.86rem;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(8px);transition:opacity .2s, transform .2s;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.error{background:var(--red-600);}
+.toast.success{background:var(--green-700);}
+
+/* ---------- Camurmut helpdesk widget ---------- */
+.camurmut-fab{
+  position:fixed;right:20px;bottom:20px;z-index:100;
+  display:flex;align-items:center;gap:10px;
+  background:var(--green-600);color:#fff;border:none;border-radius:999px;
+  padding:14px 20px;font-weight:700;font-size:.9rem;box-shadow:var(--shadow-lg);cursor:pointer;
+  transition:transform .15s, background .15s;
+}
+.camurmut-fab:hover{background:var(--green-700);transform:translateY(-2px);}
+.camurmut-fab .badge-count{background:#fff;color:var(--green-700);border-radius:999px;font-size:.7rem;padding:2px 7px;font-weight:800;}
+.camurmut-panel{
+  position:fixed;right:20px;bottom:92px;z-index:100;width:min(380px,calc(100% - 32px));
+  max-height:min(72vh,620px);background:#fff;border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);border:1px solid var(--line);
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateY(16px) scale(.98);opacity:0;pointer-events:none;transition:all .18s ease;
+}
+.camurmut-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto;}
+.camurmut-head{background:var(--blue-700);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:10px;}
+.camurmut-head img{width:32px;height:32px;border-radius:50%;background:#fff;}
+.camurmut-head-text b{display:block;font-size:.96rem;}
+.camurmut-head-text span{font-size:.74rem;color:#cfe3f7;}
+.camurmut-close{margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;}
+.camurmut-tabs{display:flex;border-bottom:1px solid var(--line);}
+.camurmut-tabs button{flex:1;padding:10px;border:none;background:none;font-weight:700;font-size:.8rem;color:var(--ink-faint);cursor:pointer;border-bottom:2px solid transparent;}
+.camurmut-tabs button.active{color:var(--blue-700);border-color:var(--blue-700);}
+.camurmut-body{padding:16px 18px;overflow-y:auto;flex:1;}
+.faq-item{border-bottom:1px solid var(--line-soft);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:11px 0;font-weight:700;font-size:.86rem;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;gap:10px;}
+.faq-a{display:none;color:var(--ink-soft);font-size:.83rem;padding-bottom:12px;}
+.faq-item.open .faq-a{display:block;}
+.faq-item.open .faq-q{color:var(--blue-700);}
+.form-field{margin-bottom:12px;}
+.form-field label{display:block;font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:5px;}
+.form-field input,.form-field textarea,.form-field select{
+  width:100%;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;
+  font-family:inherit;font-size:.88rem;color:var(--ink);background:#fff;
+}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--blue-500);outline:none;}
+.form-field textarea{resize:vertical;min-height:78px;}
+
+/* ============================================================
+   Operator panel specific
+   ============================================================ */
+.op-shell{min-height:100vh;background:var(--bg-soft);}
+.op-lock{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.op-lock-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:36px 30px;max-width:380px;width:100%;text-align:center;}
+.op-lock-card img{width:56px;margin:0 auto 14px;}
+.op-tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 24px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;}
+.op-tab-btn{white-space:nowrap;padding:9px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);font-weight:700;font-size:.85rem;cursor:pointer;}
+.op-tab-btn.active{background:var(--blue-700);border-color:var(--blue-700);color:#fff;}
+.op-panel{display:none;padding:28px 24px 60px;max-width:1000px;margin:0 auto;}
+.op-panel.active{display:block;}
+.op-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:22px;margin-bottom:18px;}
+.op-card h3{font-size:1.05rem;margin-bottom:14px;}
+.op-row-table{display:flex;flex-direction:column;gap:12px;}
+.op-row{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;position:relative;}
+.op-row-grid{display:grid;grid-template-columns:1fr 100px 1.4fr;gap:10px;}
+@media (max-width:720px){.op-row-grid{grid-template-columns:1fr;}}
+.op-row-remove{position:absolute;top:10px;right:10px;background:var(--red-100);color:var(--red-600);border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-weight:800;}
+.op-field label{display:block;font-size:.72rem;font-weight:700;color:var(--ink-soft);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.op-field input,.op-field textarea{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:.87rem;}
+.op-field textarea{min-height:52px;resize:vertical;}
+.op-actions-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.op-msg-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;background:var(--bg-soft);}
+.op-msg-item.baru{border-left:4px solid var(--amber-600);}
+.op-msg-item.selesai{opacity:.6;}
+.status-chip{font-size:.68rem;font-weight:800;text-transform:uppercase;padding:3px 9px;border-radius:999px;}
+.status-chip.baru{background:var(--amber-100);color:var(--amber-600);}
+.status-chip.selesai{background:var(--green-100);color:var(--green-700);}
+.op-topbar{display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid var(--line);padding:14px 24px;}
+.op-topbar img{width:34px;height:34px;border-radius:50%;}
+.saved-indicator{font-size:.78rem;color:var(--green-700);font-weight:700;display:flex;align-items:center;gap:6px;margin-left:auto;}
+hr.divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
+
+</style>
+</head>
+<body>
+
+<div class="op-shell">
+
+  <!-- Gerbang kode akses -->
+  <div class="op-lock" id="opLock">
+    <div class="op-lock-card">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="Logo SMAN 68">
+      <h2 style="font-size:1.15rem;margin-bottom:6px;">Panel Operator</h2>
+      <p style="color:var(--ink-soft);font-size:.86rem;margin-bottom:18px;">Masukkan kode akses operator untuk mengelola data daya tampung mutasi.</p>
+      <div class="form-field" style="text-align:left;">
+        <label for="passInput">Kode Akses</label>
+        <input type="password" id="passInput" placeholder="Masukkan kode akses">
+      </div>
+      <button class="btn btn-primary" id="unlockBtn" style="width:100%;margin-top:6px;">Masuk</button>
+      <p id="lockError" style="color:var(--red-600);font-size:.8rem;margin-top:10px;display:none;">Kode akses salah. Coba lagi.</p>
+    </div>
+  </div>
+
+  <!-- Panel utama (tersembunyi sampai kode benar) -->
+  <div id="opMain" style="display:none;">
+    <div class="op-topbar">
+      <img src="https://upload.wikimedia.org/wikipedia/id/1/19/Logo_SMAN_68_Jakarta.png" alt="">
+      <div>
+        <div style="font-weight:800;font-size:.92rem;color:var(--blue-900);">Panel Operator — Mutasi SMAN 68</div>
+        <div style="font-size:.76rem;color:var(--ink-soft);">Perubahan tersimpan akan langsung tampil di laman publik</div>
+      </div>
+      <span class="saved-indicator" id="savedIndicator"></span>
+    </div>
+
+    <div class="op-tabs">
+      <button class="op-tab-btn active" data-tab="info">Info Umum</button>
+      <button class="op-tab-btn" data-tab="daya">Daya Tampung</button>
+      <button class="op-tab-btn" data-tab="jadwal">Jadwal</button>
+      <button class="op-tab-btn" data-tab="syarat">Persyaratan &amp; Kriteria</button>
+      <button class="op-tab-btn" data-tab="pesan">Pesan Camurmut <span id="pesanBadge"></span></button>
+    </div>
+
+    <!-- TAB: Info Umum -->
+    <div class="op-panel active" data-panel="info">
+      <div class="op-card">
+        <h3>Informasi Pengumuman</h3>
+        <div class="op-row-table" style="gap:14px;">
+          <div class="op-field"><label>Nomor Pengumuman</label><input type="text" id="fNomor" placeholder="Contoh: 1335/PK.01.03"></div>
+          <div class="op-field"><label>Tahun Ajaran (T.A)</label><input type="text" id="fTA" placeholder="Contoh: 2026/2027"></div>
+          <div class="op-field"><label>Semester</label><input type="text" id="fSemester" placeholder="Contoh: Ganjil"></div>
+          <div class="op-field"><label>Dasar Surat Edaran</label><textarea id="fDasar" placeholder="Menindaklanjuti Surat Edaran ..."></textarea></div>
+          <div class="op-field"><label>Tanggal Pengumuman</label><input type="text" id="fTanggal" placeholder="Contoh: 8 Juli 2026"></div>
+          <div class="op-field"><label>Nama Kepala Sekolah</label><input type="text" id="fKepsek" placeholder="Contoh: Tjahyani, M.Pd"></div>
+          <div class="op-field"><label>NIP Kepala Sekolah</label><input type="text" id="fNip" placeholder="Contoh: 197011241993012001"></div>
+        </div>
+        <div class="op-actions-bar">
+          <button class="btn btn-primary" id="saveInfo">Simpan Info Umum</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Daya Tampung -->
+    <div class="op-panel" data-panel="daya">
+      <div class="op-card">
+        <h3>Formasi Daya Tampung per Kelas</h3>
+        <p style="font-size:.84rem;color:var(--ink-soft);margin-bottom:14px;">Tambahkan kelas seperti X, XI IPA, XI IPS, XII IPA, atau XII IPS beserta kuota dan mata pelajaran yang diujikan.</p>
+        <div class="op-row-table" id="kelasRows"></div>
+        <div class="op-actions-bar">
+          <button class="btn btn-outline btn-sm" id="addKelasRow">+ Tambah Kelas</button>
+          <button class="btn btn-primary" id="saveKelas">Simpan Daya Tampung</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Jadwal -->
+    <div class="op-panel" data-panel="jadwal">
+      <div class="op-card">
+        <h3>Jadwal Pelaksanaan</h3>
+        <p style="font-size:.84rem;color:var(--ink-soft);margin-bottom:14px;">Urutan baris menentukan urutan tampilan di laman publik. Tandai "Aktif" pada tahap yang sedang berlangsung.</p>
+        <div class="op-row-table" id="jadwalRows"></div>
+        <div class="op-actions-bar">
+          <button class="btn btn-outline btn-sm" id="addJadwalRow">+ Tambah Tahap</button>
+          <button class="btn btn-primary" id="saveJadwal">Simpan Jadwal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Persyaratan & Kriteria -->
+    <div class="op-panel" data-panel="syarat">
+      <div class="op-card">
+        <h3>Persyaratan Mutasi</h3>
+        <p style="font-size:.84rem;color:var(--ink-soft);margin-bottom:10px;">Satu persyaratan per baris.</p>
+        <textarea id="fPersyaratan" style="width:100%;min-height:140px;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-family:inherit;font-size:.9rem;"></textarea>
+        <div class="op-actions-bar">
+          <button class="btn btn-primary" id="saveSyarat">Simpan Persyaratan</button>
+        </div>
+      </div>
+      <div class="op-card">
+        <h3>Kriteria Seleksi</h3>
+        <div class="op-row-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="op-field"><label>Bobot Hasil Seleksi (%)</label><input type="number" id="fBobotSeleksi" min="0" max="100"></div>
+          <div class="op-field"><label>Bobot Rerata Rapor (%)</label><input type="number" id="fBobotRapor" min="0" max="100"></div>
+        </div>
+        <p id="bobotWarning" style="color:var(--amber-600);font-size:.8rem;margin-top:8px;display:none;">⚠ Total bobot sebaiknya berjumlah 100%.</p>
+        <div class="op-actions-bar">
+          <button class="btn btn-primary" id="saveKriteria">Simpan Kriteria</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Pesan Camurmut -->
+    <div class="op-panel" data-panel="pesan">
+      <div class="op-card">
+        <h3>Pesan Masuk dari Camurmut</h3>
+        <p style="font-size:.84rem;color:var(--ink-soft);margin-bottom:14px;">Pertanyaan yang dikirim pengunjung lewat widget helpdesk di laman publik.</p>
+        <div id="pesanList"><div class="empty-state">Memuat pesan…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+/* ============================================================
+   SMAN 68 Jakarta — Konfigurasi Firebase
+   Dipakai bersama oleh halaman publik & panel operator.
+   Menggunakan Cloud Firestore sebagai sumber data utama.
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyDAcKcg3alPOTH3FFGelYmsW7jcMMe2PLI",
+  authDomain: "upnvjdatsystem.firebaseapp.com",
+  databaseURL: "https://upnvjdatsystem-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "upnvjdatsystem",
+  storageBucket: "upnvjdatsystem.firebasestorage.app",
+  messagingSenderId: "57095309946",
+  appId: "1:57095309946:web:b0e9f3f86380d549ffc9c3"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.firestore();
+
+/* Dokumen tunggal yang menyimpan seluruh isi pengumuman:
+   info umum, daftar daya tampung per kelas, jadwal, persyaratan, kriteria seleksi. */
+const MUTASI_DOC_REF = db.collection("mutasi").doc("pengumuman");
+
+/* Koleksi pesan yang masuk lewat widget helpdesk Camurmut */
+const CAMURMUT_COLLECTION = db.collection("camurmutPesan");
+
+/* Data bawaan/contoh — hanya dipakai jika dokumen di Firestore belum pernah dibuat,
+   supaya operator punya titik awal untuk diedit, bukan tampilan kosong. */
+const MUTASI_DEFAULT_DATA = {
+  nomorSurat: "1335/PK.01.03",
+  tahunAjaran: "2026/2027",
+  semester: "Ganjil",
+  dasarSurat: "Surat Edaran Kepala Dinas Pendidikan Provinsi DKI Jakarta Nomor: 73/SE/2026 tentang Perpindahan Murid Semester Ganjil Tahun Ajaran 2026/2027",
+  tanggalPengumuman: "8 Juli 2026",
+  kepalaSekolah: "Tjahyani, M.Pd",
+  nipKepalaSekolah: "197011241993012001",
+  kelasList: [
+    { kelas: "XI IPS", kuota: 1, peminatan: "Sosiologi, Ekonomi, Geografi, Sejarah Tingkat Lanjut, Bahasa Perancis", mapelUjian: ["Bahasa Indonesia","Bahasa Inggris","Matematika","Sosiologi","Ekonomi","Geografi","Sejarah Tingkat Lanjut","Bahasa Perancis"] },
+    { kelas: "XII IPA", kuota: 4, peminatan: "Biologi, Fisika, Kimia, Matematika Tingkat Lanjut, Informatika", mapelUjian: ["Bahasa Indonesia","Bahasa Inggris","Matematika","Biologi","Fisika","Kimia","Matematika Tingkat Lanjut","Informatika"] },
+    { kelas: "XII IPS", kuota: 6, peminatan: "Sosiologi, Ekonomi, Geografi, Sejarah Tingkat Lanjut, Bahasa Perancis", mapelUjian: ["Bahasa Indonesia","Bahasa Inggris","Matematika","Sosiologi","Ekonomi","Geografi","Sejarah Tingkat Lanjut","Bahasa Perancis"] }
+  ],
+  jadwal: [
+    { tanggal: "8 – 9 Juli 2026", keterangan: "Pengumuman daya tampung secara terbuka dapat dilihat di Satuan Pendidikan dan laman SMAN 68 https://sman68jkt.sch.id", aktif: false },
+    { tanggal: "10 dan 13 Juli 2026", keterangan: "Pendaftaran", aktif: false },
+    { tanggal: "14 Juli 2026", keterangan: "Pengarahan kepada calon peserta (Pk. 10.00 WIB)", aktif: false },
+    { tanggal: "15 Juli 2026", keterangan: "Tes Seleksi (Pk. 10.00 – 12.00 WIB)", aktif: false },
+    { tanggal: "16 Juli 2026", keterangan: "Pengumuman Hasil Seleksi", aktif: false },
+    { tanggal: "17 dan 20 Juli 2026", keterangan: "Daftar Ulang Bagi yang diterima (Pk. 08.00-15.00 WIB)", aktif: true }
+  ],
+  persyaratan: [
+    "Fotocopy Ijazah SMP/MTs yang telah dilegalisir oleh Kepala Sekolah",
+    "Fotocopy Rapor 1 (satu) tahun sebelumnya (Kelas X semester 1 dan 2, Kelas XI semester 3 dan 4) yang telah dilegalisir Kepala Sekolah dan menunjukkan Rapor asli. Catatan: lengkap dari cover dan biodata",
+    "Pas Foto ukuran 2x3 (1 lembar)"
+  ],
+  kriteriaSeleksi: { bobotSeleksi: 60, bobotRapor: 40 },
+  updatedAt: null
+};
+
+</script>
+<script>
+/* ⚠️ Kode akses operator — ganti nilai ini agar tidak mudah ditebak.
+   Ini hanya proteksi dasar di sisi tampilan (bukan sistem login yang aman),
+   karena kode ini tetap terlihat oleh siapa pun yang membuka kode sumber halaman. */
+const OPERATOR_PASSCODE = "Mutasi68Jakarta!";
+
+function esc(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg, type){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' '+type : '');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('show'));
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=> el.remove(), 250); }, 3500);
+}
+function markSaved(){
+  const el = document.getElementById('savedIndicator');
+  el.textContent = '✓ Tersimpan ' + new Date().toLocaleTimeString('id-ID');
+  setTimeout(()=>{ el.textContent=''; }, 4000);
+}
+
+/* ---------- Gerbang akses ---------- */
+document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
+document.getElementById('passInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+
+function tryUnlock(){
+  const val = document.getElementById('passInput').value;
+  if(val === OPERATOR_PASSCODE){
+    document.getElementById('opLock').style.display = 'none';
+    document.getElementById('opMain').style.display = 'block';
+    sessionStorage.setItem('op_unlocked','1');
+    loadAllData();
+    listenPesanMasuk();
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+  }
+}
+if(sessionStorage.getItem('op_unlocked') === '1'){
+  document.getElementById('opLock').style.display = 'none';
+  document.getElementById('opMain').style.display = 'block';
+  loadAllData();
+  listenPesanMasuk();
+}
+
+/* ---------- Navigasi tab ---------- */
+document.querySelectorAll('.op-tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.op-tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.op-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector(`.op-panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+/* ---------- Muat data awal ke form ---------- */
+let workingData = JSON.parse(JSON.stringify(MUTASI_DEFAULT_DATA));
+
+async function loadAllData(){
+  try{
+    const snap = await MUTASI_DOC_REF.get();
+    workingData = snap.exists ? snap.data() : JSON.parse(JSON.stringify(MUTASI_DEFAULT_DATA));
+  } catch(err){
+    console.error(err);
+    showToast('Gagal memuat data dari Firestore. Periksa koneksi & aturan akses.', 'error');
+  }
+  fillInfoForm();
+  renderKelasRows();
+  renderJadwalRows();
+  fillSyaratForm();
+}
+
+function fillInfoForm(){
+  document.getElementById('fNomor').value = workingData.nomorSurat || '';
+  document.getElementById('fTA').value = workingData.tahunAjaran || '';
+  document.getElementById('fSemester').value = workingData.semester || '';
+  document.getElementById('fDasar').value = workingData.dasarSurat || '';
+  document.getElementById('fTanggal').value = workingData.tanggalPengumuman || '';
+  document.getElementById('fKepsek').value = workingData.kepalaSekolah || '';
+  document.getElementById('fNip').value = workingData.nipKepalaSekolah || '';
+}
+function fillSyaratForm(){
+  document.getElementById('fPersyaratan').value = (workingData.persyaratan||[]).join('\n');
+  const k = workingData.kriteriaSeleksi || {bobotSeleksi:60, bobotRapor:40};
+  document.getElementById('fBobotSeleksi').value = k.bobotSeleksi ?? 60;
+  document.getElementById('fBobotRapor').value = k.bobotRapor ?? 40;
+}
+
+/* ---------- Simpan: Info Umum ---------- */
+document.getElementById('saveInfo').addEventListener('click', async ()=>{
+  const payload = {
+    nomorSurat: document.getElementById('fNomor').value.trim(),
+    tahunAjaran: document.getElementById('fTA').value.trim(),
+    semester: document.getElementById('fSemester').value.trim(),
+    dasarSurat: document.getElementById('fDasar').value.trim(),
+    tanggalPengumuman: document.getElementById('fTanggal').value.trim(),
+    kepalaSekolah: document.getElementById('fKepsek').value.trim(),
+    nipKepalaSekolah: document.getElementById('fNip').value.trim(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  await saveToFirestore(payload, 'Info umum berhasil disimpan.');
+});
+
+async function saveToFirestore(partial, successMsg){
+  try{
+    await MUTASI_DOC_REF.set(partial, {merge:true});
+    Object.assign(workingData, partial);
+    markSaved();
+    showToast(successMsg, 'success');
+  }catch(err){
+    console.error(err);
+    showToast('Gagal menyimpan. Periksa koneksi & aturan akses Firestore.', 'error');
+  }
+}
+
+/* ---------- Daya Tampung (kelasList) ---------- */
+function renderKelasRows(){
+  const wrap = document.getElementById('kelasRows');
+  const list = workingData.kelasList && workingData.kelasList.length ? workingData.kelasList : [];
+  wrap.innerHTML = '';
+  list.forEach((k,i)=> wrap.appendChild(buildKelasRow(k, i)));
+}
+function buildKelasRow(k, i){
+  const row = document.createElement('div');
+  row.className = 'op-row';
+  row.dataset.index = i;
+  row.innerHTML = `
+    <button type="button" class="op-row-remove" title="Hapus baris">✕</button>
+    <div class="op-row-grid">
+      <div class="op-field"><label>Kelas</label><input type="text" class="k-kelas" placeholder="Contoh: XI IPA" value="${esc(k.kelas||'')}"></div>
+      <div class="op-field"><label>Kuota</label><input type="number" min="0" class="k-kuota" value="${Number(k.kuota)||0}"></div>
+      <div class="op-field"><label>Peminatan</label><input type="text" class="k-peminatan" placeholder="Contoh: Biologi, Fisika, Kimia" value="${esc(k.peminatan||'')}"></div>
+    </div>
+    <div class="op-field" style="margin-top:10px;"><label>Mata Pelajaran yang Diujikan (pisahkan dengan koma)</label><textarea class="k-mapel" placeholder="Bahasa Indonesia, Bahasa Inggris, Matematika, ...">${esc((k.mapelUjian||[]).join(', '))}</textarea></div>
+  `;
+  row.querySelector('.op-row-remove').addEventListener('click', ()=> row.remove());
+  return row;
+}
+document.getElementById('addKelasRow').addEventListener('click', ()=>{
+  document.getElementById('kelasRows').appendChild(buildKelasRow({kelas:'',kuota:0,peminatan:'',mapelUjian:[]}, Date.now()));
+});
+document.getElementById('saveKelas').addEventListener('click', async ()=>{
+  const rows = Array.from(document.querySelectorAll('#kelasRows .op-row'));
+  const kelasList = rows.map(r=>({
+    kelas: r.querySelector('.k-kelas').value.trim(),
+    kuota: Number(r.querySelector('.k-kuota').value) || 0,
+    peminatan: r.querySelector('.k-peminatan').value.trim(),
+    mapelUjian: r.querySelector('.k-mapel').value.split(',').map(s=>s.trim()).filter(Boolean)
+  })).filter(k=> k.kelas);
+  await saveToFirestore({ kelasList, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, 'Data daya tampung berhasil disimpan.');
+});
+
+/* ---------- Jadwal ---------- */
+function renderJadwalRows(){
+  const wrap = document.getElementById('jadwalRows');
+  const list = workingData.jadwal && workingData.jadwal.length ? workingData.jadwal : [];
+  wrap.innerHTML = '';
+  list.forEach((j,i)=> wrap.appendChild(buildJadwalRow(j, i)));
+}
+function buildJadwalRow(j, i){
+  const row = document.createElement('div');
+  row.className = 'op-row';
+  row.dataset.index = i;
+  row.innerHTML = `
+    <button type="button" class="op-row-remove" title="Hapus baris">✕</button>
+    <div class="op-row-grid" style="grid-template-columns:1fr 2fr;">
+      <div class="op-field"><label>Tanggal</label><input type="text" class="j-tanggal" placeholder="Contoh: 15 Juli 2026" value="${esc(j.tanggal||'')}"></div>
+      <div class="op-field"><label>Keterangan</label><textarea class="j-ket" placeholder="Contoh: Tes Seleksi (Pk. 10.00–12.00 WIB)">${esc(j.keterangan||'')}</textarea></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.82rem;font-weight:700;color:var(--ink-soft);">
+      <input type="checkbox" class="j-aktif" ${j.aktif?'checked':''}> Tandai sebagai tahap yang sedang berlangsung
+    </label>
+  `;
+  row.querySelector('.op-row-remove').addEventListener('click', ()=> row.remove());
+  return row;
+}
+document.getElementById('addJadwalRow').addEventListener('click', ()=>{
+  document.getElementById('jadwalRows').appendChild(buildJadwalRow({tanggal:'',keterangan:'',aktif:false}, Date.now()));
+});
+document.getElementById('saveJadwal').addEventListener('click', async ()=>{
+  const rows = Array.from(document.querySelectorAll('#jadwalRows .op-row'));
+  const jadwal = rows.map(r=>({
+    tanggal: r.querySelector('.j-tanggal').value.trim(),
+    keterangan: r.querySelector('.j-ket').value.trim(),
+    aktif: r.querySelector('.j-aktif').checked
+  })).filter(j=> j.tanggal || j.keterangan);
+  await saveToFirestore({ jadwal, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, 'Jadwal berhasil disimpan.');
+});
+
+/* ---------- Persyaratan & Kriteria ---------- */
+document.getElementById('saveSyarat').addEventListener('click', async ()=>{
+  const persyaratan = document.getElementById('fPersyaratan').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  await saveToFirestore({ persyaratan, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, 'Persyaratan berhasil disimpan.');
+});
+function checkBobot(){
+  const a = Number(document.getElementById('fBobotSeleksi').value)||0;
+  const b = Number(document.getElementById('fBobotRapor').value)||0;
+  document.getElementById('bobotWarning').style.display = (a+b !== 100) ? 'block' : 'none';
+}
+document.getElementById('fBobotSeleksi').addEventListener('input', checkBobot);
+document.getElementById('fBobotRapor').addEventListener('input', checkBobot);
+document.getElementById('saveKriteria').addEventListener('click', async ()=>{
+  const kriteriaSeleksi = {
+    bobotSeleksi: Number(document.getElementById('fBobotSeleksi').value)||0,
+    bobotRapor: Number(document.getElementById('fBobotRapor').value)||0
+  };
+  await saveToFirestore({ kriteriaSeleksi, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, 'Kriteria seleksi berhasil disimpan.');
+});
+
+/* ---------- Pesan Camurmut ---------- */
+function listenPesanMasuk(){
+  CAMURMUT_COLLECTION.orderBy('waktu','desc').onSnapshot(snap=>{
+    const list = document.getElementById('pesanList');
+    if(snap.empty){
+      list.innerHTML = '<div class="empty-state">Belum ada pesan masuk.</div>';
+      document.getElementById('pesanBadge').textContent = '';
+      return;
+    }
+    let baruCount = 0;
+    list.innerHTML = snap.docs.map(docu=>{
+      const d = docu.data();
+      if((d.status||'baru') === 'baru') baruCount++;
+      const waktu = d.waktu && d.waktu.toDate ? d.waktu.toDate().toLocaleString('id-ID') : '—';
+      return `
+      <div class="op-msg-item ${d.status==='selesai'?'selesai':'baru'}" data-id="${docu.id}">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <b>${esc(d.nama)}</b>
+          <span class="status-chip ${d.status==='selesai'?'selesai':'baru'}">${d.status==='selesai'?'Selesai':'Baru'}</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--ink-soft);margin:4px 0;">${esc(d.kontak)} · ${waktu}</div>
+        <p style="font-size:.9rem;margin-bottom:10px;">${esc(d.pesan)}</p>
+        ${d.status!=='selesai' ? `<button class="btn btn-sm btn-green mark-selesai">Tandai Selesai</button>` : ''}
+      </div>`;
+    }).join('');
+    document.getElementById('pesanBadge').textContent = baruCount ? `(${baruCount})` : '';
+    list.querySelectorAll('.mark-selesai').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        const id = e.target.closest('.op-msg-item').dataset.id;
+        try{
+          await CAMURMUT_COLLECTION.doc(id).update({status:'selesai'});
+          showToast('Pesan ditandai selesai.', 'success');
+        }catch(err){
+          console.error(err);
+          showToast('Gagal memperbarui status pesan.', 'error');
+        }
+      });
+    });
+  }, err=>{
+    console.error(err);
+    document.getElementById('pesanList').innerHTML = '<div class="empty-state">Gagal memuat pesan.</div>';
+  });
+}
+</script>
+</body>
+</html>
